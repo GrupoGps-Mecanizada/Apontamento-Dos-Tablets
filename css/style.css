@@ -296,6 +296,7 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    cursor: pointer;
 }
 
 .equipamento-card::before {
@@ -399,6 +400,7 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .alerta-item::before {
@@ -671,11 +673,4 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-/* =============================================================================
-   MODO ESCURO (FUTURO)
-============================================================================= */
-@media (prefers-color-scheme: dark) {
-    /* Será implementado em versões futuras */
 }
