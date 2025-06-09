@@ -1,146 +1,318 @@
 /**
- * Monitor Usiminas - JavaScript Principal
- * Sistema de monitoramento em tempo real dos equipamentos
+ * APLICAÇÃO PRINCIPAL DO SISTEMA DE MONITORAMENTO USIMINAS
+ * Arquivo: /js/app.js
+ * 
+ * Coordena todo o funcionamento do sistema
  */
 
-class MonitorUsiminas {
+class SistemaMonitoramento {
     constructor() {
-        // Configurações vindas do config.js
-        this.apiUrl = CONFIG_FRONTEND.API_URL;
-        this.updateInterval = CONFIG_FRONTEND.UPDATE_INTERVAL;
-        this.usarDadosSimulados = CONFIG_FRONTEND.USE_MOCK_DATA;
-        this.debugMode = CONFIG_FRONTEND.DEBUG_MODE;
+        // Estados principais
+        this.equipamentos = new Map();
+        this.motoristas = new Map();
+        this.contatos = new Map();
+        this.filtros = {
+            tipo: 'TODOS',
+            status: 'TODOS'
+        };
         
-        // Estado da aplicação
-        this.dados = null;
+        // Controles de estado
+        this.isLoading = false;
         this.ultimaAtualizacao = null;
         this.autoUpdateInterval = null;
-        this.isLoading = false;
-        this.tentativasErro = 0;
-        this.maxTentativas = CONFIG_FRONTEND.MAX_RETRIES;
         
-        // Lista dos equipamentos base
-        this.equipamentosBase = this.carregarEquipamentosBase();
+        // Elementos DOM principais
+        this.elements = {};
         
+        // Inicializar sistema
         this.init();
     }
 
     /**
      * Inicialização do sistema
      */
-    init() {
-        if (this.debugMode) {
-            console.log('🚀 Iniciando Monitor Usiminas...');
-            this.mostrarInfoSistema();
+    async init() {
+        try {
+            this.log('🚀 Iniciando Sistema de Monitoramento Usiminas...');
+            
+            // Verificar dependências
+            this.checkDependencies();
+            
+            // Configurar elementos DOM
+            this.setupDOMElements();
+            
+            // Configurar event listeners
+            this.setupEventListeners();
+            
+            // Carregar dados salvos
+            this.loadSavedData();
+            
+            // Carregar dados dos equipamentos
+            await this.loadEquipmentData();
+            
+            // Configurar auto-update
+            this.setupAutoUpdate();
+            
+            // Atualizar interface
+            this.updateInterface();
+            
+            // Atualizar data atual
+            this.updateCurrentDate();
+            
+            this.log('✅ Sistema inicializado com sucesso!');
+            
+        } catch (error) {
+            this.logError('❌ Erro na inicialização:', error);
+            this.showError('Erro ao inicializar o sistema: ' + error.message);
         }
+    }
+
+    /**
+     * Verificar se todas as dependências estão carregadas
+     */
+    checkDependencies() {
+        const required = ['CONFIG', 'EQUIPAMENTOS_BASE', 'EquipmentManager', 'MotoristaManager'];
+        const missing = required.filter(dep => typeof window[dep] === 'undefined');
         
-        this.configurarEventos();
-        this.carregarDados();
-        this.iniciarAutoUpdate();
+        if (missing.length > 0) {
+            throw new Error(`Dependências não carregadas: ${missing.join(', ')}`);
+        }
+    }
+
+    /**
+     * Configurar referências aos elementos DOM
+     */
+    setupDOMElements() {
+        this.elements = {
+            // Containers principais
+            equipamentosContainer: document.getElementById('equipamentos-container'),
+            loading: document.getElementById('loading'),
+            
+            // Header
+            dataAtual: document.getElementById('data-atual'),
+            btnAtualizar: document.getElementById('btn-atualizar'),
+            btnMotoristas: document.getElementById('btn-motoristas'),
+            
+            // Filtros
+            filtroTipo: document.getElementById('filtro-tipo'),
+            filtroStatus: document.getElementById('filtro-status'),
+            resumoStatus: document.getElementById('resumo-status'),
+            
+            // Modais
+            modalMotoristas: document.getElementById('modal-motoristas'),
+            modalContato: document.getElementById('modal-contato'),
+            
+            // Formulários
+            motoristaVaga: document.getElementById('motorista-vaga'),
+            motoristaNome: document.getElementById('motorista-nome'),
+            motoristaTelefone: document.getElementById('motorista-telefone'),
+            motoristaRadio: document.getElementById('motorista-radio'),
+            motoristasLista: document.getElementById('motoristas-lista')
+        };
+        
+        // Verificar se todos os elementos foram encontrados
+        Object.entries(this.elements).forEach(([key, element]) => {
+            if (!element) {
+                this.logWarn(`⚠️ Elemento não encontrado: ${key}`);
+            }
+        });
     }
 
     /**
      * Configurar event listeners
      */
-    configurarEventos() {
-        // Botão de atualizar
-        const btnAtualizar = document.getElementById('btn-atualizar');
-        if (btnAtualizar) {
-            btnAtualizar.addEventListener('click', () => {
-                this.carregarDados(true);
+    setupEventListeners() {
+        // Botões do header
+        if (this.elements.btnAtualizar) {
+            this.elements.btnAtualizar.addEventListener('click', () => {
+                this.refreshData();
             });
         }
-
+        
+        if (this.elements.btnMotoristas) {
+            this.elements.btnMotoristas.addEventListener('click', () => {
+                this.openMotoristaModal();
+            });
+        }
+        
+        // Filtros
+        if (this.elements.filtroTipo) {
+            this.elements.filtroTipo.addEventListener('change', (e) => {
+                this.filtros.tipo = e.target.value;
+                this.updateInterface();
+            });
+        }
+        
+        if (this.elements.filtroStatus) {
+            this.elements.filtroStatus.addEventListener('change', (e) => {
+                this.filtros.status = e.target.value;
+                this.updateInterface();
+            });
+        }
+        
         // Teclas de atalho
         document.addEventListener('keydown', (e) => {
-            // F5 ou Ctrl+R para atualizar
-            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+            this.handleKeyboardShortcuts(e);
+        });
+        
+        // Clique fora dos modais para fechar
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                this.closeModal(e.target.id);
+            }
+        });
+        
+        // Auto-format telefone
+        if (this.elements.motoristaTelefone) {
+            this.elements.motoristaTelefone.addEventListener('input', (e) => {
+                if (CONFIG.AUTO_PHONE_FORMAT) {
+                    e.target.value = this.formatPhone(e.target.value);
+                }
+            });
+        }
+        
+        // Prevenir reload acidental
+        window.addEventListener('beforeunload', (e) => {
+            if (this.hasUnsavedChanges()) {
                 e.preventDefault();
-                this.carregarDados(true);
+                e.returnValue = '';
+            }
+        });
+    }
+
+    /**
+     * Atalhos de teclado
+     */
+    handleKeyboardShortcuts(e) {
+        // F5 ou Ctrl+R - Atualizar dados
+        if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+            e.preventDefault();
+            this.refreshData();
+        }
+        
+        // Ctrl+M - Abrir modal de motoristas
+        if (e.ctrlKey && e.key === 'm') {
+            e.preventDefault();
+            this.openMotoristaModal();
+        }
+        
+        // Escape - Fechar modais
+        if (e.key === 'Escape') {
+            this.closeAllModals();
+        }
+        
+        // Ctrl+Shift+D - Toggle dados simulados (debug)
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            CONFIG.USE_MOCK_DATA = !CONFIG.USE_MOCK_DATA;
+            this.log(`🎭 Dados simulados: ${CONFIG.USE_MOCK_DATA ? 'ATIVADO' : 'DESATIVADO'}`);
+            this.refreshData();
+        }
+    }
+
+    /**
+     * Carregar dados salvos do localStorage
+     */
+    loadSavedData() {
+        try {
+            // Carregar motoristas
+            const motoristasData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'motoristas');
+            if (motoristasData) {
+                const motoristas = JSON.parse(motoristasData);
+                Object.entries(motoristas).forEach(([vaga, data]) => {
+                    this.motoristas.set(vaga, data);
+                });
+                this.log(`📋 ${this.motoristas.size} motoristas carregados`);
             }
             
-            // Ctrl+Shift+D para alternar dados simulados
-            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-                this.alternarDadosSimulados();
+            // Carregar contatos
+            const contatosData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'contatos');
+            if (contatosData) {
+                const contatos = JSON.parse(contatosData);
+                Object.entries(contatos).forEach(([id, data]) => {
+                    this.contatos.set(id, data);
+                });
+                this.log(`📞 ${this.contatos.size} contatos carregados`);
             }
-        });
+            
+            // Carregar filtros
+            const filtrosData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'filtros');
+            if (filtrosData) {
+                this.filtros = { ...this.filtros, ...JSON.parse(filtrosData) };
+                this.applyFilters();
+            }
+            
+        } catch (error) {
+            this.logWarn('⚠️ Erro ao carregar dados salvos:', error);
+        }
+    }
 
-        // Detectar quando a aba fica visível novamente
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && this.ultimaAtualizacao) {
-                const agora = new Date();
-                const diferenca = agora - this.ultimaAtualizacao;
-                if (diferenca > this.updateInterval) {
-                    if (this.debugMode) {
-                        console.log('🔄 Dados antigos detectados, atualizando...');
-                    }
-                    this.carregarDados();
-                }
-            }
-        });
+    /**
+     * Salvar dados no localStorage
+     */
+    saveData() {
+        if (!CONFIG.AUTO_SAVE) return;
+        
+        try {
+            // Salvar motoristas
+            const motoristasObj = Object.fromEntries(this.motoristas);
+            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'motoristas', JSON.stringify(motoristasObj));
+            
+            // Salvar contatos
+            const contatosObj = Object.fromEntries(this.contatos);
+            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'contatos', JSON.stringify(contatosObj));
+            
+            // Salvar filtros
+            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'filtros', JSON.stringify(this.filtros));
+            
+        } catch (error) {
+            this.logWarn('⚠️ Erro ao salvar dados:', error);
+        }
     }
 
     /**
      * Carregar dados dos equipamentos
      */
-    async carregarDados(forceUpdate = false) {
-        if (this.isLoading && !forceUpdate) {
-            if (this.debugMode) {
-                console.log('⏳ Carregamento já em andamento...');
-            }
-            return;
-        }
-
-        this.isLoading = true;
-        this.mostrarLoader(forceUpdate);
-
+    async loadEquipmentData() {
+        this.showLoading(true);
+        
         try {
-            let dados;
-
-            if (this.usarDadosSimulados) {
-                dados = await this.gerarDadosSimulados();
+            let equipmentData;
+            
+            if (CONFIG.USE_MOCK_DATA) {
+                equipmentData = this.loadMockData();
+                this.log('🎭 Usando dados simulados');
             } else {
-                dados = await this.buscarDadosAPI();
+                equipmentData = await this.loadRealData();
+                this.log('📡 Dados carregados da API');
             }
-
-            this.dados = dados;
+            
+            this.processEquipmentData(equipmentData);
             this.ultimaAtualizacao = new Date();
-            this.tentativasErro = 0;
             
-            this.renderizarDados(dados);
-            this.atualizarTimestamp();
-            
-            if (this.debugMode) {
-                console.log(`✅ Dados carregados: ${dados.equipamentos.length} equipamentos`);
-            }
-
         } catch (error) {
-            console.error('❌ Erro ao carregar dados:', error);
-            this.tentativasErro++;
-            
-            this.mostrarErro(`Erro ao carregar dados (tentativa ${this.tentativasErro}/${this.maxTentativas})`);
-            
-            if (this.tentativasErro < this.maxTentativas) {
-                // Tentar novamente em 30 segundos
-                setTimeout(() => this.carregarDados(), 30000);
-            } else {
-                this.mostrarErro('Máximo de tentativas atingido. Verifique a conexão.');
-            }
+            this.logError('❌ Erro ao carregar dados dos equipamentos:', error);
+            this.showError('Erro ao carregar dados: ' + error.message);
         } finally {
-            this.isLoading = false;
-            this.esconderLoader();
+            this.showLoading(false);
         }
     }
 
     /**
-     * Buscar dados da API real
+     * Carregar dados simulados
      */
-    async buscarDadosAPI() {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), CONFIG_FRONTEND.REQUEST_TIMEOUT);
+    loadMockData() {
+        return DADOS_SIMULADOS.equipamentos;
+    }
 
+    /**
+     * Carregar dados reais da API
+     */
+    async loadRealData() {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
         try {
-            const response = await fetch(this.apiUrl, {
+            const response = await fetch(CONFIG.API_URL, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,681 +320,573 @@ class MonitorUsiminas {
                 },
                 signal: controller.signal
             });
-
+            
             clearTimeout(timeoutId);
-
+            
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-
-            const dados = await response.json();
             
-            if (dados.error) {
-                throw new Error(`API Error: ${dados.error}`);
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
             }
-
-            return dados;
-
+            
+            return data.equipamentos || {};
+            
         } catch (error) {
             clearTimeout(timeoutId);
             if (error.name === 'AbortError') {
-                throw new Error('Timeout: A requisição demorou muito para responder');
+                throw new Error('Timeout: Requisição demorou muito para responder');
             }
             throw error;
         }
     }
 
     /**
-     * Gerar dados simulados para desenvolvimento
+     * Processar dados dos equipamentos
      */
-    async gerarDadosSimulados() {
-        // Simular delay da rede
-        const delay = MOCK_DATA_CONFIG.SIMULATED_DELAY + 
-                     (Math.random() * MOCK_DATA_CONFIG.DELAY_VARIATION) - 
-                     (MOCK_DATA_CONFIG.DELAY_VARIATION / 2);
+    processEquipmentData(data) {
+        // Limpar dados anteriores
+        this.equipamentos.clear();
         
-        await new Promise(resolve => setTimeout(resolve, delay));
-
-        const agora = new Date();
-        const equipamentos = [];
-        const estatisticas = {
-            total: 24,
-            semRegistro: 0,
-            tardios: 0,
-            poucosRegistros: 0,
-            ok: 0,
-            criticos: 0
-        };
-
-        // Gerar dados para cada equipamento
-        this.equipamentosBase.forEach(equip => {
-            const status = this.gerarStatusAleatorio();
-            const registros = this.gerarRegistrosAleatorios(status);
+        // Processar cada equipamento base
+        EQUIPAMENTOS_BASE.lista.forEach(equipBase => {
+            const equipData = data[equipBase.codigo] || {};
             
-            const equipamento = {
-                Codigo: equip.codigo,
-                Nome: equip.nome,
-                Status: status,
-                Total_Registros: registros.total,
-                Primeiro_Registro: registros.primeiro,
-                Turno: equip.turno,
-                Ultima_Atualizacao: agora.toISOString(),
-                Observacao: this.gerarObservacao(status, registros.total)
+            const equipment = {
+                ...equipBase,
+                primeiroRegistro: equipData.primeiroRegistro || null,
+                status: this.determineStatus(equipData),
+                totalApontamentos: equipData.totalApontamentos || 0,
+                apontamentos: equipData.apontamentos || [],
+                motorista: this.motoristas.get(equipBase.codigo) || null,
+                ultimoContato: this.getLastContact(equipBase.codigo)
             };
-
-            equipamentos.push(equipamento);
-
-            // Contar estatísticas
-            switch (status) {
-                case 'SEM_REGISTRO':
-                    estatisticas.semRegistro++;
-                    break;
-                case 'TARDIO':
-                    estatisticas.tardios++;
-                    break;
-                case 'POUCOS_REGISTROS':
-                    estatisticas.poucosRegistros++;
-                    break;
-                case 'CRITICO':
-                    estatisticas.criticos++;
-                    break;
-                case 'OK':
-                    estatisticas.ok++;
-                    break;
-            }
+            
+            this.equipamentos.set(equipBase.codigo, equipment);
         });
-
-        return {
-            equipamentos,
-            estatisticas,
-            ultimaAtualizacao: agora.toISOString(),
-            configuracao: {
-                horaLimite: EQUIPAMENTOS_CONFIG.HORA_LIMITE,
-                totalEquipamentos: EQUIPAMENTOS_CONFIG.TOTAL_EQUIPAMENTOS
-            }
-        };
+        
+        this.log(`📊 ${this.equipamentos.size} equipamentos processados`);
     }
 
     /**
-     * Gerar status aleatório baseado nas probabilidades
+     * Determinar status do equipamento
      */
-    gerarStatusAleatorio() {
-        const random = Math.random();
-        let acumulado = 0;
-
-        const probabilidades = Object.entries(MOCK_DATA_CONFIG.STATUS_PROBABILITIES);
-        
-        for (const [status, peso] of probabilidades) {
-            acumulado += peso;
-            if (random <= acumulado) {
-                return status;
-            }
+    determineStatus(equipData) {
+        if (!equipData.primeiroRegistro) {
+            return 'CRITICO';
         }
-
+        
+        if (equipData.totalApontamentos <= 2) {
+            return 'POUCOS';
+        }
+        
+        const primeiroHora = equipData.primeiroRegistro;
+        const horaLimite = CONFIG.HORA_LIMITE_NORMAL;
+        const horaCritico = CONFIG.HORA_LIMITE_CRITICO;
+        
+        if (primeiroHora > horaCritico) {
+            return 'CRITICO';
+        }
+        
+        if (primeiroHora > horaLimite) {
+            return 'TARDIO';
+        }
+        
         return 'OK';
     }
 
     /**
-     * Gerar registros aleatórios baseados no status
+     * Obter último contato do equipamento
      */
-    gerarRegistrosAleatorios(status) {
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-
-        switch (status) {
-            case 'SEM_REGISTRO':
-                return { total: 0, primeiro: null };
-                
-            case 'TARDIO':
-                const horaTardio = new Date(hoje);
-                horaTardio.setHours(7, 30 + Math.random() * 120, Math.random() * 60);
-                return {
-                    total: Math.floor(Math.random() * 6) + 3,
-                    primeiro: horaTardio.toISOString()
-                };
-                
-            case 'POUCOS_REGISTROS':
-                const horaPoucos = new Date(hoje);
-                horaPoucos.setHours(6, 30 + Math.random() * 60, Math.random() * 60);
-                return {
-                    total: Math.floor(Math.random() * 2) + 1,
-                    primeiro: horaPoucos.toISOString()
-                };
-                
-            case 'CRITICO':
-                const horaCritico = new Date(hoje);
-                horaCritico.setHours(8, 30 + Math.random() * 120, Math.random() * 60);
-                return {
-                    total: Math.floor(Math.random() * 3) + 1,
-                    primeiro: horaCritico.toISOString()
-                };
-                
-            case 'OK':
-            default:
-                const horaOK = new Date(hoje);
-                horaOK.setHours(6, Math.random() * 90, Math.random() * 60);
-                return {
-                    total: Math.floor(Math.random() * 10) + 5,
-                    primeiro: horaOK.toISOString()
-                };
-        }
-    }
-
-    /**
-     * Gerar observação baseada no status
-     */
-    gerarObservacao(status, totalRegistros) {
-        switch (status) {
-            case 'SEM_REGISTRO':
-                return 'Nenhum apontamento encontrado';
-            case 'TARDIO':
-                return 'Primeiro registro após 7:30h';
-            case 'POUCOS_REGISTROS':
-                return `Apenas ${totalRegistros} apontamento(s)`;
-            case 'CRITICO':
-                return 'Primeiro registro muito tardio - requer atenção';
-            case 'OK':
-                return 'Funcionando normalmente';
-            default:
-                return '';
-        }
-    }
-
-    /**
-     * Renderizar todos os dados na interface
-     */
-    renderizarDados(dados) {
-        this.renderizarEstatisticas(dados.estatisticas);
-        this.renderizarEquipamentos(dados.equipamentos);
-        this.renderizarAlertas(dados.equipamentos);
-    }
-
-    /**
-     * Renderizar cards de estatísticas
-     */
-    renderizarEstatisticas(stats) {
-        const elementos = {
-            'stat-sem-registro': stats.semRegistro,
-            'stat-tardios': stats.tardios,
-            'stat-poucos': stats.poucosRegistros,
-            'stat-ok': stats.ok
-        };
-
-        Object.entries(elementos).forEach(([id, valor]) => {
-            const elemento = document.getElementById(id);
-            if (elemento) {
-                this.animarNumero(elemento, valor);
-            }
-        });
-    }
-
-    /**
-     * Animar mudança de números nos cards
-     */
-    animarNumero(elemento, novoValor) {
-        const valorAtual = parseInt(elemento.textContent) || 0;
-        if (valorAtual === novoValor) return;
-
-        const diferenca = novoValor - valorAtual;
-        const duracao = UI_CONFIG.ANIMATION_DURATION;
-        const steps = 15;
-        const stepValue = diferenca / steps;
-        let step = 0;
-
-        const timer = setInterval(() => {
-            step++;
-            const valor = Math.round(valorAtual + (stepValue * step));
-            elemento.textContent = valor;
-
-            if (step >= steps) {
-                clearInterval(timer);
-                elemento.textContent = novoValor;
-            }
-        }, duracao / steps);
-    }
-
-    /**
-     * Renderizar grid de equipamentos
-     */
-    renderizarEquipamentos(equipamentos) {
-        // Separar por categoria
-        const categorias = {
-            'AP': equipamentos.filter(e => e.Codigo.startsWith('AP-')),
-            'AV': equipamentos.filter(e => e.Codigo.startsWith('AV-')),
-            'HP': equipamentos.filter(e => e.Codigo.startsWith('HP-'))
-        };
-
-        // Renderizar cada categoria
-        Object.entries(categorias).forEach(([prefixo, lista]) => {
-            const containerId = `grid-${prefixo.toLowerCase()}`;
-            this.renderizarGrupoEquipamentos(containerId, lista);
-        });
-    }
-
-    /**
-     * Renderizar um grupo específico de equipamentos
-     */
-    renderizarGrupoEquipamentos(containerId, equipamentos) {
-        const container = document.getElementById(containerId);
-        if (!container) {
-            if (this.debugMode) {
-                console.warn(`Container ${containerId} não encontrado`);
-            }
-            return;
-        }
-
-        // Ordenar equipamentos por código
-        equipamentos.sort((a, b) => a.Codigo.localeCompare(b.Codigo));
-
-        // Limpar container
-        container.innerHTML = '';
-
-        // Criar cards dos equipamentos
-        equipamentos.forEach(equip => {
-            const card = this.criarCardEquipamento(equip);
-            container.appendChild(card);
-        });
-    }
-
-    /**
-     * Criar card de um equipamento
-     */
-    criarCardEquipamento(equip) {
-        const card = document.createElement('div');
-        card.className = `equipamento-card status-${equip.Status.toLowerCase().replace('_', '-')}`;
+    getLastContact(vaga) {
+        const contatos = Array.from(this.contatos.values())
+            .filter(c => c.vaga === vaga)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
-        const statusTexto = obterLabelStatus(equip.Status);
-        const primeiroRegistro = equip.Primeiro_Registro ? 
-            this.formatarHora(equip.Primeiro_Registro) : 'Sem registro';
+        return contatos[0] || null;
+    }
 
-        card.innerHTML = `
-            <div class="equipamento-codigo">${equip.Codigo}</div>
-            <div class="equipamento-status">${statusTexto}</div>
-            <div class="equipamento-info">${equip.Total_Registros} registros</div>
-            <div class="equipamento-info">${primeiroRegistro}</div>
+    /**
+     * Atualizar interface completa
+     */
+    updateInterface() {
+        this.updateEquipmentDisplay();
+        this.updateStatusSummary();
+        this.updateFiltersState();
+        this.updateMotoristasList();
+    }
+
+    /**
+     * Atualizar exibição dos equipamentos
+     */
+    updateEquipmentDisplay() {
+        if (!this.elements.equipamentosContainer) return;
+        
+        const filteredEquipments = this.getFilteredEquipments();
+        const groupedEquipments = this.groupEquipmentsByType(filteredEquipments);
+        
+        this.elements.equipamentosContainer.innerHTML = '';
+        
+        Object.entries(groupedEquipments).forEach(([tipo, equipments]) => {
+            if (equipments.length === 0) return;
+            
+            const section = this.createTypeSection(tipo, equipments);
+            this.elements.equipamentosContainer.appendChild(section);
+        });
+    }
+
+    /**
+     * Obter equipamentos filtrados
+     */
+    getFilteredEquipments() {
+        let filtered = Array.from(this.equipamentos.values());
+        
+        // Filtro por tipo
+        if (this.filtros.tipo !== 'TODOS') {
+            filtered = filtered.filter(eq => eq.tipo === this.filtros.tipo);
+        }
+        
+        // Filtro por status
+        if (this.filtros.status !== 'TODOS') {
+            filtered = filtered.filter(eq => eq.status === this.filtros.status);
+        }
+        
+        return filtered;
+    }
+
+    /**
+     * Agrupar equipamentos por tipo
+     */
+    groupEquipmentsByType(equipments) {
+        const groups = {};
+        
+        equipments.forEach(eq => {
+            if (!groups[eq.tipo]) {
+                groups[eq.tipo] = [];
+            }
+            groups[eq.tipo].push(eq);
+        });
+        
+        // Ordenar equipamentos dentro de cada grupo
+        Object.keys(groups).forEach(tipo => {
+            groups[tipo].sort((a, b) => a.codigo.localeCompare(b.codigo));
+        });
+        
+        return groups;
+    }
+
+    /**
+     * Criar seção de tipo de equipamento
+     */
+    createTypeSection(tipo, equipments) {
+        const section = document.createElement('div');
+        section.className = 'categoria-section';
+        
+        const categoria = EQUIPAMENTOS_BASE.categorias[tipo];
+        const title = document.createElement('h3');
+        title.className = 'categoria-title';
+        title.innerHTML = `
+            <i class="${categoria.icon}"></i>
+            ${categoria.nome} (${equipments.length} equipamentos)
         `;
-
-        // Adicionar evento de clique para detalhes
-        card.addEventListener('click', () => {
-            this.mostrarDetalhesEquipamento(equip);
-        });
-
-        // Adicionar animação de entrada
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
         
-        setTimeout(() => {
-            card.style.transition = 'all 0.3s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, Math.random() * 200);
+        section.appendChild(title);
+        
+        equipments.forEach(equipment => {
+            const card = this.createEquipmentCard(equipment);
+            section.appendChild(card);
+        });
+        
+        return section;
+    }
 
+    /**
+     * Criar card de equipamento
+     */
+    createEquipmentCard(equipment) {
+        const card = document.createElement('div');
+        card.className = 'equipamento-card';
+        card.dataset.vaga = equipment.codigo;
+        
+        const statusConfig = STATUS_CONFIG.tipos[equipment.status];
+        
+        card.innerHTML = `
+            <div class="equipamento-header">
+                <div class="equipamento-info">
+                    <div class="equipamento-vaga">${equipment.codigo}</div>
+                    <div class="equipamento-placa">${equipment.placa}</div>
+                    <div class="equipamento-apontamentos">${equipment.totalApontamentos} apontamentos</div>
+                </div>
+                <div class="equipamento-status">
+                    <div class="status-badge ${equipment.status.toLowerCase()}">
+                        <i class="${statusConfig.icon}"></i>
+                        ${statusConfig.label}
+                    </div>
+                    ${equipment.motorista ? `
+                        <div class="motorista-info">
+                            <i class="fas fa-user"></i>
+                            ${equipment.motorista.nome}
+                        </div>
+                    ` : ''}
+                    <div class="equipamento-actions">
+                        <button class="btn btn-sm btn-primary" onclick="sistema.openContatoModal('${equipment.codigo}')">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="sistema.editMotorista('${equipment.codigo}')">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            ${this.createApontamentosTable(equipment)}
+        `;
+        
         return card;
     }
 
     /**
-     * Mostrar detalhes de um equipamento
+     * Criar tabela de apontamentos
      */
-    mostrarDetalhesEquipamento(equip) {
-        const detalhes = `
-Equipamento: ${equip.Codigo}
-Nome: ${equip.Nome}
-Status: ${obterLabelStatus(equip.Status)}
-Registros: ${equip.Total_Registros}
-Primeiro: ${equip.Primeiro_Registro ? this.formatarHora(equip.Primeiro_Registro) : 'Nenhum'}
-Turno: ${equip.Turno}
-Observação: ${equip.Observacao || 'Nenhuma'}
-Última Atualização: ${this.formatarDataHora(equip.Ultima_Atualizacao)}
-        `;
-        
-        if (this.debugMode) {
-            console.log('Detalhes do equipamento:', equip);
-        }
-        
-        alert(detalhes);
-    }
-
-    /**
-     * Renderizar lista de alertas
-     */
-    renderizarAlertas(equipamentos) {
-        const container = document.getElementById('lista-alertas');
-        if (!container) return;
-
-        // Filtrar apenas equipamentos com problemas
-        const problemas = equipamentos.filter(e => e.Status !== 'OK')
-            .sort((a, b) => obterPrioridadeStatus(b.Status) - obterPrioridadeStatus(a.Status));
-
-        // Limpar container
-        container.innerHTML = '';
-
-        if (problemas.length === 0) {
-            container.innerHTML = this.criarEstadoVazio();
-            return;
-        }
-
-        // Criar alertas
-        problemas.forEach((equip, index) => {
-            const alerta = this.criarItemAlerta(equip);
-            
-            // Animação de entrada escalonada
-            alerta.style.opacity = '0';
-            alerta.style.transform = 'translateX(-20px)';
-            
-            setTimeout(() => {
-                alerta.style.transition = 'all 0.3s ease';
-                alerta.style.opacity = '1';
-                alerta.style.transform = 'translateX(0)';
-            }, index * 100);
-            
-            container.appendChild(alerta);
-        });
-    }
-
-    /**
-     * Criar item de alerta
-     */
-    criarItemAlerta(equip) {
-        const alerta = document.createElement('div');
-        
-        // Determinar classe do alerta baseada no status
-        let classeAlerta = 'alerta-tardio';
-        if (equip.Status === 'SEM_REGISTRO' || equip.Status === 'CRITICO') {
-            classeAlerta = 'alerta-critico';
-        } else if (equip.Status === 'POUCOS_REGISTROS') {
-            classeAlerta = 'alerta-poucos';
-        }
-        
-        alerta.className = `alerta-item ${classeAlerta}`;
-
-        const icone = this.obterIconeStatus(equip.Status);
-        const descricao = equip.Observacao || this.obterDescricaoProblema(equip);
-
-        alerta.innerHTML = `
-            <div class="alerta-titulo">
-                <i class="${icone}"></i>
-                ${equip.Codigo} - ${obterLabelStatus(equip.Status)}
-            </div>
-            <div class="alerta-detalhes">${descricao}</div>
-            ${equip.Primeiro_Registro ? 
-                `<div class="alerta-detalhes">Primeiro registro: ${this.formatarHora(equip.Primeiro_Registro)}</div>` : 
-                ''
-            }
-        `;
-
-        // Adicionar evento de clique
-        alerta.addEventListener('click', () => {
-            this.mostrarDetalhesEquipamento(equip);
-        });
-
-        return alerta;
-    }
-
-    /**
-     * Criar estado vazio (sem problemas)
-     */
-    criarEstadoVazio() {
-        return `
-            <div class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <h3>Todos os equipamentos estão funcionando normalmente!</h3>
-                <p>Nenhum problema detectado nos apontamentos.</p>
-            </div>
-        `;
-    }
-
-    /**
-     * Obter ícone do status
-     */
-    obterIconeStatus(status) {
-        const icones = {
-            'SEM_REGISTRO': 'fas fa-exclamation-triangle',
-            'CRITICO': 'fas fa-exclamation-circle',
-            'TARDIO': 'fas fa-clock',
-            'POUCOS_REGISTROS': 'fas fa-search',
-            'OK': 'fas fa-check-circle'
-        };
-        return icones[status] || 'fas fa-question-circle';
-    }
-
-    /**
-     * Obter descrição do problema
-     */
-    obterDescricaoProblema(equip) {
-        switch (equip.Status) {
-            case 'SEM_REGISTRO':
-                return 'Nenhum apontamento registrado hoje';
-            case 'CRITICO':
-                return 'Primeiro registro muito tardio - requer atenção imediata';
-            case 'TARDIO':
-                return 'Primeiro registro feito após 7:30h';
-            case 'POUCOS_REGISTROS':
-                return `Apenas ${equip.Total_Registros} apontamento(s) registrado(s)`;
-            default:
-                return 'Status desconhecido';
-        }
-    }
-
-    /**
-     * Iniciar atualização automática
-     */
-    iniciarAutoUpdate() {
-        // Limpar interval anterior se existir
-        if (this.autoUpdateInterval) {
-            clearInterval(this.autoUpdateInterval);
-        }
-
-        this.autoUpdateInterval = setInterval(() => {
-            if (this.debugMode) {
-                console.log('🔄 Atualização automática iniciada');
-            }
-            this.carregarDados();
-        }, this.updateInterval);
-
-        if (this.debugMode) {
-            console.log(`⏰ Auto-update configurado para ${this.updateInterval / 60000} minutos`);
-        }
-    }
-
-    /**
-     * Parar atualização automática
-     */
-    pararAutoUpdate() {
-        if (this.autoUpdateInterval) {
-            clearInterval(this.autoUpdateInterval);
-            this.autoUpdateInterval = null;
-            if (this.debugMode) {
-                console.log('⏹️ Auto-update parado');
-            }
-        }
-    }
-
-    /**
-     * Atualizar timestamp da última atualização
-     */
-    atualizarTimestamp() {
-        const elemento = document.getElementById('ultima-atualizacao');
-        if (elemento) {
-            const agora = new Date();
-            elemento.textContent = `Atualizado: ${agora.toLocaleTimeString(UI_CONFIG.DATE_FORMAT)}`;
-        }
-    }
-
-    /**
-     * Mostrar loader
-     */
-    mostrarLoader(forceShow = false) {
-        const loader = document.getElementById('main-loader');
-        if (loader && (forceShow || !this.dados)) {
-            loader.style.display = 'block';
-        }
-
-        // Atualizar ícone do botão
-        const btnIcon = document.querySelector('#btn-atualizar i');
-        if (btnIcon) {
-            btnIcon.className = 'fas fa-spinner fa-spin';
-        }
-    }
-
-    /**
-     * Esconder loader
-     */
-    esconderLoader() {
-        const loader = document.getElementById('main-loader');
-        if (loader) {
-            loader.style.display = 'none';
-        }
-
-        // Restaurar ícone do botão
-        const btnIcon = document.querySelector('#btn-atualizar i');
-        if (btnIcon) {
-            btnIcon.className = 'fas fa-sync-alt';
-        }
-    }
-
-    /**
-     * Mostrar mensagem de erro
-     */
-    mostrarErro(mensagem) {
-        console.error(mensagem);
-        
-        // Mostrar notificação visual (simples)
-        const alertas = document.getElementById('lista-alertas');
-        if (alertas) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'alerta-item alerta-critico';
-            errorDiv.innerHTML = `
-                <div class="alerta-titulo">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Erro de Conexão
+    createApontamentosTable(equipment) {
+        if (!equipment.apontamentos || equipment.apontamentos.length === 0) {
+            return `
+                <div class="apontamentos-tabela">
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        <i class="fas fa-info-circle"></i>
+                        Nenhum apontamento registrado
+                    </div>
                 </div>
-                <div class="alerta-detalhes">${mensagem}</div>
             `;
-            
-            alertas.insertBefore(errorDiv, alertas.firstChild);
-            
-            // Remover após 10 segundos
-            setTimeout(() => {
-                errorDiv.remove();
-            }, 10000);
+        }
+        
+        const rows = equipment.apontamentos.map(apt => {
+            const tempoClass = this.getTempoClass(apt.tempo);
+            return `
+                <tr>
+                    <td>${equipment.codigo}</td>
+                    <td>${apt.categoria}</td>
+                    <td>${equipment.primeiroRegistro || '-'}</td>
+                    <td>${apt.inicio}</td>
+                    <td>${apt.fim}</td>
+                    <td class="tempo-cell ${tempoClass}">${apt.tempo}</td>
+                </tr>
+            `;
+        }).join('');
+        
+        return `
+            <div class="apontamentos-tabela">
+                <table class="apontamentos-table">
+                    <thead>
+                        <tr>
+                            <th>Vaga</th>
+                            <th>Categoria Registro</th>
+                            <th>Primeiro Registro</th>
+                            <th>Início Registro</th>
+                            <th>Final Registro</th>
+                            <th>Tempo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    /**
+     * Obter classe CSS para tempo
+     */
+    getTempoClass(tempo) {
+        const [horas, minutos] = tempo.split(':').map(Number);
+        const totalMinutos = horas * 60 + minutos;
+        
+        if (totalMinutos > STATUS_CONFIG.criterios.maxTempoAtencao) {
+            return 'tempo-critico';
+        }
+        if (totalMinutos > STATUS_CONFIG.criterios.maxTempoNormal) {
+            return 'tempo-atencao';
+        }
+        return 'tempo-normal';
+    }
+
+    /**
+     * Atualizar resumo de status
+     */
+    updateStatusSummary() {
+        if (!this.elements.resumoStatus) return;
+        
+        const stats = this.calculateStatusStats();
+        
+        this.elements.resumoStatus.innerHTML = `
+            <span class="status-count critico">Críticos: <strong>${stats.CRITICO}</strong></span>
+            <span class="status-count tardio">Tardios: <strong>${stats.TARDIO}</strong></span>
+            <span class="status-count poucos">Poucos: <strong>${stats.POUCOS}</strong></span>
+            <span class="status-count ok">OK: <strong>${stats.OK}</strong></span>
+        `;
+    }
+
+    /**
+     * Calcular estatísticas de status
+     */
+    calculateStatusStats() {
+        const stats = { CRITICO: 0, TARDIO: 0, POUCOS: 0, OK: 0 };
+        
+        this.equipamentos.forEach(eq => {
+            stats[eq.status] = (stats[eq.status] || 0) + 1;
+        });
+        
+        return stats;
+    }
+
+    /**
+     * Aplicar filtros na interface
+     */
+    applyFilters() {
+        if (this.elements.filtroTipo) {
+            this.elements.filtroTipo.value = this.filtros.tipo;
+        }
+        if (this.elements.filtroStatus) {
+            this.elements.filtroStatus.value = this.filtros.status;
         }
     }
 
     /**
-     * Alternar entre dados reais e simulados
+     * Atualizar estado dos filtros
      */
-    alternarDadosSimulados() {
-        this.usarDadosSimulados = !this.usarDadosSimulados;
-        CONFIG_FRONTEND.USE_MOCK_DATA = this.usarDadosSimulados;
+    updateFiltersState() {
+        this.applyFilters();
+        this.saveData();
+    }
+
+    /**
+     * Atualizar data atual no header
+     */
+    updateCurrentDate() {
+        if (this.elements.dataAtual) {
+            const today = new Date();
+            const formatted = today.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            this.elements.dataAtual.textContent = formatted;
+        }
+    }
+
+    /**
+     * Configurar auto-update
+     */
+    setupAutoUpdate() {
+        if (!CONFIG.AUTO_REFRESH) return;
         
-        console.log(`🎭 Dados simulados: ${this.usarDadosSimulados ? 'ATIVADO' : 'DESATIVADO'}`);
-        this.carregarDados(true);
+        this.autoUpdateInterval = setInterval(() => {
+            this.log('🔄 Auto-update executado');
+            this.loadEquipmentData();
+        }, CONFIG.UPDATE_INTERVAL);
+        
+        this.log(`⏰ Auto-update configurado (${CONFIG.UPDATE_INTERVAL / 60000}min)`);
     }
 
     /**
-     * Carregar lista base de equipamentos
+     * Refresh manual dos dados
      */
-    carregarEquipamentosBase() {
-        return [
-            // ALTA PRESSÃO (12 equipamentos)
-            { codigo: 'AP-01', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS', turno: '24h' },
-            { codigo: 'AP-02', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 02', turno: 'normal' },
-            { codigo: 'AP-03', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 03', turno: 'normal' },
-            { codigo: 'AP-04', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 04', turno: 'normal' },
-            { codigo: 'AP-05', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 05', turno: 'normal' },
-            { codigo: 'AP-06', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 06', turno: 'normal' },
-            { codigo: 'AP-07', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 07', turno: 'normal' },
-            { codigo: 'AP-08', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS', turno: '24h' },
-            { codigo: 'AP-09', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 09', turno: 'normal' },
-            { codigo: 'AP-10', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 10', turno: 'normal' },
-            { codigo: 'AP-11', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 11', turno: 'normal' },
-            { codigo: 'AP-12', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 12', turno: 'normal' },
-
-            // AUTO VÁCUO (10 equipamentos)
-            { codigo: 'AV-01', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS', turno: '16h' },
-            { codigo: 'AV-02', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS', turno: '16h' },
-            { codigo: 'AV-03', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 03', turno: 'normal' },
-            { codigo: 'AV-04', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 04', turno: 'normal' },
-            { codigo: 'AV-05', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 05', turno: 'normal' },
-            { codigo: 'AV-06', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 06', turno: 'normal' },
-            { codigo: 'AV-07', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 07', turno: 'normal' },
-            { codigo: 'AV-08', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS', turno: '24h' },
-            { codigo: 'AV-09', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 09', turno: 'normal' },
-            { codigo: 'AV-10', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 10', turno: 'normal' },
-
-            // HIPER VÁCUO (2 equipamentos)
-            { codigo: 'HP-01', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 01', turno: 'normal' },
-            { codigo: 'HP-02', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 02', turno: 'normal' }
-        ];
+    async refreshData() {
+        this.log('🔄 Refresh manual iniciado');
+        await this.loadEquipmentData();
+        this.updateInterface();
     }
 
     /**
-     * Formatadores
+     * Abrir modal de motoristas
      */
-    formatarHora(timestamp) {
-        if (!timestamp) return '';
-        const data = new Date(timestamp);
-        return data.toLocaleTimeString(UI_CONFIG.DATE_FORMAT, UI_CONFIG.TIME_FORMAT);
-    }
-
-    formatarDataHora(timestamp) {
-        if (!timestamp) return '';
-        const data = new Date(timestamp);
-        return data.toLocaleString(UI_CONFIG.DATE_FORMAT);
+    openMotoristaModal() {
+        this.populateVagasSelect();
+        this.updateMotoristasList();
+        this.showModal('modal-motoristas');
     }
 
     /**
-     * Mostrar informações do sistema
+     * Abrir modal de contato
      */
-    mostrarInfoSistema() {
-        console.log(`
-🚛 Monitor Usiminas v${CONFIG_FRONTEND.VERSION}
-════════════════════════════════════════════════
-📊 Equipamentos monitorados: ${this.equipamentosBase.length}
-⏰ Auto-update: ${this.updateInterval / 60000} min
-🕐 Horário limite: ${EQUIPAMENTOS_CONFIG.HORA_LIMITE}
-📈 Timeout: ${CONFIG_FRONTEND.REQUEST_TIMEOUT / 1000}s
-🧪 Dados simulados: ${this.usarDadosSimulados ? 'SIM' : 'NÃO'}
-🐛 Debug mode: ${this.debugMode ? 'SIM' : 'NÃO'}
+    openContatoModal(vaga) {
+        const equipment = this.equipamentos.get(vaga);
+        if (!equipment) return;
+        
+        this.currentContactVaga = vaga;
+        this.populateContatoInfo(equipment);
+        this.showModal('modal-contato');
+    }
 
-💡 Atalhos:
-   F5 / Ctrl+R: Atualizar dados
-   Ctrl+Shift+D: Alternar dados simulados
+    /**
+     * Mostrar/esconder loading
+     */
+    showLoading(show) {
+        if (this.elements.loading) {
+            this.elements.loading.style.display = show ? 'flex' : 'none';
+        }
+        this.isLoading = show;
+    }
 
-🔧 Comandos no console:
-   monitor.pause() - Pausar updates
-   monitor.resume() - Retomar updates
-   monitor.getDados() - Ver dados atuais
-   monitor.alternarDadosSimulados() - Trocar modo
-        `);
+    /**
+     * Mostrar modal
+     */
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+    }
+
+    /**
+     * Fechar modal
+     */
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        }
+    }
+
+    /**
+     * Fechar todos os modais
+     */
+    closeAllModals() {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            this.closeModal(modal.id);
+        });
+    }
+
+    /**
+     * Formatar telefone
+     */
+    formatPhone(phone) {
+        const numbers = phone.replace(/\D/g, '');
+        if (numbers.length <= 11) {
+            return numbers.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
+        }
+        return phone;
+    }
+
+    /**
+     * Verificar se há mudanças não salvas
+     */
+    hasUnsavedChanges() {
+        // Implementar lógica para detectar mudanças não salvas
+        return false;
+    }
+
+    /**
+     * Mostrar erro
+     */
+    showError(message) {
+        console.error('❌', message);
+        // Implementar notificação visual de erro
+        alert('Erro: ' + message);
+    }
+
+    /**
+     * Logging methods
+     */
+    log(message) {
+        if (CONFIG.DEBUG_MODE && CONFIG.CONSOLE_LOGS) {
+            console.log(message);
+        }
+    }
+
+    logWarn(message) {
+        if (CONFIG.DEBUG_MODE && CONFIG.CONSOLE_LOGS) {
+            console.warn(message);
+        }
+    }
+
+    logError(message, error) {
+        console.error(message, error);
     }
 
     /**
      * Métodos públicos para controle externo
      */
-    pause() {
-        this.pararAutoUpdate();
-        console.log('⏸️ Monitor pausado');
-    }
-
-    resume() {
-        this.iniciarAutoUpdate();
-        console.log('▶️ Monitor retomado');
-    }
-
-    getDados() {
-        return this.dados;
-    }
-
     getStatus() {
         return {
             isLoading: this.isLoading,
+            equipamentos: this.equipamentos.size,
+            motoristas: this.motoristas.size,
+            contatos: this.contatos.size,
             ultimaAtualizacao: this.ultimaAtualizacao,
-            tentativasErro: this.tentativasErro,
-            usarDadosSimulados: this.usarDadosSimulados,
-            totalEquipamentos: this.equipamentosBase.length,
-            autoUpdateAtivo: !!this.autoUpdateInterval
+            filtros: this.filtros
         };
+    }
+
+    pause() {
+        if (this.autoUpdateInterval) {
+            clearInterval(this.autoUpdateInterval);
+            this.autoUpdateInterval = null;
+            this.log('⏸️ Auto-update pausado');
+        }
+    }
+
+    resume() {
+        if (!this.autoUpdateInterval && CONFIG.AUTO_REFRESH) {
+            this.setupAutoUpdate();
+            this.log('▶️ Auto-update retomado');
+        }
+    }
+}
+
+// ============================================================================
+// FUNÇÕES GLOBAIS PARA USO NOS TEMPLATES
+// ============================================================================
+
+/**
+ * Fechar modal
+ */
+function fecharModal(modalId) {
+    if (window.sistema) {
+        window.sistema.closeModal(modalId);
+    }
+}
+
+/**
+ * Salvar motorista
+ */
+function salvarMotorista() {
+    if (window.motoristaManager) {
+        window.motoristaManager.salvarMotorista();
+    }
+}
+
+/**
+ * Limpar formulário de motorista
+ */
+function limparFormMotorista() {
+    if (window.motoristaManager) {
+        window.motoristaManager.limparForm();
+    }
+}
+
+/**
+ * Salvar contato
+ */
+function salvarContato() {
+    if (window.contatoManager) {
+        window.contatoManager.salvarContato();
+    }
+}
+
+/**
+ * Marcar como contatado
+ */
+function marcarContatado() {
+    if (window.contatoManager) {
+        window.contatoManager.marcarContatado();
     }
 }
 
@@ -830,23 +894,29 @@ Observação: ${equip.Observacao || 'Nenhuma'}
 // INICIALIZAÇÃO
 // ============================================================================
 
-// Disponibilizar globalmente
-window.MonitorUsiminas = MonitorUsiminas;
-
-// Inicializar quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
-    window.monitor = new MonitorUsiminas();
-    
-    // Disponibilizar comandos de conveniência
-    window.pauseMonitor = () => window.monitor.pause();
-    window.resumeMonitor = () => window.monitor.resume();
-    window.getMonitorStatus = () => window.monitor.getStatus();
-    window.forceUpdate = () => window.monitor.carregarDados(true);
+// Inicializar quando DOM estiver pronto
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Criar instância global do sistema
+        window.sistema = new SistemaMonitoramento();
+        
+        // Disponibilizar comandos úteis no console
+        if (CONFIG.DEBUG_MODE) {
+            window.pausarSistema = () => window.sistema.pause();
+            window.retomarSistema = () => window.sistema.resume();
+            window.statusSistema = () => window.sistema.getStatus();
+            window.atualizarDados = () => window.sistema.refreshData();
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro fatal na inicialização:', error);
+        alert('Erro fatal: ' + error.message);
+    }
 });
 
-// Limpeza quando a página for descarregada
-window.addEventListener('beforeunload', () => {
-    if (window.monitor) {
-        window.monitor.pause();
+// Limpeza antes de sair
+window.addEventListener('beforeunload', function() {
+    if (window.sistema) {
+        window.sistema.pause();
     }
 });
