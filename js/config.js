@@ -9,7 +9,7 @@
 
 const CONFIG = {
     // URL do Google Apps Script (substitua pela sua URL)
-    API_URL: 'https://script.google.com/macros/s/AKfycbyi1angFeBuWn0ghGqfKzSElqFkOyuotxlAb5_28JvW01Cfeb__rq2tQL3G3ZXabmrf/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzDgo5CYWk3tQfaoCHvHS3N3evgSpOTtiUsQVWL_SCjRF50wv3EQEv9unPCH7ZfX3d1/exec',
     
     // URL da página GaussFleet para extração
     GAUSSFLEET_URL: 'https://usiminas.gaussfleet.com/dashboard',
