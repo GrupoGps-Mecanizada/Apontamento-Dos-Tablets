@@ -1,5 +1,5 @@
 /* ============================================================================
-   SISTEMA DE MONITORAMENTO USIMINAS - ESTILOS PRINCIPAIS
+   SISTEMA DE MONITORAMENTO GRUPOGPS - ESTILOS PRINCIPAIS
    Arquivo: /css/style.css
 ============================================================================= */
 
@@ -683,6 +683,25 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   CRÉDITOS DO DESENVOLVEDOR
+============================================================================= */
+.developer-credits {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-md);
+}
+
+.developer-credits strong {
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 /* ============================================================================
