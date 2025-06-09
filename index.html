@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Apontamentos Usiminas</title>
+    <title>Sistema de Monitoramento Usiminas</title>
     <link rel="icon" href="data:,">
-    
-    <!-- Chart.js para gráficos -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -19,103 +16,187 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="company-logo">🚛 Usiminas</div>
-            <h1>Monitor de Apontamentos</h1>
-            <div class="status-bar">
-                <span id="ultima-atualizacao">Carregando...</span>
-                <button class="btn-refresh" id="btn-atualizar">
+            <div class="company-logo">
+                <i class="fas fa-truck"></i>
+                <span>Usiminas</span>
+            </div>
+            <div class="header-center">
+                <h1>Sistema de Monitoramento de Apontamentos</h1>
+                <div class="data-atual" id="data-atual">09/06/2025</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btn-atualizar">
                     <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+                <button class="btn btn-secondary" id="btn-motoristas">
+                    <i class="fas fa-users"></i> Motoristas
                 </button>
             </div>
         </div>
 
-        <!-- Cards de Estatísticas -->
-        <div class="summary-cards">
-            <div class="card card-sem-registro">
-                <div class="card-title">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Sem Registro
-                </div>
-                <div class="card-value" id="stat-sem-registro">0</div>
-                <div class="card-footer">Equipamentos sem apontamentos</div>
+        <!-- Filtros -->
+        <div class="filtros-container">
+            <div class="filtros">
+                <label>Filtrar por tipo:</label>
+                <select id="filtro-tipo">
+                    <option value="TODOS">Todos os Equipamentos</option>
+                    <option value="AP">Alta Pressão (AP)</option>
+                    <option value="AV">Auto Vácuo (AV)</option>
+                    <option value="HP">Hiper Vácuo (HP)</option>
+                </select>
+                
+                <label>Filtrar por status:</label>
+                <select id="filtro-status">
+                    <option value="TODOS">Todos os Status</option>
+                    <option value="CRITICO">🔴 Críticos</option>
+                    <option value="TARDIO">⚠️ Tardios</option>
+                    <option value="POUCOS">🔍 Poucos Registros</option>
+                    <option value="OK">✅ Normais</option>
+                </select>
             </div>
-
-            <div class="card card-tardios">
-                <div class="card-title">
-                    <i class="fas fa-clock"></i>
-                    Tardios
-                </div>
-                <div class="card-value" id="stat-tardios">0</div>
-                <div class="card-footer">Primeiro registro após 7:30h</div>
-            </div>
-
-            <div class="card card-poucos">
-                <div class="card-title">
-                    <i class="fas fa-search"></i>
-                    Poucos Registros
-                </div>
-                <div class="card-value" id="stat-poucos">0</div>
-                <div class="card-footer">≤2 apontamentos no dia</div>
-            </div>
-
-            <div class="card card-ok">
-                <div class="card-title">
-                    <i class="fas fa-check-circle"></i>
-                    Funcionando OK
-                </div>
-                <div class="card-value" id="stat-ok">0</div>
-                <div class="card-footer">Equipamentos normais</div>
+            
+            <div class="resumo-status" id="resumo-status">
+                <span class="status-count critico">Críticos: <strong>0</strong></span>
+                <span class="status-count tardio">Tardios: <strong>0</strong></span>
+                <span class="status-count poucos">Poucos: <strong>0</strong></span>
+                <span class="status-count ok">OK: <strong>0</strong></span>
             </div>
         </div>
 
-        <!-- Seção de Equipamentos -->
-        <div class="section">
-            <h2 class="section-title">
-                <i class="fas fa-truck"></i>
-                Status dos Equipamentos (24 Total)
-            </h2>
+        <!-- Container principal dos equipamentos -->
+        <div class="equipamentos-container" id="equipamentos-container">
+            <!-- Os equipamentos serão carregados dinamicamente aqui -->
+        </div>
 
-            <div class="equipamentos-container">
-                <!-- Alta Pressão -->
-                <h3 class="categoria-title">Alta Pressão (12 equipamentos)</h3>
-                <div class="equipamentos-grid" id="grid-ap">
-                    <!-- Equipamentos AP serão carregados dinamicamente -->
+        <!-- Loading -->
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Carregando dados...</span>
+        </div>
+    </div>
+
+    <!-- Modal de Motoristas -->
+    <div class="modal" id="modal-motoristas">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Gerenciar Motoristas</h2>
+                <button class="btn-close" onclick="fecharModal('modal-motoristas')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="motorista-form">
+                    <div class="form-group">
+                        <label>Vaga:</label>
+                        <select id="motorista-vaga">
+                            <option value="">Selecione a vaga...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do Motorista:</label>
+                        <input type="text" id="motorista-nome" placeholder="Nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone:</label>
+                        <input type="tel" id="motorista-telefone" placeholder="(31) 99999-9999">
+                    </div>
+                    <div class="form-group">
+                        <label>Rádio (opcional):</label>
+                        <input type="text" id="motorista-radio" placeholder="Canal/ID do rádio">
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="salvarMotorista()">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button class="btn btn-secondary" onclick="limparFormMotorista()">
+                            <i class="fas fa-broom"></i> Limpar
+                        </button>
+                    </div>
                 </div>
-
-                <!-- Auto Vácuo -->
-                <h3 class="categoria-title">Auto Vácuo (10 equipamentos)</h3>
-                <div class="equipamentos-grid" id="grid-av">
-                    <!-- Equipamentos AV serão carregados dinamicamente -->
-                </div>
-
-                <!-- Hiper Vácuo -->
-                <h3 class="categoria-title">Hiper Vácuo (2 equipamentos)</h3>
-                <div class="equipamentos-grid" id="grid-hp">
-                    <!-- Equipamentos HP serão carregados dinamicamente -->
+                
+                <div class="motoristas-lista" id="motoristas-lista">
+                    <!-- Lista de motoristas será carregada aqui -->
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Seção de Alertas -->
-        <div class="section">
-            <h2 class="section-title">
-                <i class="fas fa-bell"></i>
-                Equipamentos com Problemas
-            </h2>
-            <div class="alertas-lista" id="lista-alertas">
-                <!-- Alertas serão carregados dinamicamente -->
+    <!-- Modal de Contato/Justificativa -->
+    <div class="modal" id="modal-contato">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-phone"></i> Contato com Motorista</h2>
+                <button class="btn-close" onclick="fecharModal('modal-contato')">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </div>
-
-        <!-- Loader -->
-        <div class="loader" id="main-loader">
-            <div class="loader-spinner"></div>
-            <div>Carregando dados dos equipamentos...</div>
+            <div class="modal-body">
+                <div class="contato-info" id="contato-info">
+                    <!-- Informações do equipamento/motorista -->
+                </div>
+                
+                <div class="contato-form">
+                    <div class="form-group">
+                        <label>Problema Identificado:</label>
+                        <select id="problema-tipo">
+                            <option value="">Selecione o problema...</option>
+                            <option value="registro-tardio">Registro Tardio</option>
+                            <option value="poucos-registros">Poucos Registros</option>
+                            <option value="sem-registro">Sem Registro</option>
+                            <option value="demora-excessiva">Demora Excessiva</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Horário do Contato:</label>
+                        <input type="datetime-local" id="horario-contato">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Justificativa do Motorista:</label>
+                        <textarea id="justificativa" rows="4" placeholder="Descreva a justificativa fornecida pelo motorista..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Ação Tomada:</label>
+                        <select id="acao-tomada">
+                            <option value="">Selecione a ação...</option>
+                            <option value="orientacao">Orientação Fornecida</option>
+                            <option value="treinamento">Treinamento Necessário</option>
+                            <option value="manutencao">Manutenção Solicitada</option>
+                            <option value="sem-acao">Sem Ação Necessária</option>
+                            <option value="acompanhamento">Acompanhamento Próximo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Observações Adicionais:</label>
+                        <textarea id="observacoes" rows="3" placeholder="Observações adicionais sobre o contato..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-success" onclick="salvarContato()">
+                            <i class="fas fa-save"></i> Registrar Contato
+                        </button>
+                        <button class="btn btn-warning" onclick="marcarContatado()">
+                            <i class="fas fa-check"></i> Apenas Marcar como Contatado
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="historico-contatos" id="historico-contatos">
+                    <!-- Histórico de contatos será carregado aqui -->
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- JavaScript do projeto -->
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/equipamentos.js"></script>
+    <script src="js/motoristas.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
