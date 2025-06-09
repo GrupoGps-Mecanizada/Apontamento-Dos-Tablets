@@ -26,7 +26,7 @@ const CONFIG = {
     
     // Configurações de debug
     DEBUG_MODE: true,
-    USE_MOCK_DATA: true, // Mude para false quando conectar com API real
+    USE_MOCK_DATA: false, // Mude para false quando conectar com API real
     CONSOLE_LOGS: true,
     
     // Configurações da API
