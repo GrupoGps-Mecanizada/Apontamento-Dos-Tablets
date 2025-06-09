@@ -1,13 +1,10 @@
 /**
- * APLICAÇÃO PRINCIPAL DO SISTEMA DE MONITORAMENTO USIMINAS
+ * APLICAÇÃO PRINCIPAL DO SISTEMA DE MONITORAMENTO GRUPOGPS
  * Arquivo: /js/app.js
- * 
- * Coordena todo o funcionamento do sistema
  */
 
 class SistemaMonitoramento {
     constructor() {
-        // Estados principais
         this.equipamentos = new Map();
         this.motoristas = new Map();
         this.contatos = new Map();
@@ -16,47 +13,25 @@ class SistemaMonitoramento {
             status: 'TODOS'
         };
         
-        // Controles de estado
         this.isLoading = false;
         this.ultimaAtualizacao = null;
         this.autoUpdateInterval = null;
-        
-        // Elementos DOM principais
         this.elements = {};
         
-        // Inicializar sistema
         this.init();
     }
 
-    /**
-     * Inicialização do sistema
-     */
     async init() {
         try {
-            this.log('🚀 Iniciando Sistema de Monitoramento Usiminas...');
+            this.log('🚀 Iniciando Sistema de Monitoramento GrupoGPS...');
             
-            // Verificar dependências
             this.checkDependencies();
-            
-            // Configurar elementos DOM
             this.setupDOMElements();
-            
-            // Configurar event listeners
             this.setupEventListeners();
-            
-            // Carregar dados salvos
             this.loadSavedData();
-            
-            // Carregar dados dos equipamentos
             await this.loadEquipmentData();
-            
-            // Configurar auto-update
             this.setupAutoUpdate();
-            
-            // Atualizar interface
             this.updateInterface();
-            
-            // Atualizar data atual
             this.updateCurrentDate();
             
             this.log('✅ Sistema inicializado com sucesso!');
@@ -67,11 +42,8 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Verificar se todas as dependências estão carregadas
-     */
     checkDependencies() {
-        const required = ['CONFIG', 'EQUIPAMENTOS_BASE', 'EquipmentManager', 'MotoristaManager'];
+        const required = ['CONFIG', 'EQUIPAMENTOS_BASE', 'STATUS_LOGIC'];
         const missing = required.filter(dep => typeof window[dep] === 'undefined');
         
         if (missing.length > 0) {
@@ -79,50 +51,27 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Configurar referências aos elementos DOM
-     */
     setupDOMElements() {
         this.elements = {
-            // Containers principais
             equipamentosContainer: document.getElementById('equipamentos-container'),
             loading: document.getElementById('loading'),
-            
-            // Header
             dataAtual: document.getElementById('data-atual'),
             btnAtualizar: document.getElementById('btn-atualizar'),
             btnMotoristas: document.getElementById('btn-motoristas'),
-            
-            // Filtros
             filtroTipo: document.getElementById('filtro-tipo'),
             filtroStatus: document.getElementById('filtro-status'),
             resumoStatus: document.getElementById('resumo-status'),
-            
-            // Modais
             modalMotoristas: document.getElementById('modal-motoristas'),
             modalContato: document.getElementById('modal-contato'),
-            
-            // Formulários
             motoristaVaga: document.getElementById('motorista-vaga'),
             motoristaNome: document.getElementById('motorista-nome'),
             motoristaTelefone: document.getElementById('motorista-telefone'),
             motoristaRadio: document.getElementById('motorista-radio'),
             motoristasLista: document.getElementById('motoristas-lista')
         };
-        
-        // Verificar se todos os elementos foram encontrados
-        Object.entries(this.elements).forEach(([key, element]) => {
-            if (!element) {
-                this.logWarn(`⚠️ Elemento não encontrado: ${key}`);
-            }
-        });
     }
 
-    /**
-     * Configurar event listeners
-     */
     setupEventListeners() {
-        // Botões do header
         if (this.elements.btnAtualizar) {
             this.elements.btnAtualizar.addEventListener('click', () => {
                 this.refreshData();
@@ -135,7 +84,6 @@ class SistemaMonitoramento {
             });
         }
         
-        // Filtros
         if (this.elements.filtroTipo) {
             this.elements.filtroTipo.addEventListener('change', (e) => {
                 this.filtros.tipo = e.target.value;
@@ -150,19 +98,16 @@ class SistemaMonitoramento {
             });
         }
         
-        // Teclas de atalho
         document.addEventListener('keydown', (e) => {
             this.handleKeyboardShortcuts(e);
         });
         
-        // Clique fora dos modais para fechar
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 this.closeModal(e.target.id);
             }
         });
         
-        // Auto-format telefone
         if (this.elements.motoristaTelefone) {
             this.elements.motoristaTelefone.addEventListener('input', (e) => {
                 if (CONFIG.AUTO_PHONE_FORMAT) {
@@ -170,38 +115,23 @@ class SistemaMonitoramento {
                 }
             });
         }
-        
-        // Prevenir reload acidental
-        window.addEventListener('beforeunload', (e) => {
-            if (this.hasUnsavedChanges()) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
     }
 
-    /**
-     * Atalhos de teclado
-     */
     handleKeyboardShortcuts(e) {
-        // F5 ou Ctrl+R - Atualizar dados
         if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
             e.preventDefault();
             this.refreshData();
         }
         
-        // Ctrl+M - Abrir modal de motoristas
         if (e.ctrlKey && e.key === 'm') {
             e.preventDefault();
             this.openMotoristaModal();
         }
         
-        // Escape - Fechar modais
         if (e.key === 'Escape') {
             this.closeAllModals();
         }
         
-        // Ctrl+Shift+D - Toggle dados simulados (debug)
         if (e.ctrlKey && e.shiftKey && e.key === 'D') {
             CONFIG.USE_MOCK_DATA = !CONFIG.USE_MOCK_DATA;
             this.log(`🎭 Dados simulados: ${CONFIG.USE_MOCK_DATA ? 'ATIVADO' : 'DESATIVADO'}`);
@@ -209,12 +139,8 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Carregar dados salvos do localStorage
-     */
     loadSavedData() {
         try {
-            // Carregar motoristas
             const motoristasData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'motoristas');
             if (motoristasData) {
                 const motoristas = JSON.parse(motoristasData);
@@ -224,7 +150,6 @@ class SistemaMonitoramento {
                 this.log(`📋 ${this.motoristas.size} motoristas carregados`);
             }
             
-            // Carregar contatos
             const contatosData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'contatos');
             if (contatosData) {
                 const contatos = JSON.parse(contatosData);
@@ -234,7 +159,6 @@ class SistemaMonitoramento {
                 this.log(`📞 ${this.contatos.size} contatos carregados`);
             }
             
-            // Carregar filtros
             const filtrosData = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'filtros');
             if (filtrosData) {
                 this.filtros = { ...this.filtros, ...JSON.parse(filtrosData) };
@@ -246,22 +170,16 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Salvar dados no localStorage
-     */
     saveData() {
         if (!CONFIG.AUTO_SAVE) return;
         
         try {
-            // Salvar motoristas
             const motoristasObj = Object.fromEntries(this.motoristas);
             localStorage.setItem(CONFIG.STORAGE_PREFIX + 'motoristas', JSON.stringify(motoristasObj));
             
-            // Salvar contatos
             const contatosObj = Object.fromEntries(this.contatos);
             localStorage.setItem(CONFIG.STORAGE_PREFIX + 'contatos', JSON.stringify(contatosObj));
             
-            // Salvar filtros
             localStorage.setItem(CONFIG.STORAGE_PREFIX + 'filtros', JSON.stringify(this.filtros));
             
         } catch (error) {
@@ -269,9 +187,6 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Carregar dados dos equipamentos
-     */
     async loadEquipmentData() {
         this.showLoading(true);
         
@@ -297,16 +212,10 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Carregar dados simulados
-     */
     loadMockData() {
         return DADOS_SIMULADOS.equipamentos;
     }
 
-    /**
-     * Carregar dados reais da API
-     */
     async loadRealData() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -344,21 +253,15 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Processar dados dos equipamentos
-     */
     processEquipmentData(data) {
-        // Limpar dados anteriores
         this.equipamentos.clear();
         
-        // Processar cada equipamento base
         EQUIPAMENTOS_BASE.lista.forEach(equipBase => {
             const equipData = data[equipBase.codigo] || {};
             
             const equipment = {
                 ...equipBase,
-                primeiroRegistro: equipData.primeiroRegistro || null,
-                status: this.determineStatus(equipData),
+                status: STATUS_LOGIC.calcularStatus(equipData),
                 totalApontamentos: equipData.totalApontamentos || 0,
                 apontamentos: equipData.apontamentos || [],
                 motorista: this.motoristas.get(equipBase.codigo) || null,
@@ -371,36 +274,6 @@ class SistemaMonitoramento {
         this.log(`📊 ${this.equipamentos.size} equipamentos processados`);
     }
 
-    /**
-     * Determinar status do equipamento
-     */
-    determineStatus(equipData) {
-        if (!equipData.primeiroRegistro) {
-            return 'CRITICO';
-        }
-        
-        if (equipData.totalApontamentos <= 2) {
-            return 'POUCOS';
-        }
-        
-        const primeiroHora = equipData.primeiroRegistro;
-        const horaLimite = CONFIG.HORA_LIMITE_NORMAL;
-        const horaCritico = CONFIG.HORA_LIMITE_CRITICO;
-        
-        if (primeiroHora > horaCritico) {
-            return 'CRITICO';
-        }
-        
-        if (primeiroHora > horaLimite) {
-            return 'TARDIO';
-        }
-        
-        return 'OK';
-    }
-
-    /**
-     * Obter último contato do equipamento
-     */
     getLastContact(vaga) {
         const contatos = Array.from(this.contatos.values())
             .filter(c => c.vaga === vaga)
@@ -409,19 +282,15 @@ class SistemaMonitoramento {
         return contatos[0] || null;
     }
 
-    /**
-     * Atualizar interface completa
-     */
     updateInterface() {
         this.updateEquipmentDisplay();
         this.updateStatusSummary();
         this.updateFiltersState();
-        this.updateMotoristasList();
+        if (window.motoristaManager) {
+            window.motoristaManager.updateMotoristasList();
+        }
     }
 
-    /**
-     * Atualizar exibição dos equipamentos
-     */
     updateEquipmentDisplay() {
         if (!this.elements.equipamentosContainer) return;
         
@@ -438,18 +307,13 @@ class SistemaMonitoramento {
         });
     }
 
-    /**
-     * Obter equipamentos filtrados
-     */
     getFilteredEquipments() {
         let filtered = Array.from(this.equipamentos.values());
         
-        // Filtro por tipo
         if (this.filtros.tipo !== 'TODOS') {
             filtered = filtered.filter(eq => eq.tipo === this.filtros.tipo);
         }
         
-        // Filtro por status
         if (this.filtros.status !== 'TODOS') {
             filtered = filtered.filter(eq => eq.status === this.filtros.status);
         }
@@ -457,9 +321,6 @@ class SistemaMonitoramento {
         return filtered;
     }
 
-    /**
-     * Agrupar equipamentos por tipo
-     */
     groupEquipmentsByType(equipments) {
         const groups = {};
         
@@ -470,7 +331,6 @@ class SistemaMonitoramento {
             groups[eq.tipo].push(eq);
         });
         
-        // Ordenar equipamentos dentro de cada grupo
         Object.keys(groups).forEach(tipo => {
             groups[tipo].sort((a, b) => a.codigo.localeCompare(b.codigo));
         });
@@ -478,9 +338,6 @@ class SistemaMonitoramento {
         return groups;
     }
 
-    /**
-     * Criar seção de tipo de equipamento
-     */
     createTypeSection(tipo, equipments) {
         const section = document.createElement('div');
         section.className = 'categoria-section';
@@ -503,9 +360,6 @@ class SistemaMonitoramento {
         return section;
     }
 
-    /**
-     * Criar card de equipamento
-     */
     createEquipmentCard(equipment) {
         const card = document.createElement('div');
         card.className = 'equipamento-card';
@@ -517,7 +371,7 @@ class SistemaMonitoramento {
             <div class="equipamento-header">
                 <div class="equipamento-info">
                     <div class="equipamento-vaga">${equipment.codigo}</div>
-                    <div class="equipamento-placa">${equipment.placa}</div>
+                    <div class="equipamento-placa">${equipment.nome}</div>
                     <div class="equipamento-apontamentos">${equipment.totalApontamentos} apontamentos</div>
                 </div>
                 <div class="equipamento-status">
@@ -547,9 +401,6 @@ class SistemaMonitoramento {
         return card;
     }
 
-    /**
-     * Criar tabela de apontamentos
-     */
     createApontamentosTable(equipment) {
         if (!equipment.apontamentos || equipment.apontamentos.length === 0) {
             return `
@@ -568,7 +419,6 @@ class SistemaMonitoramento {
                 <tr>
                     <td>${equipment.codigo}</td>
                     <td>${apt.categoria}</td>
-                    <td>${equipment.primeiroRegistro || '-'}</td>
                     <td>${apt.inicio}</td>
                     <td>${apt.fim}</td>
                     <td class="tempo-cell ${tempoClass}">${apt.tempo}</td>
@@ -583,7 +433,6 @@ class SistemaMonitoramento {
                         <tr>
                             <th>Vaga</th>
                             <th>Categoria Registro</th>
-                            <th>Primeiro Registro</th>
                             <th>Início Registro</th>
                             <th>Final Registro</th>
                             <th>Tempo</th>
@@ -597,9 +446,6 @@ class SistemaMonitoramento {
         `;
     }
 
-    /**
-     * Obter classe CSS para tempo
-     */
     getTempoClass(tempo) {
         const [horas, minutos] = tempo.split(':').map(Number);
         const totalMinutos = horas * 60 + minutos;
@@ -613,9 +459,6 @@ class SistemaMonitoramento {
         return 'tempo-normal';
     }
 
-    /**
-     * Atualizar resumo de status
-     */
     updateStatusSummary() {
         if (!this.elements.resumoStatus) return;
         
@@ -629,9 +472,6 @@ class SistemaMonitoramento {
         `;
     }
 
-    /**
-     * Calcular estatísticas de status
-     */
     calculateStatusStats() {
         const stats = { CRITICO: 0, TARDIO: 0, POUCOS: 0, OK: 0 };
         
@@ -642,9 +482,6 @@ class SistemaMonitoramento {
         return stats;
     }
 
-    /**
-     * Aplicar filtros na interface
-     */
     applyFilters() {
         if (this.elements.filtroTipo) {
             this.elements.filtroTipo.value = this.filtros.tipo;
@@ -654,17 +491,11 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Atualizar estado dos filtros
-     */
     updateFiltersState() {
         this.applyFilters();
         this.saveData();
     }
 
-    /**
-     * Atualizar data atual no header
-     */
     updateCurrentDate() {
         if (this.elements.dataAtual) {
             const today = new Date();
@@ -678,9 +509,6 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Configurar auto-update
-     */
     setupAutoUpdate() {
         if (!CONFIG.AUTO_REFRESH) return;
         
@@ -692,39 +520,60 @@ class SistemaMonitoramento {
         this.log(`⏰ Auto-update configurado (${CONFIG.UPDATE_INTERVAL / 60000}min)`);
     }
 
-    /**
-     * Refresh manual dos dados
-     */
     async refreshData() {
         this.log('🔄 Refresh manual iniciado');
         await this.loadEquipmentData();
         this.updateInterface();
     }
 
-    /**
-     * Abrir modal de motoristas
-     */
     openMotoristaModal() {
         this.populateVagasSelect();
-        this.updateMotoristasList();
+        if (window.motoristaManager) {
+            window.motoristaManager.updateMotoristasList();
+        }
         this.showModal('modal-motoristas');
     }
 
-    /**
-     * Abrir modal de contato
-     */
-    openContatoModal(vaga) {
-        const equipment = this.equipamentos.get(vaga);
-        if (!equipment) return;
+    populateVagasSelect() {
+        if (!this.elements.motoristaVaga) return;
+
+        const vagas = EQUIPAMENTOS_BASE.lista
+            .map(eq => ({ codigo: eq.codigo, nome: `${eq.codigo} - ${eq.nome}` }))
+            .sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+        let options = '<option value="">Selecione a vaga...</option>';
         
+        vagas.forEach(vaga => {
+            const motorista = this.motoristas.get(vaga.codigo);
+            const label = motorista ? `${vaga.nome} (${motorista.nome})` : vaga.nome;
+            options += `<option value="${vaga.codigo}">${label}</option>`;
+        });
+
+        this.elements.motoristaVaga.innerHTML = options;
+    }
+
+    editMotorista(vaga) {
+        if (window.motoristaManager) {
+            window.motoristaManager.editarMotorista(vaga);
+            this.openMotoristaModal();
+        }
+    }
+
+    openContatoModal(vaga) {
         this.currentContactVaga = vaga;
-        this.populateContatoInfo(equipment);
+        if (window.contatoManager) {
+            window.contatoManager.setCurrentVaga(vaga);
+        }
+        this.populateContatoInfo(vaga);
         this.showModal('modal-contato');
     }
 
-    /**
-     * Mostrar/esconder loading
-     */
+    populateContatoInfo(vaga) {
+        if (window.motoristaManager) {
+            window.motoristaManager.populateContatoInfo(vaga);
+        }
+    }
+
     showLoading(show) {
         if (this.elements.loading) {
             this.elements.loading.style.display = show ? 'flex' : 'none';
@@ -732,9 +581,6 @@ class SistemaMonitoramento {
         this.isLoading = show;
     }
 
-    /**
-     * Mostrar modal
-     */
     showModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -743,9 +589,6 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Fechar modal
-     */
     closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -754,9 +597,6 @@ class SistemaMonitoramento {
         }
     }
 
-    /**
-     * Fechar todos os modais
-     */
     closeAllModals() {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
@@ -764,9 +604,6 @@ class SistemaMonitoramento {
         });
     }
 
-    /**
-     * Formatar telefone
-     */
     formatPhone(phone) {
         const numbers = phone.replace(/\D/g, '');
         if (numbers.length <= 11) {
@@ -775,26 +612,15 @@ class SistemaMonitoramento {
         return phone;
     }
 
-    /**
-     * Verificar se há mudanças não salvas
-     */
     hasUnsavedChanges() {
-        // Implementar lógica para detectar mudanças não salvas
         return false;
     }
 
-    /**
-     * Mostrar erro
-     */
     showError(message) {
         console.error('❌', message);
-        // Implementar notificação visual de erro
         alert('Erro: ' + message);
     }
 
-    /**
-     * Logging methods
-     */
     log(message) {
         if (CONFIG.DEBUG_MODE && CONFIG.CONSOLE_LOGS) {
             console.log(message);
@@ -811,9 +637,6 @@ class SistemaMonitoramento {
         console.error(message, error);
     }
 
-    /**
-     * Métodos públicos para controle externo
-     */
     getStatus() {
         return {
             isLoading: this.isLoading,
@@ -842,48 +665,33 @@ class SistemaMonitoramento {
 }
 
 // ============================================================================
-// FUNÇÕES GLOBAIS PARA USO NOS TEMPLATES
+// FUNÇÕES GLOBAIS
 // ============================================================================
 
-/**
- * Fechar modal
- */
 function fecharModal(modalId) {
     if (window.sistema) {
         window.sistema.closeModal(modalId);
     }
 }
 
-/**
- * Salvar motorista
- */
 function salvarMotorista() {
     if (window.motoristaManager) {
         window.motoristaManager.salvarMotorista();
     }
 }
 
-/**
- * Limpar formulário de motorista
- */
 function limparFormMotorista() {
     if (window.motoristaManager) {
         window.motoristaManager.limparForm();
     }
 }
 
-/**
- * Salvar contato
- */
 function salvarContato() {
     if (window.contatoManager) {
         window.contatoManager.salvarContato();
     }
 }
 
-/**
- * Marcar como contatado
- */
 function marcarContatado() {
     if (window.contatoManager) {
         window.contatoManager.marcarContatado();
@@ -894,13 +702,10 @@ function marcarContatado() {
 // INICIALIZAÇÃO
 // ============================================================================
 
-// Inicializar quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
     try {
-        // Criar instância global do sistema
         window.sistema = new SistemaMonitoramento();
         
-        // Disponibilizar comandos úteis no console
         if (CONFIG.DEBUG_MODE) {
             window.pausarSistema = () => window.sistema.pause();
             window.retomarSistema = () => window.sistema.resume();
@@ -914,7 +719,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Limpeza antes de sair
 window.addEventListener('beforeunload', function() {
     if (window.sistema) {
         window.sistema.pause();
