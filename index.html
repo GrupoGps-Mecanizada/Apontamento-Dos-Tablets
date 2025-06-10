@@ -546,37 +546,56 @@
         .apontamentos-lista {
             max-height: 300px;
             overflow-y: auto;
+            overflow-x: hidden;
             scrollbar-width: thin;
             scrollbar-color: #3498db #f1f1f1;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fafafa;
         }
 
         .apontamentos-lista::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .apontamentos-lista::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 3px;
+            border-radius: 4px;
         }
 
         .apontamentos-lista::-webkit-scrollbar-thumb {
             background: #3498db;
-            border-radius: 3px;
+            border-radius: 4px;
+            border: 1px solid #f1f1f1;
+        }
+
+        .apontamentos-lista::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
+        .apontamentos-lista::-webkit-scrollbar-corner {
+            background: #f1f1f1;
         }
 
         .apontamento-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
             border-left: 4px solid #3498db;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .apontamento-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+            background: #f8f9fa;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+        }
+
+        .apontamento-item:last-child {
+            margin-bottom: 0;
         }
 
         .apontamento-header {
@@ -2349,25 +2368,116 @@
                     </div>
                     
                     ${equip.apontamentos.length > 0 ? `
-                        <div class="apontamentos-lista">
-                            ${equip.apontamentos.map(apt => `
-                                <div class="apontamento-item">
-                                    <div class="apontamento-header">
-                                        <span class="apontamento-categoria">${apt.categoria}</span>
-                                        <span class="apontamento-tempo">${apt.tempoIndisponivel}</span>
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong style="color: #2c3e50;">📋 Apontamentos (${equip.apontamentos.length})</strong>
+                                ${equip.apontamentos.length > 3 ? '<small style="color: #7f8c8d;">↕️ Role para ver todos</small>' : ''}
+                            </div>
+                            <div class="apontamentos-lista" data-vaga="${equip.vaga}">
+                                ${equip.apontamentos.map(apt => `
+                                    <div class="apontamento-item">
+                                        <div class="apontamento-header">
+                                            <span class="apontamento-categoria">${apt.categoria}</span>
+                                            <span class="apontamento-tempo">${apt.tempoIndisponivel}</span>
+                                        </div>
+                                        <div class="apontamento-detalhes">
+                                            <span>🕐 ${apt.inicio || 'N/A'} - ${apt.fim || 'N/A'}</span>
+                                            <span>⏱️ Demora: ${apt.demoraRegistro}</span>
+                                        </div>
                                     </div>
-                                    <div class="apontamento-detalhes">
-                                        <span>🕐 ${apt.inicio || 'N/A'} - ${apt.fim || 'N/A'}</span>
-                                        <span>⏱️ Demora: ${apt.demoraRegistro}</span>
-                                    </div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
                         </div>
-                    ` : '<div style="text-align: center; color: #7f8c8d; padding: 20px;">Nenhum apontamento encontrado</div>'}
+                    ` : '<div style="text-align: center; color: #7f8c8d; padding: 20px; margin-top: 20px; background: #f8f9fa; border-radius: 8px;">📝 Nenhum apontamento encontrado</div>'}
                 </div>
             `}).join('');
             
+            // Configurar scroll para apontamentos após renderizar
+            setTimeout(() => {
+                configurarScrollApontamentos();
+            }, 100);
+            
             aplicarFiltro();
+        }
+
+        function configurarScrollApontamentos() {
+            const apontamentosListas = document.querySelectorAll('.apontamentos-lista');
+            
+            apontamentosListas.forEach(lista => {
+                // Limpar indicadores anteriores
+                const indicadoresAntigos = lista.querySelectorAll('.scroll-indicator');
+                indicadoresAntigos.forEach(ind => ind.remove());
+                lista.classList.remove('has-scroll');
+                
+                // Aguardar renderização completa
+                setTimeout(() => {
+                    // Verificar se o scroll está disponível (com tolerância)
+                    const needsScroll = lista.scrollHeight > (lista.clientHeight + 5);
+                    
+                    if (needsScroll) {
+                        // Adicionar classe para indicar que há scroll
+                        lista.classList.add('has-scroll');
+                        
+                        // Adicionar indicador visual de scroll apenas se há mais de 3 itens
+                        const numItens = lista.querySelectorAll('.apontamento-item').length;
+                        if (numItens > 3) {
+                            const scrollIndicator = document.createElement('div');
+                            scrollIndicator.className = 'scroll-indicator';
+                            scrollIndicator.innerHTML = '⬇️';
+                            scrollIndicator.style.cssText = `
+                                position: absolute;
+                                bottom: 8px;
+                                right: 12px;
+                                color: #3498db;
+                                font-size: 0.9rem;
+                                animation: bounce 2s infinite;
+                                pointer-events: none;
+                                z-index: 10;
+                                background: rgba(255, 255, 255, 0.8);
+                                border-radius: 50%;
+                                width: 24px;
+                                height: 24px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                            `;
+                            
+                            lista.style.position = 'relative';
+                            lista.appendChild(scrollIndicator);
+                            
+                            // Remover indicador quando usuário faz scroll
+                            const removeIndicator = () => {
+                                if (scrollIndicator && lista.contains(scrollIndicator)) {
+                                    scrollIndicator.style.animation = 'fadeOut 0.3s ease';
+                                    setTimeout(() => {
+                                        if (lista.contains(scrollIndicator)) {
+                                            scrollIndicator.remove();
+                                        }
+                                    }, 300);
+                                }
+                            };
+                            
+                            lista.addEventListener('scroll', removeIndicator, { once: true });
+                            
+                            // Auto-remover após 10 segundos
+                            setTimeout(removeIndicator, 10000);
+                        }
+                    }
+                    
+                    // Melhorar a experiência de scroll
+                    lista.style.webkitOverflowScrolling = 'touch';
+                    lista.style.scrollBehavior = 'smooth';
+                    
+                    // Log para debug
+                    if (CONFIG.DEBUG_MODE) {
+                        console.log(`📜 Lista ${lista.dataset.vaga || 'desconhecida'}: 
+                            scrollHeight: ${lista.scrollHeight}px, 
+                            clientHeight: ${lista.clientHeight}px, 
+                            needsScroll: ${needsScroll}`);
+                    }
+                }, 50);
+            });
         }
 
         function exibirTabelaApontamentos() {
@@ -2852,6 +2962,11 @@
                 
                 card.style.display = mostrar ? 'block' : 'none';
             });
+
+            // Reconfigurar scroll após filtrar
+            setTimeout(() => {
+                configurarScrollApontamentos();
+            }, 100);
         }
 
         // Funções de Justificativas
