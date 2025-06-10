@@ -1089,12 +1089,12 @@
 
             const uploadArea = document.getElementById('uploadArea');
             uploadArea.innerHTML = `
-                <div class="upload-icon">✅</div>
-                <div class="upload-text">${file.name}</div>
-                <div class="upload-subtext">Arquivo pronto para processamento (${(file.size / 1024).toFixed(1)} KB)</div>
+                <div class="upload-icon">⏳</div>
+                <div class="upload-text">Analisando ${file.name}...</div>
+                <div class="upload-subtext">Verificando colunas e estrutura (${(file.size / 1024).toFixed(1)} KB)</div>
             `;
 
-            document.getElementById('processBtn').disabled = false;
+            document.getElementById('processBtn').disabled = true;
             
             // Ler o arquivo
             const reader = new FileReader();
@@ -1102,11 +1102,24 @@
                 Papa.parse(e.target.result, {
                     header: true,
                     skipEmptyLines: true,
-                    delimiter: ';', // CSV usa ponto e vírgula como separador
+                    delimiter: ';', // Primeiro tenta com ponto e vírgula
                     complete: function(results) {
-                        dadosCSV = results.data;
-                        console.log('📊 CSV carregado:', dadosCSV.length, 'registros');
-                        showSuccess(`Arquivo carregado: ${dadosCSV.length} registros encontrados`);
+                        // Se poucos dados ou muitas colunas vazias, tenta com vírgula
+                        if (results.data.length === 0 || Object.keys(results.data[0] || {}).some(key => key.includes(';'))) {
+                            Papa.parse(e.target.result, {
+                                header: true,
+                                skipEmptyLines: true,
+                                delimiter: ',', // Tenta com vírgula
+                                complete: function(resultsComma) {
+                                    processarArquivoCarregado(resultsComma, file.name);
+                                },
+                                error: function(error) {
+                                    showError('Erro ao ler arquivo CSV: ' + error.message);
+                                }
+                            });
+                        } else {
+                            processarArquivoCarregado(results, file.name);
+                        }
                     },
                     error: function(error) {
                         showError('Erro ao ler arquivo CSV: ' + error.message);
@@ -1114,6 +1127,149 @@
                 });
             };
             reader.readAsText(file);
+        }
+
+        function processarArquivoCarregado(results, fileName) {
+            console.log('📊 Dados brutos carregados:', results.data.length, 'registros');
+            
+            // Verificar e mapear colunas
+            const mapeamento = detectarColunas(results.data[0]);
+            
+            if (!mapeamento.valido) {
+                showError(`Arquivo inválido: ${mapeamento.erro}`);
+                resetUploadArea();
+                return;
+            }
+            
+            // Processar dados com mapeamento
+            dadosCSV = normalizarDados(results.data, mapeamento.mapeamento);
+            
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <div class="upload-text">${fileName}</div>
+                <div class="upload-subtext">
+                    ${dadosCSV.length} registros processados<br>
+                    <small style="color: #27ae60; font-weight: 600;">
+                        ✓ Colunas detectadas: ${Object.keys(mapeamento.mapeamento).join(', ')}
+                    </small>
+                </div>
+            `;
+
+            document.getElementById('processBtn').disabled = false;
+            showSuccess(`Arquivo processado: ${dadosCSV.length} registros válidos encontrados`);
+        }
+
+        function detectarColunas(amostra) {
+            if (!amostra) {
+                return { valido: false, erro: 'Arquivo vazio ou sem dados' };
+            }
+
+            const colunasOriginais = Object.keys(amostra);
+            console.log('🔍 Colunas encontradas no arquivo:', colunasOriginais);
+
+            // Definir colunas obrigatórias e suas possíveis variações
+            const colunasNecessarias = {
+                'Placa': ['placa', 'plate', 'veiculo', 'vehicle'],
+                'Vaga': ['vaga', 'equipamento', 'equipment', 'nome', 'descricao'],
+                'Categoria Demora': ['categoria demora', 'categoria', 'category', 'tipo demora', 'motivo'],
+                'Data Inicial': ['data inicial', 'inicio', 'start', 'data inicio', 'hora inicial'],
+                'Data Final': ['data final', 'fim', 'end', 'data fim', 'hora final'],
+                'Tempo Indisponível (HH:MM)': ['tempo indisponivel', 'tempo', 'duration', 'duracao', 'tempo indisponivel (hh:mm)', 'tempo total']
+            };
+
+            const mapeamento = {};
+            const colunasEncontradas = [];
+            const colunasFaltantes = [];
+
+            // Mapear cada coluna necessária
+            Object.keys(colunasNecessarias).forEach(colunaNecessaria => {
+                let colunaEncontrada = null;
+
+                // Primeiro: busca exata (case insensitive)
+                colunaEncontrada = colunasOriginais.find(col => 
+                    col.toLowerCase().trim() === colunaNecessaria.toLowerCase().trim()
+                );
+
+                // Segundo: busca por variações
+                if (!colunaEncontrada) {
+                    const variacoes = colunasNecessarias[colunaNecessaria];
+                    colunaEncontrada = colunasOriginais.find(col => 
+                        variacoes.some(variacao => 
+                            col.toLowerCase().trim().includes(variacao.toLowerCase()) ||
+                            variacao.toLowerCase().includes(col.toLowerCase().trim())
+                        )
+                    );
+                }
+
+                // Terceiro: busca parcial mais flexível
+                if (!colunaEncontrada) {
+                    const palavrasChave = colunaNecessaria.toLowerCase().split(' ');
+                    colunaEncontrada = colunasOriginais.find(col => {
+                        const colLower = col.toLowerCase();
+                        return palavrasChave.some(palavra => 
+                            palavra.length > 3 && colLower.includes(palavra)
+                        );
+                    });
+                }
+
+                if (colunaEncontrada) {
+                    mapeamento[colunaNecessaria] = colunaEncontrada;
+                    colunasEncontradas.push(colunaEncontrada);
+                    console.log(`✅ ${colunaNecessaria} → ${colunaEncontrada}`);
+                } else {
+                    colunasFaltantes.push(colunaNecessaria);
+                    console.log(`❌ ${colunaNecessaria} não encontrada`);
+                }
+            });
+
+            // Verificar se encontrou todas as colunas obrigatórias
+            if (colunasFaltantes.length > 0) {
+                return { 
+                    valido: false, 
+                    erro: `Colunas obrigatórias não encontradas: ${colunasFaltantes.join(', ')}. Colunas disponíveis: ${colunasOriginais.join(', ')}` 
+                };
+            }
+
+            return { 
+                valido: true, 
+                mapeamento: mapeamento,
+                colunasOriginais: colunasOriginais,
+                colunasUsadas: colunasEncontradas
+            };
+        }
+
+        function normalizarDados(dadosBrutos, mapeamento) {
+            console.log('🔄 Normalizando dados com mapeamento:', mapeamento);
+            
+            return dadosBrutos.map(linha => {
+                const linhaNormalizada = {};
+                
+                // Mapear apenas as colunas necessárias
+                Object.keys(mapeamento).forEach(colunaPadrao => {
+                    const colunaOriginal = mapeamento[colunaPadrao];
+                    linhaNormalizada[colunaPadrao] = linha[colunaOriginal] || '';
+                });
+
+                // Manter compatibilidade com código existente
+                linhaNormalizada['Data Registro'] = linhaNormalizada['Data Inicial']; // Fallback
+                linhaNormalizada['Demora para Registro'] = '00:00'; // Valor padrão
+
+                return linhaNormalizada;
+            }).filter(linha => {
+                // Filtrar linhas válidas (que tenham pelo menos placa e vaga)
+                return linha['Placa'] && linha['Vaga'];
+            });
+        }
+
+        function resetUploadArea() {
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+            `;
+            document.getElementById('processBtn').disabled = true;
         }
 
         function processarArquivo() {
