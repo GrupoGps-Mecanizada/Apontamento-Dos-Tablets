@@ -1247,11 +1247,15 @@
             <div class="charts-container">
                 <div class="chart-card">
                     <div class="chart-title">📈 Distribuição de Status</div>
-                    <canvas id="statusChart" width="400" height="200"></canvas>
+                    <div style="position: relative; height: 280px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-title">🕐 Horários de Primeiro Registro</div>
-                    <canvas id="horariosChart" width="400" height="200"></canvas>
+                    <div style="position: relative; height: 280px;">
+                        <canvas id="horariosChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1359,11 +1363,15 @@
             <div class="charts-container">
                 <div class="chart-card">
                     <div class="chart-title">📊 Tempo Médio por Categoria</div>
-                    <canvas id="tempoMedioChart" width="400" height="200"></canvas>
+                    <div style="position: relative; height: 280px;">
+                        <canvas id="tempoMedioChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-title">🎯 Performance por Equipamento</div>
-                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                    <div style="position: relative; height: 280px;">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -1520,6 +1528,14 @@
         let filteredData = [];
         let equipamentoAtualModal = null;
         let motoristaAtualModal = null;
+
+        // Variáveis para controle dos gráficos
+        let chartsInstances = {
+            statusChart: null,
+            horariosChart: null,
+            tempoMedioChart: null,
+            performanceChart: null
+        };
 
         // Base de equipamentos (mesmo do código original)
         const equipamentosBase = [
@@ -1861,12 +1877,20 @@
             document.getElementById('processBtn').disabled = true;
         }
 
+        let isProcessing = false; // Flag para evitar processamento duplo
+
         function processarArquivo() {
             if (!dadosCSV || dadosCSV.length === 0) {
                 showError('Nenhum dado para processar. Carregue um arquivo CSV primeiro.');
                 return;
             }
 
+            if (isProcessing) {
+                console.warn('Processamento já em andamento...');
+                return;
+            }
+
+            isProcessing = true;
             document.getElementById('processBtn').innerHTML = '⏳ Processando...';
             document.getElementById('processBtn').disabled = true;
 
@@ -1885,8 +1909,11 @@
                 } catch (error) {
                     showError('Erro ao processar dados: ' + error.message);
                     document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
+                    console.error('Erro detalhado:', error);
+                } finally {
+                    document.getElementById('processBtn').disabled = false;
+                    isProcessing = false;
                 }
-                document.getElementById('processBtn').disabled = false;
             }, 500);
         }
 
@@ -1899,11 +1926,11 @@
             event.target.classList.add('active');
             document.getElementById(tabName + '-tab').classList.add('active');
 
-            // Atualizar conteúdo da tab se necessário
-            if (tabName === 'motoristas') {
-                exibirMotoristas();
-            } else if (tabName === 'tempos') {
-                exibirEstatisticasTemporais();
+            // Atualizar conteúdo da tab se necessário (com proteção)
+            if (tabName === 'motoristas' && Object.keys(equipamentosProcessados).length > 0) {
+                setTimeout(() => exibirMotoristas(), 50);
+            } else if (tabName === 'tempos' && Object.keys(equipamentosProcessados).length > 0) {
+                setTimeout(() => exibirEstatisticasTemporais(), 50);
             }
         }
 
@@ -2046,6 +2073,10 @@
         }
 
         function exibirResultados() {
+            // Limpar renderizações anteriores
+            limparRenderizacaoAnterior();
+            
+            // Renderizar na ordem correta
             exibirEstatisticas();
             exibirEquipamentos();
             exibirTabelaApontamentos();
@@ -2053,10 +2084,37 @@
             exibirMotoristas();
             exibirEstatisticasTemporais();
             populateCategoriaFilter();
-            criarGraficos();
+            
+            // Criar gráficos por último
+            setTimeout(() => {
+                criarGraficos();
+            }, 200);
             
             document.getElementById('statsSection').style.display = 'block';
             document.getElementById('tabsContainer').style.display = 'block';
+        }
+
+        function limparRenderizacaoAnterior() {
+            // Destruir todos os gráficos existentes
+            destruirGraficos();
+            
+            // Limpar containers principais
+            const containers = [
+                'statsGrid',
+                'equipamentosGrid', 
+                'apontamentosTableBody',
+                'relatorioDetalhado',
+                'motoristasGrid',
+                'tempoStatsGrid',
+                'tempoDetalheTableBody'
+            ];
+            
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
         }
 
         function exibirEstatisticas() {
@@ -2104,15 +2162,41 @@
         }
 
         function criarGraficos() {
-            criarGraficoStatus();
-            criarGraficoHorarios();
+            // Destruir gráficos existentes antes de criar novos
+            destruirGraficos();
+            
+            // Aguardar um pequeno delay para garantir que os elementos DOM estão prontos
+            setTimeout(() => {
+                try {
+                    criarGraficoStatus();
+                    criarGraficoHorarios();
+                } catch (error) {
+                    console.warn('Erro ao criar gráficos:', error);
+                }
+            }, 100);
+        }
+
+        function destruirGraficos() {
+            Object.keys(chartsInstances).forEach(chartKey => {
+                if (chartsInstances[chartKey]) {
+                    try {
+                        chartsInstances[chartKey].destroy();
+                        chartsInstances[chartKey] = null;
+                    } catch (error) {
+                        console.warn(`Erro ao destruir gráfico ${chartKey}:`, error);
+                    }
+                }
+            });
         }
 
         function criarGraficoStatus() {
-            const ctx = document.getElementById('statusChart').getContext('2d');
+            const canvas = document.getElementById('statusChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
             const stats = calcularEstatisticas();
             
-            new Chart(ctx, {
+            chartsInstances.statusChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['OK', 'Tardio', 'Poucos Apontamentos', 'Crítico'],
@@ -2141,7 +2225,10 @@
         }
 
         function criarGraficoHorarios() {
-            const ctx = document.getElementById('horariosChart').getContext('2d');
+            const canvas = document.getElementById('horariosChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
             
             // Agrupar por faixas de horário
             const faixasHorario = {
@@ -2163,7 +2250,7 @@
                 }
             });
 
-            new Chart(ctx, {
+            chartsInstances.horariosChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(faixasHorario),
@@ -2479,7 +2566,15 @@
 
         // Nova função para exibir estatísticas temporais
         function exibirEstatisticasTemporais() {
+            // Verificar se há dados processados
+            if (!equipamentosProcessados || Object.keys(equipamentosProcessados).length === 0) {
+                console.warn('Nenhum equipamento processado para estatísticas temporais');
+                return;
+            }
+            
             const tempoStatsGrid = document.getElementById('tempoStatsGrid');
+            if (!tempoStatsGrid) return;
+            
             const estatisticas = calcularEstatisticasTemporais();
             
             tempoStatsGrid.innerHTML = `
@@ -2503,7 +2598,13 @@
 
             // Atualizar tabela de detalhes temporais
             exibirTabelaTempoDetalhes();
-            criarGraficosTemporais();
+            
+            // Criar gráficos temporais (com delay)
+            setTimeout(() => {
+                if (dadosCSV && dadosCSV.length > 0) {
+                    criarGraficosTemporais();
+                }
+            }, 300);
         }
 
         function calcularEstatisticasTemporais() {
@@ -2582,12 +2683,31 @@
         }
 
         function criarGraficosTemporais() {
-            criarGraficoTempoMedio();
-            criarGraficoPerformance();
+            // Destruir gráficos temporais existentes
+            if (chartsInstances.tempoMedioChart) {
+                chartsInstances.tempoMedioChart.destroy();
+                chartsInstances.tempoMedioChart = null;
+            }
+            if (chartsInstances.performanceChart) {
+                chartsInstances.performanceChart.destroy();
+                chartsInstances.performanceChart = null;
+            }
+            
+            setTimeout(() => {
+                try {
+                    criarGraficoTempoMedio();
+                    criarGraficoPerformance();
+                } catch (error) {
+                    console.warn('Erro ao criar gráficos temporais:', error);
+                }
+            }, 100);
         }
 
         function criarGraficoTempoMedio() {
-            const ctx = document.getElementById('tempoMedioChart').getContext('2d');
+            const canvas = document.getElementById('tempoMedioChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
             
             // Agrupar por categoria
             const categoriasTempo = {};
@@ -2605,7 +2725,7 @@
             const labels = Object.keys(categoriasTempo);
             const data = labels.map(cat => categoriasTempo[cat].total / categoriasTempo[cat].count);
 
-            new Chart(ctx, {
+            chartsInstances.tempoMedioChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels.map(label => label.length > 20 ? label.substring(0, 20) + '...' : label),
@@ -2645,7 +2765,10 @@
         }
 
         function criarGraficoPerformance() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const canvas = document.getElementById('performanceChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
             const equipamentos = Object.values(equipamentosProcessados);
             
             const labels = equipamentos.map(e => e.vaga);
@@ -2665,7 +2788,7 @@
                 return '#95a5a6';
             });
 
-            new Chart(ctx, {
+            chartsInstances.performanceChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
