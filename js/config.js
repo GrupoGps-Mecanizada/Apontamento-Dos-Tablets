@@ -9,7 +9,7 @@
 
 const CONFIG = {
     // !!! ATENÇÃO: ATUALIZE ESTA URL COM A SUA URL DE IMPLANTAÇÃO DO GOOGLE APPS SCRIPT !!!
-    API_URL: 'https://script.google.com/macros/s/AKfycbwluIO7K7K_keeuBvO-7on-Oo_ZK0AAPqC1LIcRWdWr3ZtMflN3sfdOYhvy5Q_bPtw/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzFGq15DLsoruhUvBpO1JjsVb60oZRfg07EgqoxS9CeBRvA22nZimhf0ZM3QAl97d7T/exec',
 
     GAUSSFLEET_URL: 'https://usiminas.gaussfleet.com/dashboard',
 
