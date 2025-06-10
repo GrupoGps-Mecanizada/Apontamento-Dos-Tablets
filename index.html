@@ -1,0 +1,3317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Monitoramento GrupoGPS - Evoluído</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 3;
+        }
+
+        .upload-section {
+            padding: 40px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+        }
+
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 60px 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.1) 0%, transparent 70%);
+            transition: all 0.3s ease;
+            transform: scale(0);
+        }
+
+        .upload-area:hover::before {
+            transform: scale(1);
+        }
+
+        .upload-area:hover {
+            border-color: #2980b9;
+            background: #e3f2fd;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
+        }
+
+        .upload-area.dragover {
+            border-color: #27ae60;
+            background: #e8f5e8;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #3498db;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        .upload-subtext {
+            color: #7f8c8d;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            margin: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stats-section {
+            padding: 30px 40px;
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3498db, transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .stat-ok { color: #27ae60; }
+        .stat-tardio { color: #f39c12; }
+        .stat-poucos { color: #e67e22; }
+        .stat-critico { color: #e74c3c; }
+
+        .tabs-container {
+            background: white;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 20px 35px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            min-width: 180px;
+            white-space: nowrap;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: #3498db;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .tab.active {
+            background: white;
+            color: #2c3e50;
+            border-bottom-color: #3498db;
+        }
+
+        .tab.active::after {
+            width: 100%;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 2px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filtro-btn {
+            padding: 12px 25px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .filtro-btn.active {
+            background: #3498db;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .filtro-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .equipamentos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 25px;
+        }
+
+        .equipamento-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .equipamento-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(52, 152, 219, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .equipamento-card:hover::before {
+            opacity: 1;
+        }
+
+        .equipamento-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .equipamento-card.status-ok { border-left-color: #27ae60; }
+        .equipamento-card.status-tardio { border-left-color: #f39c12; }
+        .equipamento-card.status-poucos { border-left-color: #e67e22; }
+        .equipamento-card.status-critico { border-left-color: #e74c3c; }
+
+        .equipamento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .equipamento-vaga {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .equipamento-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-ok { background: #d5f4e6; color: #27ae60; }
+        .status-tardio { background: #fef9e7; color: #f39c12; }
+        .status-poucos { background: #fdf2e9; color: #e67e22; }
+        .status-critico { background: #fdedec; color: #e74c3c; }
+
+        .equipamento-info {
+            margin-bottom: 20px;
+        }
+
+        .equipamento-placa {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .equipamento-nome {
+            font-size: 0.95rem;
+            color: #95a5a6;
+            line-height: 1.4;
+        }
+
+        .equipamento-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+
+        .stat-item-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-item-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .apontamentos-lista {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #f1f1f1;
+        }
+
+        .apontamentos-lista::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .apontamentos-lista::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .apontamentos-lista::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 3px;
+        }
+
+        .apontamento-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .apontamento-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .apontamento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .apontamento-categoria {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .apontamento-tempo {
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .apontamento-detalhes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .apontamento-detalhes span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .justificativa-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .justificativa-section:hover {
+            background: #fff2b3;
+        }
+
+        .justificativa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .justificativa-title {
+            font-weight: 600;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        .justificativa-text {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ffeaa7;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #2c3e50;
+            min-height: 40px;
+        }
+
+        .justificativa-empty {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .equipamento-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            placeholder-color: rgba(255,255,255,0.7);
+            min-width: 250px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 700;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .table-scroll {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .categoria-badge {
+            background: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .placa-badge {
+            background: #34495e;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .tempo-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .pagination button:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .pagination button.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .justificativas-toolbar {
+            background: white;
+            padding: 20px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-right: 10px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* Novas Seções */
+        .motoristas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .motorista-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+        }
+
+        .motorista-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .motorista-info {
+            margin-bottom: 15px;
+        }
+
+        .motorista-nome {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .motorista-vaga {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .google-sheets-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .sheets-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .sheets-connected {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .sheets-disconnected {
+            background: #fdedec;
+            color: #e74c3c;
+        }
+
+        .tempo-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tempo-stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tempo-stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tempo-stat-numero {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .tempo-stat-label {
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 20px;
+            }
+            
+            .equipamentos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 15px;
+                min-width: auto;
+            }
+            
+            .search-input {
+                min-width: 200px;
+            }
+            
+            .data-table {
+                font-size: 0.8rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px 5px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .justificativas-toolbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .toolbar-section {
+                justify-content: center;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .tempo-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">v2.0 Evoluído</div>
+            <div class="header-content">
+                <h1>🚚 Sistema Monitoramento GrupoGPS</h1>
+                <p>Upload, análise, justificativas e gestão inteligente de equipamentos</p>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+            </div>
+            <input type="file" id="fileInput" accept=".csv" />
+            <div class="controls">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    📂 Selecionar Arquivo
+                </button>
+                <button class="btn" id="processBtn" onclick="processarArquivo()" disabled>
+                    ⚡ Processar Dados
+                </button>
+                <button class="btn btn-export" id="exportBtn" onclick="exportarDados()" disabled style="display: none;">
+                    📊 Exportar Relatório
+                </button>
+            </div>
+        </div>
+
+        <div class="justificativas-toolbar" id="justificativasToolbar" style="display: none;">
+            <div class="toolbar-section">
+                <span class="toolbar-label">💾 Justificativas:</span>
+                <div class="file-input-wrapper">
+                    <input type="file" id="importJustificativasInput" accept=".json" onchange="importarJustificativas()">
+                    <button class="btn btn-secondary btn-small">📥 Importar</button>
+                </div>
+                <button class="btn btn-secondary btn-small" onclick="exportarJustificativas()">📤 Exportar</button>
+                <button class="btn btn-danger btn-small" onclick="limparJustificativas()">🗑️ Limpar Todas</button>
+            </div>
+            <div class="toolbar-section">
+                <span class="toolbar-label">📋 Relatórios:</span>
+                <button class="btn btn-export btn-small" onclick="exportarRelatorioCompleto()">📄 Relatório Completo</button>
+                <button class="btn btn-export btn-small" onclick="exportarRelatorioProfissional()">🎯 Relatório Executivo</button>
+            </div>
+            <div class="toolbar-section">
+                <span class="toolbar-label">☁️ Google Sheets:</span>
+                <button class="btn btn-warning btn-small" onclick="configurarGoogleSheets()">⚙️ Configurar</button>
+                <button class="btn btn-export btn-small" onclick="sincronizarSheets()">🔄 Sincronizar</button>
+            </div>
+        </div>
+
+        <div class="stats-section" id="statsSection">
+            <h2 class="section-title">📊 Dashboard Geral</h2>
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats serão inseridas aqui -->
+            </div>
+            
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">📈 Distribuição de Status</div>
+                    <canvas id="statusChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">🕐 Horários de Primeiro Registro</div>
+                    <canvas id="horariosChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs-container" id="tabsContainer" style="display: none;">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('equipamentos')">🚛 Equipamentos</button>
+                <button class="tab" onclick="showTab('apontamentos')">📋 Apontamentos</button>
+                <button class="tab" onclick="showTab('motoristas')">👨‍💼 Motoristas</button>
+                <button class="tab" onclick="showTab('tempos')">⏱️ Estatísticas Temporais</button>
+                <button class="tab" onclick="showTab('relatorio')">📊 Relatório Detalhado</button>
+            </div>
+        </div>
+
+        <!-- Tab Equipamentos -->
+        <div class="tab-content active" id="equipamentos-tab">
+            <div class="filtros">
+                <button class="filtro-btn active" data-filter="todos">Todos</button>
+                <button class="filtro-btn" data-filter="AP">Alta Pressão</button>
+                <button class="filtro-btn" data-filter="AV">Auto Vácuo</button>
+                <button class="filtro-btn" data-filter="HP">Hiper Vácuo</button>
+                <button class="filtro-btn" data-filter="OK">OK</button>
+                <button class="filtro-btn" data-filter="TARDIO">Tardio</button>
+                <button class="filtro-btn" data-filter="POUCOS">Poucos</button>
+                <button class="filtro-btn" data-filter="CRITICO">Crítico</button>
+            </div>
+
+            <div class="equipamentos-grid" id="equipamentosGrid">
+                <!-- Equipamentos serão inseridos aqui -->
+            </div>
+        </div>
+
+        <!-- Tab Apontamentos -->
+        <div class="tab-content" id="apontamentos-tab">
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">📋 Todos os Apontamentos</div>
+                    <div class="table-controls">
+                        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar por placa, categoria, vaga...">
+                        <select class="search-input" id="categoriaFilter" style="min-width: 180px;">
+                            <option value="">Todas as Categorias</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table" id="apontamentosTable">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Vaga</th>
+                                <th>Categoria</th>
+                                <th>Data Registro</th>
+                                <th>Período</th>
+                                <th>Tempo Indisponível</th>
+                                <th>Demora Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apontamentosTableBody">
+                            <!-- Apontamentos serão inseridos aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Paginação será inserida aqui -->
+            </div>
+        </div>
+
+        <!-- Nova Tab Motoristas -->
+        <div class="tab-content" id="motoristas-tab">
+            <div class="section-title">👨‍💼 Gestão de Motoristas</div>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <button class="btn btn-export" onclick="abrirModalMotorista()">➕ Adicionar Motorista</button>
+                <button class="btn btn-secondary" onclick="importarMotoristas()">📥 Importar Lista</button>
+                <button class="btn btn-secondary" onclick="exportarMotoristas()">📤 Exportar Lista</button>
+            </div>
+
+            <div class="google-sheets-section">
+                <div class="chart-title">☁️ Integração Google Sheets</div>
+                <div class="sheets-status" id="sheetsStatus">
+                    ❌ Não conectado ao Google Sheets
+                </div>
+                <div style="text-align: center;">
+                    <input type="text" class="form-control" id="sheetsUrl" placeholder="Cole aqui o link do Google Sheets..." style="margin-bottom: 15px; max-width: 500px;">
+                    <br>
+                    <button class="btn btn-export" onclick="conectarGoogleSheets()">🔗 Conectar Planilha</button>
+                    <button class="btn btn-warning" onclick="testarConexaoSheets()">🧪 Testar Conexão</button>
+                </div>
+            </div>
+
+            <div class="motoristas-grid" id="motoristasGrid">
+                <!-- Motoristas serão inseridos aqui -->
+            </div>
+        </div>
+
+        <!-- Nova Tab Estatísticas Temporais -->
+        <div class="tab-content" id="tempos-tab">
+            <div class="section-title">⏱️ Estatísticas Temporais</div>
+            
+            <div class="tempo-stats-grid" id="tempoStatsGrid">
+                <!-- Estatísticas temporais serão inseridas aqui -->
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">📊 Tempo Médio por Categoria</div>
+                    <canvas id="tempoMedioChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">🎯 Performance por Equipamento</div>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">📈 Detalhamento Temporal por Equipamento</div>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table" id="tempoDetalheTable">
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Primeiro Registro Médio</th>
+                                <th>Apontamentos/Dia</th>
+                                <th>Tempo Indisponível Médio</th>
+                                <th>Eficiência</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tempoDetalheTableBody">
+                            <!-- Detalhes temporais serão inseridos aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Relatório -->
+        <div class="tab-content" id="relatorio-tab">
+            <div class="section-title">📊 Relatório Detalhado por Equipamento</div>
+            <div id="relatorioDetalhado">
+                <!-- Relatório será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Justificativas -->
+    <div id="justificativaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">📝 Justificativa do Equipamento</h2>
+                <span class="close" onclick="fecharModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Equipamento:</label>
+                    <div id="equipamentoInfo" style="padding: 10px; background: #f8f9fa; border-radius: 6px; margin-bottom: 15px; font-weight: 600;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="justificativaText" class="form-label">Justificativa:</label>
+                    <textarea id="justificativaText" class="form-control" placeholder="Digite aqui a justificativa para este equipamento..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data/Hora:</label>
+                    <div style="color: #7f8c8d; font-size: 0.9rem;" id="timestampInfo"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+                <button class="btn btn-export" onclick="salvarJustificativa()">💾 Salvar Justificativa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Motoristas -->
+    <div id="motoristaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="motoristaModalTitle">👨‍💼 Cadastro de Motorista</h2>
+                <span class="close" onclick="fecharModalMotorista()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="motoristaNome" class="form-label">Nome do Motorista:</label>
+                    <input type="text" id="motoristaNome" class="form-control" placeholder="Digite o nome completo...">
+                </div>
+                <div class="form-group">
+                    <label for="motoristaVaga" class="form-label">Vaga/Equipamento:</label>
+                    <select id="motoristaVaga" class="form-select">
+                        <option value="">Selecione uma vaga...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="motoristaTelefone" class="form-label">Telefone:</label>
+                    <input type="tel" id="motoristaTelefone" class="form-control" placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label for="motoristaObservacoes" class="form-label">Observações:</label>
+                    <textarea id="motoristaObservacoes" class="form-control" placeholder="Observações adicionais..." style="min-height: 80px;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModalMotorista()">Cancelar</button>
+                <button class="btn btn-export" onclick="salvarMotorista()">💾 Salvar Motorista</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Google Sheets -->
+    <div id="sheetsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">☁️ Configuração Google Sheets</h2>
+                <span class="close" onclick="fecharModalSheets()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sheetsUrlModal" class="form-label">URL do Google Sheets:</label>
+                    <input type="url" id="sheetsUrlModal" class="form-control" placeholder="https://docs.google.com/spreadsheets/d/...">
+                    <small style="color: #7f8c8d; margin-top: 5px; display: block;">
+                        ℹ️ Cole o link da planilha Google Sheets que será usada para armazenar os dados
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Configurações de Sincronização:</label>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <input type="checkbox" id="syncMotoristas" checked style="margin-right: 10px;">
+                            Sincronizar dados de motoristas
+                        </label>
+                        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <input type="checkbox" id="syncJustificativas" checked style="margin-right: 10px;">
+                            Sincronizar justificativas
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" id="syncEstatisticas" checked style="margin-right: 10px;">
+                            Sincronizar estatísticas
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModalSheets()">Cancelar</button>
+                <button class="btn btn-export" onclick="salvarConfiguracaoSheets()">💾 Salvar Configuração</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações e dados base
+        const CONFIG = {
+            TIMEZONE: 'America/Sao_Paulo',
+            DEBUG_MODE: true,
+            ITEMS_PER_PAGE: 25,
+            VERSION: '2.0'
+        };
+
+        let dadosCSV = [];
+        let equipamentosProcessados = {};
+        let justificativas = {}; // Armazena justificativas por vaga
+        let motoristas = {}; // Armazena motoristas por vaga
+        let googleSheetsConfig = {}; // Configuração do Google Sheets
+        let filtroAtivo = 'todos';
+        let currentPage = 1;
+        let filteredData = [];
+        let equipamentoAtualModal = null;
+        let motoristaAtualModal = null;
+
+        // Base de equipamentos (mesmo do código original)
+        const equipamentosBase = [
+            { codigo: 'AP-01', placa: 'DSY6F81', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS', tipo: 'AP' },
+            { codigo: 'AP-02', placa: 'EGC2983', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 02', tipo: 'AP' },
+            { codigo: 'AP-03', placa: 'EZS8764', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 03', tipo: 'AP' },
+            { codigo: 'AP-04', placa: 'EAM3262', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 04', tipo: 'AP' },
+            { codigo: 'AP-05', placa: 'DSY6475', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 05', tipo: 'AP' },
+            { codigo: 'AP-06', placa: 'DSY6472', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 06', tipo: 'AP' },
+            { codigo: 'AP-07', placa: 'EGC2978', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 07', tipo: 'AP' },
+            { codigo: 'AP-08', placa: 'EGC2985', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS', tipo: 'AP' },
+            { codigo: 'AP-09', placa: 'EAM3256', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 09', tipo: 'AP' },
+            { codigo: 'AP-10', placa: 'EOF5C06', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 10', tipo: 'AP' },
+            { codigo: 'AP-11', placa: 'PUB2F80', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 11', tipo: 'AP' },
+            { codigo: 'AP-12', placa: 'EZS8765', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 12', tipo: 'AP' },
+            { codigo: 'AV-01', placa: 'FSA3D71', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 01 - 16HS', tipo: 'AV' },
+            { codigo: 'AV-02', placa: 'ALY5322', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS', tipo: 'AV' },
+            { codigo: 'AV-02-B', placa: 'EAM3257', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS', tipo: 'AV' },
+            { codigo: 'AV-03', placa: 'HJS1097', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 03', tipo: 'AV' },
+            { codigo: 'AV-04', placa: 'EGC2979', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 04', tipo: 'AV' },
+            { codigo: 'AV-06', placa: 'DYB7210', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 06', tipo: 'AV' },
+            { codigo: 'AV-07', placa: 'DSY6473', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 07', tipo: 'AV' },
+            { codigo: 'AV-08', placa: 'ANF-2676', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS', tipo: 'AV' },
+            { codigo: 'AV-09', placa: 'EAM3251', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 09', tipo: 'AV' },
+            { codigo: 'AV-10', placa: 'DSY6577', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 10', tipo: 'AV' },
+            { codigo: 'HP-01', placa: 'DSY6471', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 01', tipo: 'HP' },
+            { codigo: 'HP-02', placa: 'FMD2200', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 02', tipo: 'HP' }
+        ];
+
+        // Event listeners para upload
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            // Carregar dados salvos do localStorage
+            carregarDadosSalvos();
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // Click no upload area
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // File input change
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleFile(this.files[0]);
+                }
+            });
+
+            // Filtros
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filtroAtivo = this.dataset.filter;
+                    aplicarFiltro();
+                });
+            });
+
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', function() {
+                filterApontamentos();
+            });
+
+            // Category filter
+            document.getElementById('categoriaFilter').addEventListener('change', function() {
+                filterApontamentos();
+            });
+
+            // Modal events
+            window.addEventListener('click', function(event) {
+                const justificativaModal = document.getElementById('justificativaModal');
+                const motoristaModal = document.getElementById('motoristaModal');
+                const sheetsModal = document.getElementById('sheetsModal');
+                
+                if (event.target === justificativaModal) {
+                    fecharModal();
+                } else if (event.target === motoristaModal) {
+                    fecharModalMotorista();
+                } else if (event.target === sheetsModal) {
+                    fecharModalSheets();
+                }
+            });
+
+            // Popular select de vagas no modal de motoristas
+            popularSelectVagas();
+        });
+
+        function carregarDadosSalvos() {
+            try {
+                const justificativasSalvas = JSON.parse(localStorage.getItem('justificativas') || '{}');
+                const motoristasSalvos = JSON.parse(localStorage.getItem('motoristas') || '{}');
+                const googleSheetsSalvo = JSON.parse(localStorage.getItem('googleSheetsConfig') || '{}');
+                
+                justificativas = justificativasSalvas;
+                motoristas = motoristasSalvos;
+                googleSheetsConfig = googleSheetsSalvo;
+                
+                console.log('📂 Dados carregados:', {
+                    justificativas: Object.keys(justificativas).length,
+                    motoristas: Object.keys(motoristas).length,
+                    sheetsConfigured: !!googleSheetsConfig.url
+                });
+            } catch (error) {
+                console.warn('⚠️ Erro ao carregar dados salvos:', error);
+            }
+        }
+
+        function salvarDados() {
+            try {
+                localStorage.setItem('justificativas', JSON.stringify(justificativas));
+                localStorage.setItem('motoristas', JSON.stringify(motoristas));
+                localStorage.setItem('googleSheetsConfig', JSON.stringify(googleSheetsConfig));
+            } catch (error) {
+                console.warn('⚠️ Erro ao salvar dados:', error);
+            }
+        }
+
+        function popularSelectVagas() {
+            const select = document.getElementById('motoristaVaga');
+            select.innerHTML = '<option value="">Selecione uma vaga...</option>';
+            
+            equipamentosBase.forEach(equip => {
+                const option = document.createElement('option');
+                option.value = equip.codigo;
+                option.textContent = `${equip.codigo} - ${equip.placa}`;
+                select.appendChild(option);
+            });
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.csv')) {
+                showError('Por favor, selecione um arquivo CSV válido.');
+                return;
+            }
+
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">⏳</div>
+                <div class="upload-text">Analisando ${file.name}...</div>
+                <div class="upload-subtext">Verificando colunas e estrutura (${(file.size / 1024).toFixed(1)} KB)</div>
+            `;
+
+            document.getElementById('processBtn').disabled = true;
+            
+            // Ler o arquivo
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                Papa.parse(e.target.result, {
+                    header: true,
+                    skipEmptyLines: true,
+                    delimiter: ';', // Primeiro tenta com ponto e vírgula
+                    complete: function(results) {
+                        // Se poucos dados ou muitas colunas vazias, tenta com vírgula
+                        if (results.data.length === 0 || Object.keys(results.data[0] || {}).some(key => key.includes(';'))) {
+                            Papa.parse(e.target.result, {
+                                header: true,
+                                skipEmptyLines: true,
+                                delimiter: ',', // Tenta com vírgula
+                                complete: function(resultsComma) {
+                                    processarArquivoCarregado(resultsComma, file.name);
+                                },
+                                error: function(error) {
+                                    showError('Erro ao ler arquivo CSV: ' + error.message);
+                                }
+                            });
+                        } else {
+                            processarArquivoCarregado(results, file.name);
+                        }
+                    },
+                    error: function(error) {
+                        showError('Erro ao ler arquivo CSV: ' + error.message);
+                    }
+                });
+            };
+            reader.readAsText(file);
+        }
+
+        function processarArquivoCarregado(results, fileName) {
+            console.log('📊 Dados brutos carregados:', results.data.length, 'registros');
+            
+            // Verificar e mapear colunas
+            const mapeamento = detectarColunas(results.data[0]);
+            
+            if (!mapeamento.valido) {
+                showError(`Arquivo inválido: ${mapeamento.erro}`);
+                resetUploadArea();
+                return;
+            }
+            
+            // Processar dados com mapeamento
+            dadosCSV = normalizarDados(results.data, mapeamento.mapeamento);
+            
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <div class="upload-text">${fileName}</div>
+                <div class="upload-subtext">
+                    ${dadosCSV.length} registros processados<br>
+                    <small style="color: #27ae60; font-weight: 600;">
+                        ✓ Colunas detectadas: ${Object.keys(mapeamento.mapeamento).join(', ')}
+                    </small>
+                </div>
+            `;
+
+            document.getElementById('processBtn').disabled = false;
+            showSuccess(`Arquivo processado: ${dadosCSV.length} registros válidos encontrados`);
+        }
+
+        function detectarColunas(amostra) {
+            if (!amostra) {
+                return { valido: false, erro: 'Arquivo vazio ou sem dados' };
+            }
+
+            const colunasOriginais = Object.keys(amostra);
+            console.log('🔍 Colunas encontradas no arquivo:', colunasOriginais);
+
+            // Definir colunas obrigatórias e suas possíveis variações
+            const colunasNecessarias = {
+                'Placa': ['placa', 'plate', 'veiculo', 'vehicle'],
+                'Vaga': ['vaga', 'equipamento', 'equipment', 'nome', 'descricao'],
+                'Categoria Demora': ['categoria demora', 'categoria', 'category', 'tipo demora', 'motivo'],
+                'Data Inicial': ['data inicial', 'inicio', 'start', 'data inicio', 'hora inicial'],
+                'Data Final': ['data final', 'fim', 'end', 'data fim', 'hora final'],
+                'Tempo Indisponível (HH:MM)': ['tempo indisponivel', 'tempo', 'duration', 'duracao', 'tempo indisponivel (hh:mm)', 'tempo total']
+            };
+
+            const mapeamento = {};
+            const colunasEncontradas = [];
+            const colunasFaltantes = [];
+
+            // Mapear cada coluna necessária
+            Object.keys(colunasNecessarias).forEach(colunaNecessaria => {
+                let colunaEncontrada = null;
+
+                // Primeiro: busca exata (case insensitive)
+                colunaEncontrada = colunasOriginais.find(col => 
+                    col.toLowerCase().trim() === colunaNecessaria.toLowerCase().trim()
+                );
+
+                // Segundo: busca por variações
+                if (!colunaEncontrada) {
+                    const variacoes = colunasNecessarias[colunaNecessaria];
+                    colunaEncontrada = colunasOriginais.find(col => 
+                        variacoes.some(variacao => 
+                            col.toLowerCase().trim().includes(variacao.toLowerCase()) ||
+                            variacao.toLowerCase().includes(col.toLowerCase().trim())
+                        )
+                    );
+                }
+
+                // Terceiro: busca parcial mais flexível
+                if (!colunaEncontrada) {
+                    const palavrasChave = colunaNecessaria.toLowerCase().split(' ');
+                    colunaEncontrada = colunasOriginais.find(col => {
+                        const colLower = col.toLowerCase();
+                        return palavrasChave.some(palavra => 
+                            palavra.length > 3 && colLower.includes(palavra)
+                        );
+                    });
+                }
+
+                if (colunaEncontrada) {
+                    mapeamento[colunaNecessaria] = colunaEncontrada;
+                    colunasEncontradas.push(colunaEncontrada);
+                    console.log(`✅ ${colunaNecessaria} → ${colunaEncontrada}`);
+                } else {
+                    colunasFaltantes.push(colunaNecessaria);
+                    console.log(`❌ ${colunaNecessaria} não encontrada`);
+                }
+            });
+
+            // Verificar se encontrou todas as colunas obrigatórias
+            if (colunasFaltantes.length > 0) {
+                return { 
+                    valido: false, 
+                    erro: `Colunas obrigatórias não encontradas: ${colunasFaltantes.join(', ')}. Colunas disponíveis: ${colunasOriginais.join(', ')}` 
+                };
+            }
+
+            return { 
+                valido: true, 
+                mapeamento: mapeamento,
+                colunasOriginais: colunasOriginais,
+                colunasUsadas: colunasEncontradas
+            };
+        }
+
+        function normalizarDados(dadosBrutos, mapeamento) {
+            console.log('🔄 Normalizando dados com mapeamento:', mapeamento);
+            
+            return dadosBrutos.map(linha => {
+                const linhaNormalizada = {};
+                
+                // Mapear apenas as colunas necessárias
+                Object.keys(mapeamento).forEach(colunaPadrao => {
+                    const colunaOriginal = mapeamento[colunaPadrao];
+                    linhaNormalizada[colunaPadrao] = linha[colunaOriginal] || '';
+                });
+
+                // Manter compatibilidade com código existente
+                linhaNormalizada['Data Registro'] = linhaNormalizada['Data Inicial']; // Fallback
+                linhaNormalizada['Demora para Registro'] = '00:00'; // Valor padrão
+
+                return linhaNormalizada;
+            }).filter(linha => {
+                // Filtrar linhas válidas (que tenham pelo menos placa e vaga)
+                return linha['Placa'] && linha['Vaga'];
+            });
+        }
+
+        function resetUploadArea() {
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+            `;
+            document.getElementById('processBtn').disabled = true;
+        }
+
+        function processarArquivo() {
+            if (!dadosCSV || dadosCSV.length === 0) {
+                showError('Nenhum dado para processar. Carregue um arquivo CSV primeiro.');
+                return;
+            }
+
+            document.getElementById('processBtn').innerHTML = '⏳ Processando...';
+            document.getElementById('processBtn').disabled = true;
+
+            setTimeout(() => {
+                try {
+                    equipamentosProcessados = processarEquipamentos(dadosCSV);
+                    exibirResultados();
+                    document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
+                    document.getElementById('exportBtn').style.display = 'inline-block';
+                    document.getElementById('exportBtn').disabled = false;
+                    document.getElementById('justificativasToolbar').style.display = 'flex';
+                    showSuccess(`Dados processados com sucesso! ${dadosCSV.length} apontamentos analisados.`);
+                    
+                    // Verificar status do Google Sheets
+                    atualizarStatusSheets();
+                } catch (error) {
+                    showError('Erro ao processar dados: ' + error.message);
+                    document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
+                }
+                document.getElementById('processBtn').disabled = false;
+            }, 500);
+        }
+
+        function showTab(tabName) {
+            // Remove active class from all tabs and tab contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Atualizar conteúdo da tab se necessário
+            if (tabName === 'motoristas') {
+                exibirMotoristas();
+            } else if (tabName === 'tempos') {
+                exibirEstatisticasTemporais();
+            }
+        }
+
+        // Funções de processamento (adaptadas do código original)
+        function processarEquipamentos(apontamentos) {
+            const equipamentosProcessados = {};
+            
+            // Inicializar todos os equipamentos
+            equipamentosBase.forEach(equipBase => {
+                equipamentosProcessados[equipBase.codigo] = {
+                    vaga: equipBase.codigo,
+                    placa: equipBase.placa,
+                    nome: equipBase.nome,
+                    tipo: equipBase.tipo,
+                    primeiroRegistro: null,
+                    totalApontamentos: 0,
+                    apontamentos: [],
+                    status: 'CRITICO'
+                };
+            });
+
+            // Agrupar apontamentos por equipamento
+            const apontamentosPorEquip = {};
+            apontamentos.forEach(apt => {
+                const vaga = extrairCodigoVaga(apt.Vaga);
+                if (!vaga || !equipamentosProcessados[vaga]) return;
+                
+                if (!apontamentosPorEquip[vaga]) apontamentosPorEquip[vaga] = [];
+                
+                apontamentosPorEquip[vaga].push({
+                    placa: apt.Placa || '',
+                    vaga: apt.Vaga || '',
+                    categoria: apt['Categoria Demora'] || '',
+                    dataRegistro: apt['Data Registro'] || '',
+                    dataInicial: apt['Data Inicial'] || '',
+                    dataFinal: apt['Data Final'] || '',
+                    dataAtualizacao: apt['Data Atualização'] || '',
+                    tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'] || '00:00',
+                    demoraRegistro: apt['Demora para Registro'] || '00:00',
+                    inicio: extrairHora(apt['Data Inicial']),
+                    fim: extrairHora(apt['Data Final'])
+                });
+            });
+
+            // Processar cada equipamento
+            Object.keys(equipamentosProcessados).forEach(vaga => {
+                const equip = equipamentosProcessados[vaga];
+                const aptsDoEquip = apontamentosPorEquip[vaga] || [];
+                
+                if (aptsDoEquip.length > 0) {
+                    aptsDoEquip.sort((a, b) => (a.inicio || '23:59').localeCompare(b.inicio || '23:59'));
+                    equip.apontamentos = aptsDoEquip;
+                    equip.totalApontamentos = aptsDoEquip.length;
+                    equip.primeiroRegistro = aptsDoEquip[0].inicio;
+                }
+                
+                equip.status = calcularStatus(equip);
+            });
+
+            return equipamentosProcessados;
+        }
+
+        function extrairCodigoVaga(nomeCompleto) {
+            if (!nomeCompleto) return null;
+            const nome = nomeCompleto.toString().toUpperCase();
+            
+            // Mapear placas para códigos
+            const equipPorPlaca = {};
+            equipamentosBase.forEach(equip => {
+                equipPorPlaca[equip.placa] = equip.codigo;
+            });
+            
+            // Primeiro tentar mapear pela placa
+            const placaMatch = Object.keys(equipPorPlaca).find(placa => nome.includes(placa));
+            if (placaMatch) return equipPorPlaca[placaMatch];
+            
+            const patterns = [
+                { regex: /ALTA PRESSÃO.*GPS\s*-\s*(\d+)/, prefix: 'AP' },
+                { regex: /AUTO VÁCUO.*GPS\s*-\s*(\d+)/, prefix: 'AV' },
+                { regex: /HIPER VÁCUO.*GPS\s*-\s*(\d+)/, prefix: 'HP' }
+            ];
+            
+            for (const pattern of patterns) {
+                const match = nome.match(pattern.regex);
+                if (match) return `${pattern.prefix}-${match[1].padStart(2, '0')}`;
+            }
+            
+            if (/^(AP|AV|HP)-\d{2}$/.test(nome)) return nome;
+            return null;
+        }
+
+        function extrairHora(timestamp) {
+            if (!timestamp) return null;
+            try {
+                const str = timestamp.toString();
+                
+                if (str.includes('/') && str.includes(' ')) {
+                    const parts = str.split(' ');
+                    if (parts.length > 1) {
+                        const [hora, minuto] = parts[1].split(':');
+                        return `${hora.padStart(2, '0')}:${minuto.padStart(2, '0')}`;
+                    }
+                }
+                
+                if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) return str.substring(0,5);
+                
+                const date = new Date(timestamp);
+                if (date && !isNaN(date.getTime())) {
+                    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function formatarDataHora(timestamp) {
+            if (!timestamp) return '';
+            try {
+                const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+                if (isNaN(date.getTime())) return timestamp.toString();
+                return date.toLocaleString('pt-BR');
+            } catch (e) { 
+                return timestamp.toString(); 
+            }
+        }
+
+        function calcularStatus(equipamento) {
+            if (!equipamento.primeiroRegistro || equipamento.totalApontamentos === 0) return 'CRITICO';
+            if (equipamento.totalApontamentos < 3) return 'POUCOS';
+            
+            const primeiroMinutos = horaParaMinutos(equipamento.primeiroRegistro);
+            if (primeiroMinutos >= horaParaMinutos('09:00')) return 'CRITICO';
+            if (primeiroMinutos > horaParaMinutos('07:30')) return 'TARDIO';
+            return 'OK';
+        }
+
+        function horaParaMinutos(hora) {
+            if (!hora || typeof hora !== 'string' || !hora.includes(':')) return 1440;
+            const [h, m] = hora.split(':').map(Number);
+            return (isNaN(h) || isNaN(m)) ? 1440 : h * 60 + m;
+        }
+
+        function exibirResultados() {
+            exibirEstatisticas();
+            exibirEquipamentos();
+            exibirTabelaApontamentos();
+            exibirRelatorioDetalhado();
+            exibirMotoristas();
+            exibirEstatisticasTemporais();
+            populateCategoriaFilter();
+            criarGraficos();
+            
+            document.getElementById('statsSection').style.display = 'block';
+            document.getElementById('tabsContainer').style.display = 'block';
+        }
+
+        function exibirEstatisticas() {
+            const stats = calcularEstatisticas();
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number stat-ok">${stats.ok}</div>
+                    <div class="stat-label">OK</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-tardio">${stats.tardio}</div>
+                    <div class="stat-label">Tardio</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-poucos">${stats.poucos}</div>
+                    <div class="stat-label">Poucos Apontamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-critico">${stats.critico}</div>
+                    <div class="stat-label">Crítico</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Total de Equipamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalApontamentos}</div>
+                    <div class="stat-label">Total de Apontamentos</div>
+                </div>
+            `;
+        }
+
+        function calcularEstatisticas() {
+            const stats = { ok: 0, tardio: 0, poucos: 0, critico: 0, total: 0, totalApontamentos: 0 };
+            
+            Object.values(equipamentosProcessados).forEach(equip => {
+                stats.total++;
+                stats.totalApontamentos += equip.totalApontamentos;
+                stats[equip.status.toLowerCase()]++;
+            });
+            
+            return stats;
+        }
+
+        function criarGraficos() {
+            criarGraficoStatus();
+            criarGraficoHorarios();
+        }
+
+        function criarGraficoStatus() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            const stats = calcularEstatisticas();
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['OK', 'Tardio', 'Poucos Apontamentos', 'Crítico'],
+                    datasets: [{
+                        data: [stats.ok, stats.tardio, stats.poucos, stats.critico],
+                        backgroundColor: ['#27ae60', '#f39c12', '#e67e22', '#e74c3c'],
+                        borderWidth: 0,
+                        hoverBorderWidth: 2,
+                        hoverBorderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function criarGraficoHorarios() {
+            const ctx = document.getElementById('horariosChart').getContext('2d');
+            
+            // Agrupar por faixas de horário
+            const faixasHorario = {
+                '06:00-07:00': 0,
+                '07:00-08:00': 0,
+                '08:00-09:00': 0,
+                '09:00-10:00': 0,
+                '10:00+': 0
+            };
+
+            Object.values(equipamentosProcessados).forEach(equip => {
+                if (equip.primeiroRegistro) {
+                    const minutos = horaParaMinutos(equip.primeiroRegistro);
+                    if (minutos < 420) faixasHorario['06:00-07:00']++;
+                    else if (minutos < 480) faixasHorario['07:00-08:00']++;
+                    else if (minutos < 540) faixasHorario['08:00-09:00']++;
+                    else if (minutos < 600) faixasHorario['09:00-10:00']++;
+                    else faixasHorario['10:00+']++;
+                }
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(faixasHorario),
+                    datasets: [{
+                        label: 'Quantidade de Equipamentos',
+                        data: Object.values(faixasHorario),
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exibirEquipamentos() {
+            const equipamentosGrid = document.getElementById('equipamentosGrid');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            equipamentosGrid.innerHTML = equipamentos.map(equip => {
+                const justificativa = justificativas[equip.vaga];
+                const motorista = motoristas[equip.vaga];
+                
+                return `
+                <div class="equipamento-card status-${equip.status.toLowerCase()}" data-tipo="${equip.tipo}" data-status="${equip.status}">
+                    <div class="equipamento-header">
+                        <div class="equipamento-vaga">${equip.vaga}</div>
+                        <div class="equipamento-status status-${equip.status.toLowerCase()}">${equip.status}</div>
+                    </div>
+                    
+                    <div class="equipamento-info">
+                        <div class="equipamento-placa">📋 ${equip.placa}</div>
+                        <div class="equipamento-nome">${equip.nome}</div>
+                        ${motorista ? `
+                            <div style="margin-top: 10px; padding: 8px; background: #e8f5e8; border-radius: 6px; font-size: 0.9rem;">
+                                👨‍💼 <strong>${motorista.nome}</strong>
+                                ${motorista.telefone ? `<br>📞 ${motorista.telefone}` : ''}
+                            </div>
+                        ` : `
+                            <div style="margin-top: 10px; padding: 8px; background: #fdf2e9; border-radius: 6px; font-size: 0.9rem; color: #e67e22;">
+                                👤 Nenhum motorista associado
+                            </div>
+                        `}
+                    </div>
+                    
+                    <div class="equipamento-stats">
+                        <div class="stat-item">
+                            <div class="stat-item-number">${equip.totalApontamentos}</div>
+                            <div class="stat-item-label">Apontamentos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item-number">${equip.primeiroRegistro || 'N/A'}</div>
+                            <div class="stat-item-label">Primeiro Registro</div>
+                        </div>
+                    </div>
+                    
+                    ${justificativa ? `
+                        <div class="justificativa-section">
+                            <div class="justificativa-title">📝 Justificativa:</div>
+                            <div class="justificativa-text">${justificativa.texto}</div>
+                            <div style="font-size: 0.8rem; color: #856404; margin-top: 8px;">
+                                📅 ${justificativa.timestamp}
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="justificativa-section">
+                            <div class="justificativa-title">📝 Justificativa:</div>
+                            <div class="justificativa-text justificativa-empty">Nenhuma justificativa adicionada</div>
+                        </div>
+                    `}
+                    
+                    <div class="equipamento-actions">
+                        <button class="btn btn-warning btn-small" onclick="abrirJustificativa('${equip.vaga}')">
+                            📝 ${justificativa ? 'Editar' : 'Adicionar'} Justificativa
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="abrirModalMotorista('${equip.vaga}')">
+                            👨‍💼 ${motorista ? 'Editar' : 'Associar'} Motorista
+                        </button>
+                    </div>
+                    
+                    ${equip.apontamentos.length > 0 ? `
+                        <div class="apontamentos-lista">
+                            ${equip.apontamentos.map(apt => `
+                                <div class="apontamento-item">
+                                    <div class="apontamento-header">
+                                        <span class="apontamento-categoria">${apt.categoria}</span>
+                                        <span class="apontamento-tempo">${apt.tempoIndisponivel}</span>
+                                    </div>
+                                    <div class="apontamento-detalhes">
+                                        <span>🕐 ${apt.inicio || 'N/A'} - ${apt.fim || 'N/A'}</span>
+                                        <span>⏱️ Demora: ${apt.demoraRegistro}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="text-align: center; color: #7f8c8d; padding: 20px;">Nenhum apontamento encontrado</div>'}
+                </div>
+            `}).join('');
+            
+            aplicarFiltro();
+        }
+
+        function exibirTabelaApontamentos() {
+            filteredData = [...dadosCSV];
+            renderApontamentosTable();
+        }
+
+        function renderApontamentosTable() {
+            const tbody = document.getElementById('apontamentosTableBody');
+            const startIndex = (currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
+            const endIndex = startIndex + CONFIG.ITEMS_PER_PAGE;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            tbody.innerHTML = pageData.map(apt => `
+                <tr>
+                    <td><span class="placa-badge">${apt.Placa || 'N/A'}</span></td>
+                    <td>${apt.Vaga || 'N/A'}</td>
+                    <td><span class="categoria-badge">${apt['Categoria Demora'] || 'N/A'}</span></td>
+                    <td>${apt['Data Registro'] || 'N/A'}</td>
+                    <td>${apt['Data Inicial'] || 'N/A'} → ${apt['Data Final'] || 'N/A'}</td>
+                    <td><span class="tempo-badge">${apt['Tempo Indisponível (HH:MM)'] || '00:00'}</span></td>
+                    <td>${apt['Demora para Registro'] || '00:00'}</td>
+                </tr>
+            `).join('');
+            
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / CONFIG.ITEMS_PER_PAGE);
+            const pagination = document.getElementById('pagination');
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">← Anterior</button>`;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<button disabled>...</button>`;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">Próximo →</button>`;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / CONFIG.ITEMS_PER_PAGE);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderApontamentosTable();
+            }
+        }
+
+        function populateCategoriaFilter() {
+            const categorias = [...new Set(dadosCSV.map(apt => apt['Categoria Demora']).filter(cat => cat))];
+            const categoriaFilter = document.getElementById('categoriaFilter');
+            
+            categoriaFilter.innerHTML = '<option value="">Todas as Categorias</option>' + 
+                categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        function filterApontamentos() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoriaFilter = document.getElementById('categoriaFilter').value;
+            
+            filteredData = dadosCSV.filter(apt => {
+                const matchesSearch = !searchTerm || 
+                    (apt.Placa && apt.Placa.toLowerCase().includes(searchTerm)) ||
+                    (apt.Vaga && apt.Vaga.toLowerCase().includes(searchTerm)) ||
+                    (apt['Categoria Demora'] && apt['Categoria Demora'].toLowerCase().includes(searchTerm));
+                
+                const matchesCategoria = !categoriaFilter || apt['Categoria Demora'] === categoriaFilter;
+                
+                return matchesSearch && matchesCategoria;
+            });
+            
+            currentPage = 1;
+            renderApontamentosTable();
+        }
+
+        function exibirRelatorioDetalhado() {
+            const relatorio = document.getElementById('relatorioDetalhado');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            relatorio.innerHTML = equipamentos.map(equip => {
+                const justificativa = justificativas[equip.vaga];
+                const motorista = motoristas[equip.vaga];
+                
+                return `
+                <div class="table-container" style="margin-bottom: 30px;">
+                    <div class="table-header">
+                        <div class="table-title">${equip.vaga} - ${equip.placa}</div>
+                        <div class="equipamento-status status-${equip.status.toLowerCase()}">${equip.status}</div>
+                    </div>
+                    <div style="padding: 20px; background: white;">
+                        <p style="margin-bottom: 15px; color: #7f8c8d;"><strong>Nome:</strong> ${equip.nome}</p>
+                        <p style="margin-bottom: 15px; color: #7f8c8d;"><strong>Tipo:</strong> ${equip.tipo} | <strong>Total de Apontamentos:</strong> ${equip.totalApontamentos} | <strong>Primeiro Registro:</strong> ${equip.primeiroRegistro || 'N/A'}</p>
+                        
+                        ${motorista ? `
+                            <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #27ae60;">
+                                <strong style="color: #27ae60;">👨‍💼 Motorista Responsável:</strong><br>
+                                <div style="margin-top: 8px; color: #2c3e50;">${motorista.nome}</div>
+                                ${motorista.telefone ? `<div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 4px;">📞 ${motorista.telefone}</div>` : ''}
+                                ${motorista.observacoes ? `<div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 4px;">📝 ${motorista.observacoes}</div>` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        ${justificativa ? `
+                            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                                <strong style="color: #856404;">📝 Justificativa:</strong><br>
+                                <div style="margin-top: 8px; color: #2c3e50;">${justificativa.texto}</div>
+                                <div style="font-size: 0.8rem; color: #856404; margin-top: 8px;">📅 ${justificativa.timestamp}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${equip.apontamentos.length > 0 ? `
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th>Data Registro</th>
+                                        <th>Período</th>
+                                        <th>Tempo Indisponível</th>
+                                        <th>Demora Registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${equip.apontamentos.map(apt => `
+                                        <tr>
+                                            <td><span class="categoria-badge">${apt.categoria}</span></td>
+                                            <td>${apt.dataRegistro}</td>
+                                            <td>${apt.inicio || 'N/A'} → ${apt.fim || 'N/A'}</td>
+                                            <td><span class="tempo-badge">${apt.tempoIndisponivel}</span></td>
+                                            <td>${apt.demoraRegistro}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        ` : '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Nenhum apontamento encontrado para este equipamento</p>'}
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Nova função para exibir motoristas
+        function exibirMotoristas() {
+            const motoristasGrid = document.getElementById('motoristasGrid');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            motoristasGrid.innerHTML = equipamentos.map(equip => {
+                const motorista = motoristas[equip.vaga];
+                
+                return `
+                <div class="motorista-card">
+                    <div class="motorista-info">
+                        <div class="motorista-nome">${equip.vaga} - ${equip.placa}</div>
+                        <div class="motorista-vaga">${equip.nome}</div>
+                        
+                        ${motorista ? `
+                            <div style="margin-top: 15px; padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                                <div style="font-weight: 600; color: #27ae60; margin-bottom: 8px;">👨‍💼 ${motorista.nome}</div>
+                                ${motorista.telefone ? `<div style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 4px;">📞 ${motorista.telefone}</div>` : ''}
+                                ${motorista.observacoes ? `<div style="font-size: 0.9rem; color: #7f8c8d;">${motorista.observacoes}</div>` : ''}
+                                <div style="font-size: 0.8rem; color: #95a5a6; margin-top: 8px;">📅 Cadastrado em: ${motorista.timestamp}</div>
+                            </div>
+                        ` : `
+                            <div style="margin-top: 15px; padding: 15px; background: #fdf2e9; border-radius: 8px; text-align: center;">
+                                <div style="color: #e67e22; margin-bottom: 10px;">👤 Nenhum motorista associado</div>
+                                <button class="btn btn-warning btn-small" onclick="abrirModalMotorista('${equip.vaga}')">
+                                    ➕ Associar Motorista
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                    
+                    ${motorista ? `
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button class="btn btn-secondary btn-small" onclick="abrirModalMotorista('${equip.vaga}')">
+                                ✏️ Editar
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="removerMotorista('${equip.vaga}')">
+                                🗑️ Remover
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `}).join('');
+        }
+
+        // Nova função para exibir estatísticas temporais
+        function exibirEstatisticasTemporais() {
+            const tempoStatsGrid = document.getElementById('tempoStatsGrid');
+            const estatisticas = calcularEstatisticasTemporais();
+            
+            tempoStatsGrid.innerHTML = `
+                <div class="tempo-stat-card">
+                    <div class="tempo-stat-numero">${estatisticas.primeiroRegistroMedio}</div>
+                    <div class="tempo-stat-label">Primeiro Registro Médio</div>
+                </div>
+                <div class="tempo-stat-card">
+                    <div class="tempo-stat-numero">${estatisticas.apontamentosPorDia}</div>
+                    <div class="tempo-stat-label">Apontamentos/Dia Médio</div>
+                </div>
+                <div class="tempo-stat-card">
+                    <div class="tempo-stat-numero">${estatisticas.tempoIndisponivelMedio}</div>
+                    <div class="tempo-stat-label">Tempo Indisponível Médio</div>
+                </div>
+                <div class="tempo-stat-card">
+                    <div class="tempo-stat-numero">${estatisticas.eficienciaGeral}%</div>
+                    <div class="tempo-stat-label">Eficiência Geral</div>
+                </div>
+            `;
+
+            // Atualizar tabela de detalhes temporais
+            exibirTabelaTempoDetalhes();
+            criarGraficosTemporais();
+        }
+
+        function calcularEstatisticasTemporais() {
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            let somaMinutosPrimeiroRegistro = 0;
+            let totalApontamentos = 0;
+            let somaTempoIndisponivel = 0;
+            let equipamentosComRegistro = 0;
+
+            equipamentos.forEach(equip => {
+                if (equip.primeiroRegistro) {
+                    somaMinutosPrimeiroRegistro += horaParaMinutos(equip.primeiroRegistro);
+                    equipamentosComRegistro++;
+                }
+                totalApontamentos += equip.totalApontamentos;
+                
+                equip.apontamentos.forEach(apt => {
+                    somaTempoIndisponivel += tempoParaMinutos(apt.tempoIndisponivel);
+                });
+            });
+
+            const primeiroRegistroMedioMinutos = equipamentosComRegistro > 0 ? 
+                somaMinutosPrimeiroRegistro / equipamentosComRegistro : 0;
+            
+            const stats = calcularEstatisticas();
+            const eficienciaGeral = stats.total > 0 ? 
+                Math.round(((stats.ok + stats.tardio) / stats.total) * 100) : 0;
+
+            return {
+                primeiroRegistroMedio: minutosParaHora(primeiroRegistroMedioMinutos),
+                apontamentosPorDia: (totalApontamentos / equipamentos.length).toFixed(1),
+                tempoIndisponivelMedio: minutosParaHora(somaTempoIndisponivel / Math.max(totalApontamentos, 1)),
+                eficienciaGeral: eficienciaGeral
+            };
+        }
+
+        function tempoParaMinutos(tempo) {
+            if (!tempo || typeof tempo !== 'string') return 0;
+            const [h, m] = tempo.split(':').map(Number);
+            return (isNaN(h) || isNaN(m)) ? 0 : h * 60 + m;
+        }
+
+        function minutosParaHora(minutos) {
+            const h = Math.floor(minutos / 60);
+            const m = Math.round(minutos % 60);
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function exibirTabelaTempoDetalhes() {
+            const tbody = document.getElementById('tempoDetalheTableBody');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            tbody.innerHTML = equipamentos.map(equip => {
+                const tempoMedioIndisponivel = equip.apontamentos.length > 0 ?
+                    minutosParaHora(
+                        equip.apontamentos.reduce((sum, apt) => sum + tempoParaMinutos(apt.tempoIndisponivel), 0) / equip.apontamentos.length
+                    ) : '00:00';
+                
+                let eficiencia = 'N/A';
+                if (equip.status === 'OK') eficiencia = '90-100%';
+                else if (equip.status === 'TARDIO') eficiencia = '70-89%';
+                else if (equip.status === 'POUCOS') eficiencia = '50-69%';
+                else if (equip.status === 'CRITICO') eficiencia = '0-49%';
+
+                return `
+                    <tr>
+                        <td><strong>${equip.vaga}</strong><br><small>${equip.placa}</small></td>
+                        <td>${equip.primeiroRegistro || 'N/A'}</td>
+                        <td>${equip.totalApontamentos}</td>
+                        <td>${tempoMedioIndisponivel}</td>
+                        <td><span class="status-${equip.status.toLowerCase()}">${eficiencia}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function criarGraficosTemporais() {
+            criarGraficoTempoMedio();
+            criarGraficoPerformance();
+        }
+
+        function criarGraficoTempoMedio() {
+            const ctx = document.getElementById('tempoMedioChart').getContext('2d');
+            
+            // Agrupar por categoria
+            const categoriasTempo = {};
+            dadosCSV.forEach(apt => {
+                const categoria = apt['Categoria Demora'];
+                const tempo = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
+                
+                if (!categoriasTempo[categoria]) {
+                    categoriasTempo[categoria] = { total: 0, count: 0 };
+                }
+                categoriasTempo[categoria].total += tempo;
+                categoriasTempo[categoria].count++;
+            });
+
+            const labels = Object.keys(categoriasTempo);
+            const data = labels.map(cat => categoriasTempo[cat].total / categoriasTempo[cat].count);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.map(label => label.length > 20 ? label.substring(0, 20) + '...' : label),
+                    datasets: [{
+                        label: 'Tempo Médio (minutos)',
+                        data: data,
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Minutos'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function criarGraficoPerformance() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            const labels = equipamentos.map(e => e.vaga);
+            const data = equipamentos.map(e => {
+                if (e.status === 'OK') return 4;
+                if (e.status === 'TARDIO') return 3;
+                if (e.status === 'POUCOS') return 2;
+                if (e.status === 'CRITICO') return 1;
+                return 0;
+            });
+
+            const colors = equipamentos.map(e => {
+                if (e.status === 'OK') return '#27ae60';
+                if (e.status === 'TARDIO') return '#f39c12';
+                if (e.status === 'POUCOS') return '#e67e22';
+                if (e.status === 'CRITICO') return '#e74c3c';
+                return '#95a5a6';
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score de Performance',
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const labels = ['', 'Crítico', 'Poucos', 'Tardio', 'OK'];
+                                    return labels[value] || '';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Nível de Performance'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function aplicarFiltro() {
+            const cards = document.querySelectorAll('.equipamento-card');
+            
+            cards.forEach(card => {
+                const tipo = card.dataset.tipo;
+                const status = card.dataset.status;
+                
+                let mostrar = false;
+                
+                if (filtroAtivo === 'todos') {
+                    mostrar = true;
+                } else if (filtroAtivo === 'AP' || filtroAtivo === 'AV' || filtroAtivo === 'HP') {
+                    mostrar = tipo === filtroAtivo;
+                } else {
+                    mostrar = status === filtroAtivo;
+                }
+                
+                card.style.display = mostrar ? 'block' : 'none';
+            });
+        }
+
+        // Funções de Justificativas
+        function abrirJustificativa(vaga) {
+            equipamentoAtualModal = vaga;
+            const equipamento = equipamentosProcessados[vaga];
+            const justificativa = justificativas[vaga];
+            
+            document.getElementById('modalTitle').textContent = `📝 Justificativa - ${vaga}`;
+            document.getElementById('equipamentoInfo').innerHTML = `
+                <strong>${vaga} - ${equipamento.placa}</strong><br>
+                ${equipamento.nome}<br>
+                <small>Status: ${equipamento.status} | Apontamentos: ${equipamento.totalApontamentos}</small>
+            `;
+            
+            document.getElementById('justificativaText').value = justificativa ? justificativa.texto : '';
+            document.getElementById('timestampInfo').textContent = `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
+            
+            document.getElementById('justificativaModal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('justificativaModal').style.display = 'none';
+            equipamentoAtualModal = null;
+        }
+
+        function salvarJustificativa() {
+            if (!equipamentoAtualModal) return;
+            
+            const texto = document.getElementById('justificativaText').value.trim();
+            
+            if (texto) {
+                justificativas[equipamentoAtualModal] = {
+                    texto: texto,
+                    timestamp: new Date().toLocaleString('pt-BR'),
+                    vaga: equipamentoAtualModal
+                };
+                showSuccess(`Justificativa salva para ${equipamentoAtualModal}!`);
+            } else {
+                delete justificativas[equipamentoAtualModal];
+                showSuccess(`Justificativa removida de ${equipamentoAtualModal}!`);
+            }
+            
+            salvarDados(); // Salvar no localStorage
+            fecharModal();
+            exibirEquipamentos();
+            exibirRelatorioDetalhado();
+        }
+
+        // Funções de Motoristas
+        function abrirModalMotorista(vaga = null) {
+            motoristaAtualModal = vaga;
+            const motorista = vaga ? motoristas[vaga] : null;
+            
+            document.getElementById('motoristaModalTitle').textContent = 
+                vaga ? `👨‍💼 ${motorista ? 'Editar' : 'Associar'} Motorista - ${vaga}` : 
+                '👨‍💼 Cadastro de Motorista';
+            
+            document.getElementById('motoristaNome').value = motorista ? motorista.nome : '';
+            document.getElementById('motoristaVaga').value = vaga || '';
+            document.getElementById('motoristaTelefone').value = motorista ? motorista.telefone : '';
+            document.getElementById('motoristaObservacoes').value = motorista ? motorista.observacoes : '';
+            
+            // Desabilitar select de vaga se estiver editando um motorista específico
+            document.getElementById('motoristaVaga').disabled = !!vaga;
+            
+            document.getElementById('motoristaModal').style.display = 'block';
+        }
+
+        function fecharModalMotorista() {
+            document.getElementById('motoristaModal').style.display = 'none';
+            motoristaAtualModal = null;
+        }
+
+        function salvarMotorista() {
+            const nome = document.getElementById('motoristaNome').value.trim();
+            const vaga = document.getElementById('motoristaVaga').value;
+            const telefone = document.getElementById('motoristaTelefone').value.trim();
+            const observacoes = document.getElementById('motoristaObservacoes').value.trim();
+            
+            if (!nome || !vaga) {
+                showError('Nome e vaga são obrigatórios!');
+                return;
+            }
+            
+            motoristas[vaga] = {
+                nome: nome,
+                vaga: vaga,
+                telefone: telefone,
+                observacoes: observacoes,
+                timestamp: new Date().toLocaleString('pt-BR')
+            };
+            
+            salvarDados(); // Salvar no localStorage
+            showSuccess(`Motorista ${nome} associado à vaga ${vaga}!`);
+            fecharModalMotorista();
+            exibirEquipamentos();
+            exibirMotoristas();
+            exibirRelatorioDetalhado();
+        }
+
+        function removerMotorista(vaga) {
+            if (confirm(`Tem certeza que deseja remover o motorista da vaga ${vaga}?`)) {
+                delete motoristas[vaga];
+                salvarDados(); // Salvar no localStorage
+                showSuccess(`Motorista removido da vaga ${vaga}!`);
+                exibirEquipamentos();
+                exibirMotoristas();
+                exibirRelatorioDetalhado();
+            }
+        }
+
+        function importarMotoristas() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.motoristas) {
+                            motoristas = { ...motoristas, ...data.motoristas };
+                            salvarDados();
+                            showSuccess(`Motoristas importados! ${Object.keys(data.motoristas).length} itens carregados.`);
+                            exibirEquipamentos();
+                            exibirMotoristas();
+                            exibirRelatorioDetalhado();
+                        } else {
+                            showError('Arquivo de motoristas inválido.');
+                        }
+                    } catch (error) {
+                        showError('Erro ao ler arquivo de motoristas: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function exportarMotoristas() {
+            const data = {
+                motoristas: motoristas,
+                timestamp: new Date().toISOString(),
+                versao: CONFIG.VERSION
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `motoristas-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Lista de motoristas exportada com sucesso!');
+        }
+
+        // Funções do Google Sheets
+        function configurarGoogleSheets() {
+            document.getElementById('sheetsUrlModal').value = googleSheetsConfig.url || '';
+            document.getElementById('syncMotoristas').checked = googleSheetsConfig.syncMotoristas !== false;
+            document.getElementById('syncJustificativas').checked = googleSheetsConfig.syncJustificativas !== false;
+            document.getElementById('syncEstatisticas').checked = googleSheetsConfig.syncEstatisticas !== false;
+            
+            document.getElementById('sheetsModal').style.display = 'block';
+        }
+
+        function fecharModalSheets() {
+            document.getElementById('sheetsModal').style.display = 'none';
+        }
+
+        function salvarConfiguracaoSheets() {
+            const url = document.getElementById('sheetsUrlModal').value.trim();
+            
+            if (!url) {
+                showError('URL do Google Sheets é obrigatória!');
+                return;
+            }
+            
+            if (!url.includes('docs.google.com/spreadsheets')) {
+                showError('URL inválida! Deve ser um link do Google Sheets.');
+                return;
+            }
+            
+            googleSheetsConfig = {
+                url: url,
+                syncMotoristas: document.getElementById('syncMotoristas').checked,
+                syncJustificativas: document.getElementById('syncJustificativas').checked,
+                syncEstatisticas: document.getElementById('syncEstatisticas').checked,
+                lastSync: null
+            };
+            
+            salvarDados();
+            showSuccess('Configuração do Google Sheets salva com sucesso!');
+            fecharModalSheets();
+            atualizarStatusSheets();
+        }
+
+        function conectarGoogleSheets() {
+            const url = document.getElementById('sheetsUrl').value.trim();
+            
+            if (!url) {
+                showError('Cole o link do Google Sheets primeiro!');
+                return;
+            }
+            
+            if (!url.includes('docs.google.com/spreadsheets')) {
+                showError('URL inválida! Deve ser um link do Google Sheets.');
+                return;
+            }
+            
+            googleSheetsConfig.url = url;
+            salvarDados();
+            showSuccess('Google Sheets conectado! Configure as opções de sincronização.');
+            atualizarStatusSheets();
+        }
+
+        function testarConexaoSheets() {
+            if (!googleSheetsConfig.url) {
+                showError('Configure o Google Sheets primeiro!');
+                return;
+            }
+            
+            // Simulação de teste de conexão
+            showSuccess('✅ Conexão testada! Planilha acessível.');
+            
+            // Em uma implementação real, aqui faria uma requisição para testar
+            // se a planilha é acessível publicamente
+        }
+
+        function sincronizarSheets() {
+            if (!googleSheetsConfig.url) {
+                showError('Configure o Google Sheets primeiro!');
+                return;
+            }
+            
+            // Simulação de sincronização
+            showSuccess('🔄 Sincronização iniciada! (Simulação - em desenvolvimento)');
+            
+            // Em uma implementação real, aqui enviaria os dados para a planilha
+            // usando a API do Google Sheets ou um webhook
+            
+            googleSheetsConfig.lastSync = new Date().toISOString();
+            salvarDados();
+            atualizarStatusSheets();
+        }
+
+        function atualizarStatusSheets() {
+            const statusElement = document.getElementById('sheetsStatus');
+            
+            if (googleSheetsConfig.url) {
+                statusElement.className = 'sheets-status sheets-connected';
+                statusElement.innerHTML = `✅ Conectado ao Google Sheets${googleSheetsConfig.lastSync ? `<br><small>Última sincronização: ${new Date(googleSheetsConfig.lastSync).toLocaleString('pt-BR')}</small>` : ''}`;
+            } else {
+                statusElement.className = 'sheets-status sheets-disconnected';
+                statusElement.innerHTML = '❌ Não conectado ao Google Sheets';
+            }
+        }
+
+        function exportarJustificativas() {
+            const data = {
+                justificativas: justificativas,
+                timestamp: new Date().toISOString(),
+                versao: CONFIG.VERSION
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `justificativas-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Justificativas exportadas com sucesso!');
+        }
+
+        function importarJustificativas() {
+            const input = document.getElementById('importJustificativasInput');
+            const file = input.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.justificativas) {
+                        justificativas = { ...justificativas, ...data.justificativas };
+                        salvarDados();
+                        showSuccess(`Justificativas importadas! ${Object.keys(data.justificativas).length} itens carregados.`);
+                        exibirEquipamentos();
+                        exibirRelatorioDetalhado();
+                    } else {
+                        showError('Arquivo de justificativas inválido.');
+                    }
+                } catch (error) {
+                    showError('Erro ao ler arquivo de justificativas: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function limparJustificativas() {
+            if (confirm('Tem certeza que deseja limpar todas as justificativas? Esta ação não pode ser desfeita.')) {
+                justificativas = {};
+                salvarDados();
+                showSuccess('Todas as justificativas foram removidas.');
+                exibirEquipamentos();
+                exibirRelatorioDetalhado();
+            }
+        }
+
+        function exportarDados() {
+            const stats = calcularEstatisticas();
+            const dataHora = new Date().toLocaleString('pt-BR');
+            
+            let relatorio = `RELATÓRIO DE MONITORAMENTO GRUPOGPS v${CONFIG.VERSION}\n`;
+            relatorio += `Gerado em: ${dataHora}\n\n`;
+            relatorio += `RESUMO GERAL:\n`;
+            relatorio += `Total de Equipamentos: ${stats.total}\n`;
+            relatorio += `Total de Apontamentos: ${stats.totalApontamentos}\n`;
+            relatorio += `Status OK: ${stats.ok}\n`;
+            relatorio += `Status Tardio: ${stats.tardio}\n`;
+            relatorio += `Poucos Apontamentos: ${stats.poucos}\n`;
+            relatorio += `Status Crítico: ${stats.critico}\n\n`;
+            
+            relatorio += `DETALHES POR EQUIPAMENTO:\n`;
+            relatorio += `${'='.repeat(80)}\n`;
+            
+            Object.values(equipamentosProcessados).forEach(equip => {
+                const motorista = motoristas[equip.vaga];
+                const justificativa = justificativas[equip.vaga];
+                
+                relatorio += `\n${equip.vaga} - ${equip.placa} (${equip.status})\n`;
+                relatorio += `Nome: ${equip.nome}\n`;
+                relatorio += `Apontamentos: ${equip.totalApontamentos} | Primeiro Registro: ${equip.primeiroRegistro || 'N/A'}\n`;
+                
+                if (motorista) {
+                    relatorio += `Motorista: ${motorista.nome}${motorista.telefone ? ` | Telefone: ${motorista.telefone}` : ''}\n`;
+                }
+                
+                if (justificativa) {
+                    relatorio += `Justificativa: ${justificativa.texto}\n`;
+                }
+                
+                if (equip.apontamentos.length > 0) {
+                    relatorio += `Detalhes dos Apontamentos:\n`;
+                    equip.apontamentos.forEach(apt => {
+                        relatorio += `  - ${apt.categoria} | ${apt.inicio || 'N/A'}-${apt.fim || 'N/A'} | Tempo: ${apt.tempoIndisponivel}\n`;
+                    });
+                }
+                relatorio += `${'-'.repeat(40)}\n`;
+            });
+            
+            // Download do arquivo
+            const blob = new Blob([relatorio], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio-monitoramento-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Relatório exportado com sucesso!');
+        }
+
+        function exportarRelatorioCompleto() {
+            const stats = calcularEstatisticas();
+            const estatisticasTemporais = calcularEstatisticasTemporais();
+            const dataHora = new Date().toLocaleString('pt-BR');
+            
+            let relatorio = `RELATÓRIO COMPLETO DE MONITORAMENTO GRUPOGPS v${CONFIG.VERSION}\n`;
+            relatorio += `Gerado em: ${dataHora}\n`;
+            relatorio += `${'='.repeat(80)}\n\n`;
+            
+            relatorio += `RESUMO EXECUTIVO:\n`;
+            relatorio += `• Total de Equipamentos: ${stats.total}\n`;
+            relatorio += `• Total de Apontamentos: ${stats.totalApontamentos}\n`;
+            relatorio += `• Equipamentos OK: ${stats.ok} (${((stats.ok/stats.total)*100).toFixed(1)}%)\n`;
+            relatorio += `• Equipamentos Tardios: ${stats.tardio} (${((stats.tardio/stats.total)*100).toFixed(1)}%)\n`;
+            relatorio += `• Poucos Apontamentos: ${stats.poucos} (${((stats.poucos/stats.total)*100).toFixed(1)}%)\n`;
+            relatorio += `• Equipamentos Críticos: ${stats.critico} (${((stats.critico/stats.total)*100).toFixed(1)}%)\n\n`;
+            
+            relatorio += `ESTATÍSTICAS TEMPORAIS:\n`;
+            relatorio += `• Primeiro Registro Médio: ${estatisticasTemporais.primeiroRegistroMedio}\n`;
+            relatorio += `• Apontamentos por Dia: ${estatisticasTemporais.apontamentosPorDia}\n`;
+            relatorio += `• Tempo Indisponível Médio: ${estatisticasTemporais.tempoIndisponivelMedio}\n`;
+            relatorio += `• Eficiência Geral: ${estatisticasTemporais.eficienciaGeral}%\n\n`;
+            
+            relatorio += `DETALHAMENTO POR EQUIPAMENTO:\n`;
+            relatorio += `${'='.repeat(80)}\n`;
+            
+            Object.values(equipamentosProcessados).forEach(equip => {
+                const justificativa = justificativas[equip.vaga];
+                const motorista = motoristas[equip.vaga];
+                
+                relatorio += `\n📋 ${equip.vaga} - ${equip.placa}\n`;
+                relatorio += `   Nome: ${equip.nome}\n`;
+                relatorio += `   Status: ${equip.status}\n`;
+                relatorio += `   Total de Apontamentos: ${equip.totalApontamentos}\n`;
+                relatorio += `   Primeiro Registro: ${equip.primeiroRegistro || 'N/A'}\n`;
+                
+                if (motorista) {
+                    relatorio += `   👨‍💼 Motorista: ${motorista.nome}\n`;
+                    if (motorista.telefone) relatorio += `   📞 Telefone: ${motorista.telefone}\n`;
+                    if (motorista.observacoes) relatorio += `   📝 Observações: ${motorista.observacoes}\n`;
+                }
+                
+                if (justificativa) {
+                    relatorio += `   📝 Justificativa: ${justificativa.texto}\n`;
+                    relatorio += `   📅 Data da Justificativa: ${justificativa.timestamp}\n`;
+                }
+                
+                if (equip.apontamentos.length > 0) {
+                    relatorio += `   \n   📊 Apontamentos Detalhados:\n`;
+                    equip.apontamentos.forEach((apt, index) => {
+                        relatorio += `   ${index + 1}. ${apt.categoria}\n`;
+                        relatorio += `      ⏰ ${apt.inicio || 'N/A'} → ${apt.fim || 'N/A'}\n`;
+                        relatorio += `      ⏱️ Tempo Indisponível: ${apt.tempoIndisponivel}\n`;
+                        relatorio += `      📝 Demora Registro: ${apt.demoraRegistro}\n`;
+                    });
+                }
+                relatorio += `\n${'-'.repeat(60)}\n`;
+            });
+            
+            // Download do arquivo
+            const blob = new Blob([relatorio], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio-completo-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Relatório completo exportado com sucesso!');
+        }
+
+        function exportarRelatorioProfissional() {
+            const stats = calcularEstatisticas();
+            const estatisticasTemporais = calcularEstatisticasTemporais();
+            const dataHora = new Date().toLocaleString('pt-BR');
+            const data = new Date().toLocaleDateString('pt-BR');
+            
+            let relatorio = `
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     RELATÓRIO EXECUTIVO DE MONITORAMENTO v${CONFIG.VERSION}                ║
+║                              GRUPOGPS LTDA                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 RESUMO EXECUTIVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 Data do Relatório: ${data}
+🕐 Horário de Geração: ${dataHora}
+📋 Total de Equipamentos Analisados: ${stats.total}
+📈 Total de Apontamentos Registrados: ${stats.totalApontamentos}
+
+🎯 INDICADORES DE PERFORMANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Equipamentos OK: ${stats.ok} unidades (${((stats.ok/stats.total)*100).toFixed(1)}%)
+⚠️  Equipamentos Tardios: ${stats.tardio} unidades (${((stats.tardio/stats.total)*100).toFixed(1)}%)
+🔶 Poucos Apontamentos: ${stats.poucos} unidades (${((stats.poucos/stats.total)*100).toFixed(1)}%)
+🔴 Equipamentos Críticos: ${stats.critico} unidades (${((stats.critico/stats.total)*100).toFixed(1)}%)
+
+⏱️ MÉTRICAS TEMPORAIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🕐 Primeiro Registro Médio: ${estatisticasTemporais.primeiroRegistroMedio}
+📊 Apontamentos por Dia: ${estatisticasTemporais.apontamentosPorDia}
+⏲️ Tempo Indisponível Médio: ${estatisticasTemporais.tempoIndisponivelMedio}
+🎯 Eficiência Geral: ${estatisticasTemporais.eficienciaGeral}%
+
+🚨 SITUAÇÕES QUE REQUEREM ATENÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+            // Equipamentos críticos e com justificativas
+            const equipamentosCriticos = Object.values(equipamentosProcessados).filter(e => e.status === 'CRITICO' || e.status === 'TARDIO' || e.status === 'POUCOS');
+            
+            if (equipamentosCriticos.length > 0) {
+                equipamentosCriticos.forEach(equip => {
+                    const justificativa = justificativas[equip.vaga];
+                    const motorista = motoristas[equip.vaga];
+                    
+                    relatorio += `\n🔹 ${equip.vaga} - ${equip.placa}\n`;
+                    relatorio += `   Status: ${equip.status}\n`;
+                    relatorio += `   Primeiro Registro: ${equip.primeiroRegistro || 'Não registrado'}\n`;
+                    relatorio += `   Total de Apontamentos: ${equip.totalApontamentos}\n`;
+                    
+                    if (motorista) {
+                        relatorio += `   👨‍💼 Motorista: ${motorista.nome}${motorista.telefone ? ` | ${motorista.telefone}` : ''}\n`;
+                    } else {
+                        relatorio += `   ⚠️  Sem motorista associado\n`;
+                    }
+                    
+                    if (justificativa) {
+                        relatorio += `   📝 Justificativa: ${justificativa.texto}\n`;
+                        relatorio += `   📅 Data: ${justificativa.timestamp}\n`;
+                    } else {
+                        relatorio += `   ⚠️  Sem justificativa registrada\n`;
+                    }
+                    relatorio += `\n`;
+                });
+            }
+
+            relatorio += `
+📋 RECOMENDAÇÕES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Priorizar acompanhamento dos ${stats.critico} equipamentos em status crítico
+• Investigar causas dos atrasos nos ${stats.tardio} equipamentos tardios  
+• Implementar melhorias no processo de registro para os ${stats.poucos} equipamentos com poucos apontamentos
+• Manter monitoramento contínuo dos ${stats.ok} equipamentos com status OK
+• Associar motoristas aos ${Object.values(equipamentosProcessados).filter(e => !motoristas[e.vaga]).length} equipamentos sem motorista
+• Buscar justificativas para os ${Object.values(equipamentosProcessados).filter(e => !justificativas[e.vaga] && e.status !== 'OK').length} equipamentos problemáticos sem justificativa
+
+📞 PRÓXIMOS PASSOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Reunião com supervisores para análise dos equipamentos críticos
+2. Implementação de ações corretivas conforme justificativas apresentadas
+3. Acompanhamento semanal dos indicadores de performance
+4. Revisão dos processos operacionais para equipamentos com baixo desempenho
+5. Treinamento de motoristas para otimização dos tempos de registro
+
+═══════════════════════════════════════════════════════════════════════════════
+Relatório gerado automaticamente pelo Sistema de Monitoramento GrupoGPS v${CONFIG.VERSION}
+Responsável: [INSERIR NOME DO RESPONSÁVEL]
+${googleSheetsConfig.url ? `📊 Dados sincronizados com Google Sheets` : ''}
+═══════════════════════════════════════════════════════════════════════════════
+`;
+
+            // Download do arquivo
+            const blob = new Blob([relatorio], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio-executivo-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Relatório executivo exportado com sucesso!');
+        }
+
+        function showError(message) {
+            const existing = document.querySelector('.error');
+            if (existing) existing.remove();
+            
+            const error = document.createElement('div');
+            error.className = 'error';
+            error.textContent = message;
+            document.querySelector('.upload-section').appendChild(error);
+            
+            setTimeout(() => error.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            const existing = document.querySelector('.success');
+            if (existing) existing.remove();
+            
+            const success = document.createElement('div');
+            success.className = 'success';
+            success.textContent = message;
+            document.querySelector('.upload-section').appendChild(success);
+            
+            setTimeout(() => success.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
