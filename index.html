@@ -230,7 +230,7 @@
 
         .equipamentos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 15px;
         }
 
@@ -256,9 +256,18 @@
         }
 
         .equipamento-codigo {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #2c3e50;
+        }
+
+        .equipamento-tipo {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
         }
 
         .equipamento-status {
@@ -287,20 +296,11 @@
             border-left-color: #e74c3c !important;
         }
 
-        .equipamento-info {
-            margin-bottom: 15px;
-        }
-
-        .equipamento-placa {
-            font-size: 1rem;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-
         .equipamento-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-item {
@@ -329,7 +329,6 @@
             border-radius: 6px;
             padding: 10px;
             background: #fafafa;
-            margin-top: 15px;
         }
 
         .apontamento-item {
@@ -512,34 +511,6 @@
         let apontamentosIrregulares = [];
         let dadosFiltrados = [];
 
-        // Base de equipamentos atualizada com as placas corretas do CSV
-        const equipamentosBase = [
-            { codigo: 'AP-01', placa: 'DSY6F81', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS', tipo: 'AP' },
-            { codigo: 'AP-02', placa: 'DSY6474', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 02', tipo: 'AP' },
-            { codigo: 'AP-03', placa: 'EZS8764', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 03', tipo: 'AP' },
-            { codigo: 'AP-04', placa: 'EAM3262', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 04', tipo: 'AP' },
-            { codigo: 'AP-05', placa: 'DSY6475', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 05', tipo: 'AP' },
-            { codigo: 'AP-06', placa: 'DSY6472', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 06', tipo: 'AP' },
-            { codigo: 'AP-07', placa: 'PUB2F80', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 07', tipo: 'AP' },
-            { codigo: 'AP-08', placa: 'EGC2985', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS', tipo: 'AP' },
-            { codigo: 'AP-09', placa: 'EGC2978', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 09', tipo: 'AP' },
-            { codigo: 'AP-10', placa: 'EAM3256', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 10', tipo: 'AP' },
-            { codigo: 'AP-11', placa: 'EGC2983', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 11', tipo: 'AP' },
-            { codigo: 'AP-12', placa: 'EZS8765', nome: 'CAMINHÃO ALTA PRESSÃO - GPS - 12', tipo: 'AP' },
-            { codigo: 'AV-01', placa: 'EAM3257', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS', tipo: 'AV' },
-            { codigo: 'AV-02', placa: 'ALY5322', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS', tipo: 'AV' },
-            { codigo: 'AV-03', placa: 'HJS1097', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 03', tipo: 'AV' },
-            { codigo: 'AV-04', placa: 'EGC2979', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 04', tipo: 'AV' },
-            { codigo: 'AV-05', placa: 'FSA3D71', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 05', tipo: 'AV' },
-            { codigo: 'AV-06', placa: 'DYB7210', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 06', tipo: 'AV' },
-            { codigo: 'AV-07', placa: 'DSY6473', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 07', tipo: 'AV' },
-            { codigo: 'AV-08', placa: 'EGC2993', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS', tipo: 'AV' },
-            { codigo: 'AV-09', placa: 'EAM3251', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 09', tipo: 'AV' },
-            { codigo: 'AV-10', placa: 'DSY6577', nome: 'CAMINHÃO AUTO VÁCUO - GPS - 10', tipo: 'AV' },
-            { codigo: 'HP-01', placa: 'DSY6471', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 01', tipo: 'HP' },
-            { codigo: 'HP-02', placa: 'FMD2200', nome: 'CAMINHÃO HIPER VÁCUO - GPS - 02', tipo: 'HP' }
-        ];
-
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             const uploadArea = document.getElementById('uploadArea');
@@ -640,11 +611,13 @@
 
             setTimeout(() => {
                 try {
+                    console.log('📊 Iniciando processamento de', dadosCSV.length, 'registros');
+                    
                     // Detectar apontamentos irregulares
                     detectarApontamentosIrregulares();
                     
-                    // Processar equipamentos
-                    equipamentosProcessados = processarEquipamentos(dadosCSV);
+                    // Processar equipamentos baseado nos dados REAIS do CSV
+                    equipamentosProcessados = processarEquipamentosDoCSV(dadosCSV);
                     
                     // Mostrar resultados
                     exibirResultados();
@@ -652,7 +625,11 @@
                     document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
                     document.getElementById('processBtn').disabled = false;
                     showSuccess(`Dados processados com sucesso! ${dadosCSV.length} apontamentos analisados.`);
+                    
+                    console.log('✅ Processamento concluído:', Object.keys(equipamentosProcessados).length, 'equipamentos encontrados');
+                    console.log('🔍 Equipamentos processados:', Object.keys(equipamentosProcessados));
                 } catch (error) {
+                    console.error('❌ Erro no processamento:', error);
                     showError('Erro ao processar dados: ' + error.message);
                     document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
                     document.getElementById('processBtn').disabled = false;
@@ -660,74 +637,74 @@
             }, 500);
         }
 
-        function detectarApontamentosIrregulares() {
-            apontamentosIrregulares = [];
+        function extrairCodigoVaga(nomeVaga) {
+            if (!nomeVaga) return null;
             
-            dadosCSV.forEach((apt, index) => {
-                const tempo = apt['Tempo Indisponível (HH:MM)'];
-                const categoria = apt['Categoria Demora'];
-                const minutos = tempoParaMinutos(tempo);
-                
-                // Apontamentos zerados
-                if (minutos === 0) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Apontamento Zerado',
-                        descricao: `${apt.Placa} - ${categoria} com tempo 00:00`,
-                        equipamento: apt.Vaga,
-                        categoria: categoria,
-                        tempo: tempo,
-                        index: index
-                    });
+            const nome = nomeVaga.toString().trim();
+            console.log('🔍 Analisando vaga:', nome);
+            
+            // Padrões para extração do código
+            const patterns = [
+                // Alta Pressão
+                { regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)( - 24 HS)?/, prefix: 'AP' },
+                // Auto Vácuo  
+                { regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)( - (?:16|24) HS)?/, prefix: 'AV' },
+                // Hiper Vácuo
+                { regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)/, prefix: 'HP' }
+            ];
+            
+            for (const pattern of patterns) {
+                const match = nome.match(pattern.regex);
+                if (match) {
+                    const numero = match[1].padStart(2, '0');
+                    let codigo = `${pattern.prefix}-${numero}`;
+                    
+                    // Adicionar sufixo se necessário
+                    if (match[2]) {
+                        if (match[2].includes('24 HS')) {
+                            codigo += ' - 24HS';
+                        } else if (match[2].includes('16 HS')) {
+                            codigo += ' - 16HS';
+                        }
+                    }
+                    
+                    console.log('✅ Código extraído:', codigo, 'de', nome);
+                    return codigo;
                 }
-                
-                // Refeições acima de 1 hora
-                if (categoria && categoria.toLowerCase().includes('refeição') && minutos > 60) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Refeição Excessiva',
-                        descricao: `${apt.Placa} - Refeição de ${tempo} (acima de 1:00)`,
-                        equipamento: apt.Vaga,
-                        categoria: categoria,
-                        tempo: tempo,
-                        index: index
-                    });
-                }
-                
-                // Abastecimentos de 1 hora ou mais
-                if (categoria && categoria.toLowerCase().includes('abastecimento') && minutos >= 60) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Abastecimento Excessivo',
-                        descricao: `${apt.Placa} - Abastecimento de ${tempo} (1 hora ou mais)`,
-                        equipamento: apt.Vaga,
-                        categoria: categoria,
-                        tempo: tempo,
-                        index: index
-                    });
-                }
-                
-                // Apontamentos muito curtos (0 a 4 minutos)
-                if (minutos > 0 && minutos <= 4) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Apontamento Muito Curto',
-                        descricao: `${apt.Placa} - ${categoria} de apenas ${tempo}`,
-                        equipamento: apt.Vaga,
-                        categoria: categoria,
-                        tempo: tempo,
-                        index: index
-                    });
-                }
-            });
+            }
+            
+            console.log('❌ Não foi possível extrair código de:', nome);
+            return null;
         }
 
-        function processarEquipamentos(apontamentos) {
-            const equipamentosProcessados = {};
+        function getTipoEquipamento(codigo) {
+            if (codigo.startsWith('AP-')) return 'AP';
+            if (codigo.startsWith('AV-')) return 'AV';
+            if (codigo.startsWith('HP-')) return 'HP';
+            return 'UNKNOWN';
+        }
+
+        function processarEquipamentosDoCSV(apontamentos) {
+            const equipamentos = {};
             
-            // Inicializar todos os equipamentos
-            equipamentosBase.forEach(equipBase => {
-                equipamentosProcessados[equipBase.codigo] = {
-                    codigo: equipBase.codigo,
-                    placa: equipBase.placa,
-                    nome: equipBase.nome,
-                    tipo: equipBase.tipo,
+            console.log('📋 Processando apontamentos...');
+            
+            // Primeiro, identificar todos os equipamentos únicos do CSV
+            const equipamentosUnicos = new Set();
+            apontamentos.forEach(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if (codigo) {
+                    equipamentosUnicos.add(codigo);
+                }
+            });
+            
+            console.log('🔍 Equipamentos únicos encontrados:', Array.from(equipamentosUnicos));
+            
+            // Inicializar todos os equipamentos encontrados
+            equipamentosUnicos.forEach(codigo => {
+                equipamentos[codigo] = {
+                    codigo: codigo,
+                    tipo: getTipoEquipamento(codigo),
                     totalApontamentos: 0,
                     apontamentos: [],
                     primeiroRegistro: null,
@@ -735,19 +712,15 @@
                 };
             });
 
-            // Criar mapa de placas para códigos
-            const placaParaCodigo = {};
-            equipamentosBase.forEach(equip => {
-                placaParaCodigo[equip.placa] = equip.codigo;
-            });
-
-            // Agrupar apontamentos por equipamento
+            // Processar cada apontamento
             apontamentos.forEach((apt, index) => {
-                const codigo = placaParaCodigo[apt.Placa];
-                if (!codigo) return;
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if (!codigo || !equipamentos[codigo]) {
+                    console.warn('⚠️ Equipamento não encontrado para:', apt.Vaga);
+                    return;
+                }
                 
-                const equip = equipamentosProcessados[codigo];
-                if (!equip) return;
+                const equip = equipamentos[codigo];
                 
                 const apontamento = {
                     placa: apt.Placa,
@@ -762,17 +735,80 @@
                 equip.apontamentos.push(apontamento);
                 equip.totalApontamentos++;
                 
+                // Atualizar primeiro registro
                 if (!equip.primeiroRegistro || (apontamento.inicio && apontamento.inicio < equip.primeiroRegistro)) {
                     equip.primeiroRegistro = apontamento.inicio;
                 }
             });
 
             // Calcular status de cada equipamento
-            Object.values(equipamentosProcessados).forEach(equip => {
+            Object.values(equipamentos).forEach(equip => {
                 equip.status = calcularStatusInteligente(equip);
+                console.log(`📊 ${equip.codigo}: ${equip.totalApontamentos} apontamentos, status: ${equip.status}`);
             });
 
-            return equipamentosProcessados;
+            return equipamentos;
+        }
+
+        function detectarApontamentosIrregulares() {
+            apontamentosIrregulares = [];
+            
+            dadosCSV.forEach((apt, index) => {
+                const tempo = apt['Tempo Indisponível (HH:MM)'];
+                const categoria = apt['Categoria Demora'];
+                const minutos = tempoParaMinutos(tempo);
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                
+                // Apontamentos zerados
+                if (minutos === 0) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Zerado',
+                        descricao: `${codigo} - ${categoria} com tempo 00:00`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        index: index
+                    });
+                }
+                
+                // Refeições acima de 1 hora
+                if (categoria && categoria.toLowerCase().includes('refeição') && minutos > 60) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Refeição Excessiva',
+                        descricao: `${codigo} - Refeição de ${tempo} (acima de 1:00)`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        index: index
+                    });
+                }
+                
+                // Abastecimentos de 1 hora ou mais
+                if (categoria && categoria.toLowerCase().includes('abastecimento') && minutos >= 60) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Abastecimento Excessivo',
+                        descricao: `${codigo} - Abastecimento de ${tempo} (1 hora ou mais)`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        index: index
+                    });
+                }
+                
+                // Apontamentos muito curtos (0 a 4 minutos)
+                if (minutos > 0 && minutos <= 4) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Muito Curto',
+                        descricao: `${codigo} - ${categoria} de apenas ${tempo}`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        index: index
+                    });
+                }
+            });
+            
+            console.log('⚠️ Irregularidades detectadas:', apontamentosIrregulares.length);
         }
 
         function calcularStatusInteligente(equipamento) {
@@ -914,15 +950,17 @@
             const equipamentosGrid = document.getElementById('equipamentosGrid');
             const equipamentos = Object.values(equipamentosProcessados);
             
+            // Ordenar equipamentos por código
+            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+            
             equipamentosGrid.innerHTML = equipamentos.map(equip => `
                 <div class="equipamento-card status-${equip.status.toLowerCase()}" data-tipo="${equip.tipo}">
                     <div class="equipamento-header">
-                        <div class="equipamento-codigo">${equip.codigo}</div>
+                        <div>
+                            <div class="equipamento-codigo">${equip.codigo}</div>
+                            <div class="equipamento-tipo">${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'}</div>
+                        </div>
                         <div class="equipamento-status status-${equip.status.toLowerCase()}">${equip.status}</div>
-                    </div>
-                    
-                    <div class="equipamento-info">
-                        <div class="equipamento-placa">📋 ${equip.placa}</div>
                     </div>
                     
                     <div class="equipamento-stats">
@@ -995,7 +1033,7 @@
             // Reprocessar com dados filtrados
             if (dadosFiltrados.length > 0) {
                 detectarApontamentosIrregulares();
-                equipamentosProcessados = processarEquipamentos(dadosFiltrados);
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
                 exibirResultados();
                 
                 // Filtro por tipo de equipamento na visualização
