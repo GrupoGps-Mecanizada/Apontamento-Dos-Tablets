@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Monitoramento GrupoGPS</title>
+
+<!-- DEPENDÊNCIAS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- ESTILOS – idêntico à versão anterior (omitido para brevidade) -->
+<style>
+/*  ……  todo o CSS já enviado anteriormente permanece inalterado ……  */
+</style>
+</head>
+<body>
+<!-- ==========================================================
+     HEADER
+=========================================================== -->
+<div class="header">
+  <h1>Sistema Monitoramento GrupoGPS</h1>
+  <p>Dashboard de Acompanhamento de Equipamentos</p>
+</div>
+
+<!-- ==========================================================
+     CONTAINER PRINCIPAL
+=========================================================== -->
+<div class="container">
+  <!-- ABAS -->
+  <div class="tabs-container">
+    <div class="tabs-header">
+      <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab-btn"         onclick="switchTab('timeline')">Timeline</button>
+    </div>
+  </div>
+
+  <!-- ================================= DASHBOARD ================================ -->
+  <div class="tab-content" id="dashboard-tab">
+    <!-- UPLOAD -->
+    <section class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+        <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+      </div>
+      <input type="file" id="fileInput" accept=".csv">
+      <button class="btn" onclick="fileInput.click()">Selecionar Arquivo</button>
+      <button class="btn" id="processBtn" onclick="processarArquivo()" disabled>Processar Dados</button>
+    </section>
+
+    <!-- EXPORTAÇÃO -->
+    <section class="export-section" id="exportSection" style="display:none">
+      <h2 class="section-title">Exportar Relatórios</h2>
+      <div class="export-buttons">
+        <button class="btn btn-success" onclick="exportarRelatorio('xlsx')">Irregulares (XLSX)</button>
+        <button class="btn btn-warning" onclick="exportarRelatorio('csv')">Irregulares (CSV)</button>
+        <button class="btn" onclick="exportarApontamentosCompletos()">Todos Apontamentos (XLSX)</button>
+      </div>
+    </section>
+
+    <!-- FILTROS -->
+    <section class="filters-section" id="filtersSection" style="display:none">
+      <h2 class="section-title">Filtros</h2>
+      <div class="filters-grid">
+        <div class="filter-group"><label class="filter-label" for="dataInicial">Data Inicial</label>
+          <input type="date" id="dataInicial" class="filter-input"></div>
+        <div class="filter-group"><label class="filter-label" for="dataFinal">Data Final</label>
+          <input type="date" id="dataFinal" class="filter-input"></div>
+        <div class="filter-group"><label class="filter-label" for="horaInicial">Hora Inicial</label>
+          <input type="time" id="horaInicial" class="filter-input"></div>
+        <div class="filter-group"><label class="filter-label" for="horaFinal">Hora Final</label>
+          <input type="time" id="horaFinal" class="filter-input"></div>
+        <div class="filter-group"><label class="filter-label" for="tipoFilter">Tipo Equipamento</label>
+          <select id="tipoFilter" class="filter-input">
+            <option value="">Todos</option><option value="AP">Alta Pressão</option>
+            <option value="AV">Auto Vácuo</option><option value="HP">Hiper Vácuo</option>
+          </select>
+        </div>
+        <div class="filter-group"><button class="btn" style="width:100%" onclick="aplicarFiltros()">Aplicar</button></div>
+      </div>
+    </section>
+
+    <!-- ESTATÍSTICAS -->
+    <section class="stats-section" id="statsSection">
+      <h2 class="section-title">Estatísticas</h2>
+      <div id="statsGrid" class="stats-grid"></div>
+    </section>
+
+    <!-- IRREGULARES -->
+    <section class="problems-section" id="problemsSection">
+      <h2 class="section-title" style="color:#e74c3c;border-color:#e74c3c">Irregularidades</h2>
+      <div id="problemsList"></div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="equipamentos-section" id="equipamentosSection">
+      <h2 class="section-title">Equipamentos</h2>
+      <div id="equipamentosGrid" class="equipamentos-grid"></div>
+    </section>
+  </div>
+
+  <!-- ================================= TIMELINE ================================ -->
+  <div class="tab-content hidden" id="timeline-tab">
+    <section class="timeline-section">
+      <h2 class="section-title">Timeline de Equipamentos (24h)</h2>
+
+      <!-- filtros timeline -->
+      <div class="timeline-filters-container">
+        <div class="timeline-filters-grid">
+          <div class="filter-group"><label class="filter-label" for="timelineSearch">Pesquisar</label>
+            <input type="text" id="timelineSearch" class="filter-input" placeholder="AV-01"></div>
+          <div class="filter-group"><label class="filter-label" for="timelineDate">Data</label>
+            <input type="date" id="timelineDate" class="filter-input"></div>
+          <div class="filter-group"><label class="filter-label" for="timelineTypeFilter">Tipo</label>
+            <select id="timelineTypeFilter" class="filter-input">
+              <option value="">Todos</option><option value="AP">Alta Pressão</option>
+              <option value="AV">Auto Vácuo</option><option value="HP">Hiper Vácuo</option>
+            </select></div>
+          <div class="filter-group"><label class="filter-label" for="timelineStatusFilter">Status</label>
+            <select id="timelineStatusFilter" class="filter-input">
+              <option value="">Todos</option><option value="normal">Normal</option>
+              <option value="irregular">Irregular</option><option value="excessive">Excessivo</option>
+            </select></div>
+          <div class="filter-group" style="grid-column:1/-1">
+            <label class="filter-label" for="equipmentSelectorTimeline">Focar Equipamentos</label>
+            <select id="equipmentSelectorTimeline" multiple class="filter-input"></select>
+          </div>
+          <div class="filter-group" style="grid-column:1/-1">
+            <label class="filter-label" for="timelineZoom">Zoom 1×–6×</label>
+            <div class="zoom-wrapper">
+              <input type="range" id="timelineZoom" min="1" max="6" value="1" step=".5" oninput="updateZoom(this.value)">
+              <span id="zoomLabel">1×</span>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:20px">
+          <button class="btn btn-success" onclick="exportarTimelinePDF('selected')">PDF Selecionados</button>
+          <button class="btn"            onclick="exportarTimelinePDF('all')">PDF Visíveis</button>
+        </div>
+      </div>
+
+      <div id="timelineLegend" class="timeline-legend"></div>
+      <div id="timelineContainer"><div class="timeline-empty">Carregue e processe um CSV.</div></div>
+    </section>
+  </div>
+</div>
+
+<!-- ==========================================================
+     SCRIPTS
+=========================================================== -->
+<script>
+/* ---------- VARIÁVEIS GERAIS ---------- */
+let dadosCSV=[],dadosFiltrados=[],equipamentosProcessados={},apontamentosIrregulares=[];
+let zoomLevel=1;
+const CATEGORIA_CORES={DEFAULT:'#7f8c8d',REFEIÇÃO:'#3498db',ABASTECIMENTO:'#f39c12',
+  'MANUTENÇÃO CORRETIVA':'#e74c3c','MANUTENÇÃO PREVENTIVA':'#d35400',
+  DESLOCAMENTO:'#2ecc71',CHECKLIST:'#9b59b6',ESPERA:'#1abc9c',LIMPEZA:'#f1c40f'};
+const COLOR_PALETTE=['#1abc9c','#3498db','#9b59b6','#e67e22','#e74c3c','#f1c40f',
+  '#2ecc71','#16a085','#27ae60','#2980b9','#8e44ad','#d35400','#c0392b','#7f8c8d'];
+let dynamicColorIndex=0;
+const COR_IRREGULAR='#c0392b',MIN_APONTAMENTOS=4;
+
+/* ---------- READY ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  const upload=document.getElementById('uploadArea');
+  const fileIn=document.getElementById('fileInput');
+  upload.addEventListener('dragover',e=>{e.preventDefault();upload.classList.add('dragover')});
+  upload.addEventListener('dragleave',e=>{e.preventDefault();upload.classList.remove('dragover')});
+  upload.addEventListener('drop',e=>{e.preventDefault();upload.classList.remove('dragover');
+    if(e.dataTransfer.files.length)lerArquivo(e.dataTransfer.files[0])});
+  upload.addEventListener('click',()=>fileIn.click());
+  fileIn.addEventListener('change',()=>{if(fileIn.files.length)lerArquivo(fileIn.files[0])});
+
+  ['dataInicial','dataFinal','horaInicial','horaFinal','tipoFilter']
+    .forEach(id=>document.getElementById(id).addEventListener('change',aplicarFiltros));
+
+  ['timelineSearch','timelineDate','timelineTypeFilter','timelineStatusFilter']
+    .forEach(id=>document.getElementById(id).addEventListener(
+      id==='timelineSearch'?'input':'change',filtrarTimeline));
+
+  document.getElementById('equipmentSelectorTimeline').addEventListener('change',filtrarTimeline);
+
+  document.body.addEventListener('wheel',e=>{
+    if(!e.ctrlKey)return;
+    e.preventDefault();
+    const next=Math.min(6,Math.max(1,zoomLevel+(e.deltaY<0?0.5:-0.5)));
+    if(next!==zoomLevel){
+      document.getElementById('timelineZoom').value=next;updateZoom(next);
+    }
+  },{passive:false});
+});
+
+/* ---------- UPLOAD & PARSE ---------- */
+function lerArquivo(f){
+  if(!f.name.endsWith('.csv')){erro('Arquivo deve ser CSV');return}
+  uploadArea.innerHTML='<div class="upload-text">Lendo '+f.name+'...</div>';
+  Papa.parse(f,{header:true,skipEmptyLines:true,delimiter:';',
+    complete:r=>carregado(r,f.name),
+    error:e=>{erro('Falha ao ler CSV: '+e.message);resetUpload()}
+  });
+}
+function carregado(res,nome){
+  dadosCSV=res.data.filter(l=>l.Placa&&l.Vaga&&l['Categoria Demora']&&l['Data Inicial']
+    &&l['Data Final']&&l['Tempo Indisponível (HH:MM)']);
+  if(!dadosCSV.length){erro('CSV sem registros válidos');resetUpload();return}
+  uploadArea.innerHTML='<div class="upload-text">'+nome+'</div><div class="upload-subtext">'+dadosCSV.length+' registros.</div>';
+  processBtn.disabled=false;sucesso('CSV carregado');
+}
+function resetUpload(){
+  uploadArea.innerHTML='<div class="upload-text">Clique ou arraste o arquivo CSV</div><div class="upload-subtext">Demoras Categorizadas</div>';
+}
+
+/* ---------- PROCESSAR ---------- */
+function processarArquivo(){
+  if(!dadosCSV.length){erro('Nenhum CSV carregado');return}
+  processBtn.textContent='Processando...';processBtn.disabled=true;
+  setTimeout(()=>{
+    try{
+      dadosFiltrados=[...dadosCSV];
+      marcarIrregulares(dadosFiltrados);
+      equipamentosProcessados=agruparEquip(dadosFiltrados);
+      exibirDashboard();
+      atualizarLegenda();
+      if(document.querySelector('.tab-btn.active').textContent==='Timeline')gerarTimeline();
+      ['exportSection','filtersSection','statsSection','equipamentosSection']
+        .forEach(id=>document.getElementById(id).style.display='block');
+      problemsSection.style.display=apontamentosIrregulares.length?'block':'none';
+      processBtn.textContent='Processar Dados';sucesso('Processado');
+    }catch(e){erro('Erro: '+e.message);processBtn.textContent='Processar Dados';processBtn.disabled=false}
+  },100);
+}
+
+/* ---------- HELPERS ---------- */
+const extrairCodigo=txt=>{
+  const s=txt.toUpperCase();
+  const maps=[{r:/CAMINHÃO ALTA PRESSÃO - GPS - (\d+)/,p:'AP'},
+              {r:/CAMINHÃO AUTO VÁCUO - GPS - (\d+)/,p:'AV'},
+              {r:/CAMINHÃO HIPER VÁCUO - GPS - (\d+)/,p:'HP'}];
+  for(const {r,p} of maps){
+    const m=s.match(r);if(m)return p+'-'+m[1].padStart(2,'0');
+  }
+  return null;
+};
+const tipoEq=c=>c?.slice(0,2)||'';
+const hora=ts=>{const m=ts.match(/(\d{1,2}:\d{2})/);return m?m[1].padStart(5,'0'):''};
+const durMin=t=>!t||!t.includes(':')?0:t.split(':').reduce((n,v,i)=>n+ +v*(i?1:60),0);
+const intervalo=(i,f)=>{const hi=hora(i),hf=hora(f);return hi&&hf?hi+' às '+hf:hi||hf};
+
+/* ---------- IRREGULARES ---------- */
+function marcarIrregulares(arr){
+  apontamentosIrregulares=[];
+  arr.forEach((l,idx)=>{
+    const tempo=l['Tempo Indisponível (HH:MM)'],min=durMin(tempo),
+          cat=l['Categoria Demora'],cod=extrairCodigo(l.Vaga),
+          intv=intervalo(l['Data Inicial'],l['Data Final']);
+    const add=(tipo,grav)=>apontamentosIrregulares.push(
+      {tipo,equipamento:cod,categoria:cat,intv,tempo,gravidade:grav,idx});
+    if(min===0)add('Apontamento Zerado','BAIXA');
+    if(cat.toLowerCase().includes('refeição')&&min>70)add('Refeição Excessiva','ALTA');
+    if(cat.toLowerCase().includes('abastecimento')&&min>=60)add('Abastecimento Excessivo','MÉDIA');
+    if(min>0&&min<=4)add('Apontamento Curto','BAIXA');
+  });
+}
+
+/* ---------- AGRUPAR EQUIP ---------- */
+function agruparEquip(arr){
+  const obj={};
+  arr.forEach(l=>{
+    const cod=extrairCodigo(l.Vaga);if(!cod)return;
+    if(!obj[cod])obj[cod]={codigo:cod,tipo:tipoEq(cod),apont:[],total:0,primeiro:null,status:''};
+    const e=obj[cod];e.total++;
+    const ap={cat:l['Categoria Demora'],dur:l['Tempo Indisponível (HH:MM)'],
+              inicio:hora(l['Data Inicial']),
+              intv:intervalo(l['Data Inicial'],l['Data Final']),
+              irregular:apontamentosIrregulares.some(i=>i.idx===dadosCSV.indexOf(l)),
+              data:l['Data Inicial'].split(' ')[0]};
+    e.apont.push(ap);if(!e.primeiro||hora(ap.inicio)<e.primeiro)e.primeiro=ap.inicio;
+  });
+  Object.values(obj).forEach(e=>{
+    const irr=e.apont.filter(a=>a.irregular).length;
+    e.status=e.total<MIN_APONTAMENTOS||irr>e.total*.4?'CRITICO':
+              irr>e.total*.2||e.total<6||durMin(e.primeiro)>540?'ATENCAO':'BOM';
+  });
+  return obj;
+}
+
+/* ---------- DASHBOARD RENDER ---------- */
+function exibirDashboard(){
+  /* estatísticas */
+  const s={total:Object.keys(equipamentosProcessados).length,bom:0,at:0,cr:0,
+    ap:dadosFiltrados.length,irr:apontamentosIrregulares.length};
+  Object.values(equipamentosProcessados).forEach(e=>s[e.status==='BOM'?'bom':e.status==='ATENCAO'?'at':'cr']++);
+  statsGrid.innerHTML=`
+<div class="stat-card"><div class="stat-number">${s.total}</div><div class="stat-label">Equipamentos</div></div>
+<div class="stat-card"><div class="stat-number" style="color:#155724">${s.bom}</div><div class="stat-label">BOM</div></div>
+<div class="stat-card"><div class="stat-number" style="color:#856404">${s.at}</div><div class="stat-label">ATENÇÃO</div></div>
+<div class="stat-card"><div class="stat-number" style="color:#721c24">${s.cr}</div><div class="stat-label">CRÍTICO</div></div>
+<div class="stat-card"><div class="stat-number">${s.ap}</div><div class="stat-label">Apontamentos</div></div>
+<div class="stat-card"><div class="stat-number" style="color:#721c24">${s.irr}</div><div class="stat-label">Irregulares</div></div>`;
+
+  /* irregularidades */
+  if(!apontamentosIrregulares.length)problemsList.innerHTML='<p style="text-align:center;color:#7f8c8d">Sem irregularidades.</p>';
+  else{
+    const by=apontamentosIrregulares.reduce((o,p)=>(o[p.tipo]=o[p.tipo]||[]).push(p)&&o,{});
+    problemsList.innerHTML=Object.entries(by).map(([t,v])=>
+      `<div class="problem-item"><div class="problem-type">${t} (${v.length})</div>
+        <div class="problem-details">${v.slice(0,3).map(i=>i.equipamento+' '+i.categoria).join('<br>')}${v.length>3?' ...':''}</div>
+      </div>`).join('');
+  }
+
+  /* cards */
+  const cards=Object.values(equipamentosProcessados).sort((a,b)=>a.codigo.localeCompare(b.codigo))
+    .map(e=>`
+    <div class="equipamento-card status-${e.status.toLowerCase()}">
+      <div class="equipamento-header">
+        <div>
+          <div class="equipamento-codigo">${e.codigo}</div>
+          <div class="equipamento-tipo">${e.tipo==='AP'?'Alta Pressão':e.tipo==='AV'?'Auto Vácuo':'Hiper Vácuo'}</div>
+        </div>
+        <div class="equipamento-status status-${e.status.toLowerCase()}">${e.status}</div>
+      </div>
+      <div class="equipamento-stats">
+        <div class="stat-item"><div class="stat-item-number">${e.total}</div><div class="stat-item-label">Apont.</div></div>
+        <div class="stat-item"><div class="stat-item-number">${e.primeiro||'-'}</div><div class="stat-item-label">1º Reg.</div></div>
+      </div>
+      <div class="apontamentos-lista">
+        ${e.apont.map(a=>`
+          <div class="apontamento-item ${a.irregular?'apontamento-irregular':''}">
+            <div class="apontamento-header"><span class="apontamento-categoria">${a.cat}</span>
+              <span class="apontamento-tempo">${a.dur}</span></div>
+            <div class="apontamento-detalhes"><div class="apontamento-intervalo">${a.intv}</div>
+              ${a.irregular?'<div style="color:#c0392b;font-weight:600">Irregular</div>':''}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+  equipamentosGrid.innerHTML=cards||'<p style="text-align:center;color:#7f8c8d;padding:20px">Sem dados.</p>';
+}
+
+/* ---------- FILTROS DASHBOARD ---------- */
+function aplicarFiltros(){
+  const di=dataInicial.value,df=dataFinal.value,hi=horaInicial.value,hf=horaFinal.value,tipo=tipoFilter.value;
+  dadosFiltrados=dadosCSV.filter(l=>{
+    const [d,m,y]=l['Data Inicial'].split(' ')[0].split('/'),
+          dt=new Date(`${y}-${m}-${d}`);
+    if(di&&dt<new Date(di))return false;
+    if(df&&dt>new Date(df))return false;
+    const h=hora(l['Data Inicial']);
+    if(hi&&h<hi)return false;
+    if(hf&&h>hf)return false;
+    if(tipo&&tipoEq(extrairCodigo(l.Vaga))!==tipo)return false;
+    return true;
+  });
+  marcarIrregulares(dadosFiltrados);
+  equipamentosProcessados=agruparEquip(dadosFiltrados);
+  exibirDashboard();
+  atualizarLegenda();
+  if(timeline-tab.classList.contains('hidden')===false)gerarTimeline();
+  sucesso('Filtros aplicados');
+}
+
+/* ---------- SWITCH TAB ---------- */
+function switchTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${t}')"]`).classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+  document.getElementById(t+'-tab').classList.remove('hidden');
+  if(t==='timeline'&&Object.keys(equipamentosProcessados).length)gerarTimeline();
+}
+
+/* ---------- ZOOM ---------- */
+function updateZoom(v){
+  zoomLevel=v;zoomLabel.textContent=v+'×';
+  document.querySelectorAll('.timeline-horizontal-track,.timeline-ruler')
+   .forEach(el=>el.style.width=(100*v)+'%');
+}
+
+/* ---------- TIMELINE ---------- */
+function gerarTimeline(){
+  const cont=timelineContainer;cont.innerHTML='';
+  const arr=Object.values(equipamentosProcessados).sort((a,b)=>a.codigo.localeCompare(b.codigo));
+  if(!arr.length){cont.innerHTML='<div class="timeline-empty">Sem dados.</div>';return}
+  atualizarSelector(arr);
+  arr.forEach(eq=>{
+    const bloco=`
+    <div class="timeline-equipment-container" data-code="${eq.codigo}" data-type="${eq.tipo}">
+      <div class="timeline-equipment-header">
+        <span class="timeline-equipment-code">${eq.codigo}</span>
+        <span class="timeline-equipment-details">${eq.tipo} | ${eq.total} pts | ${eq.status}</span>
+      </div>
+      <div class="timeline-horizontal-wrapper">
+        <div class="timeline-ruler" style="width:${100*zoomLevel}%">
+          ${[0,3,6,9,12,15,18,21,24].map(h=>`<span style="left:${h/24*100}%">${h.toString().padStart(2,'0')}:00</span>`).join('')}
+        </div>
+        <div class="timeline-horizontal-track" style="width:${100*zoomLevel}%">
+          ${eq.apont.sort((a,b)=>hora(a.inicio).localeCompare(hora(b.inicio)))
+            .map(a=>blocoApont(a)).join('')}
+        </div>
+      </div>
+    </div>`;
+    cont.insertAdjacentHTML('beforeend',bloco);
+  });
+  filtrarTimeline();atualizarLegenda();
+}
+function blocoApont(a){
+  const iniMin=+hora(a.inicio).split(':')[0]*60+ +hora(a.inicio).split(':')[1],
+        dur=durMin(a.dur),left=iniMin/1440*100,width=dur/1440*100;
+  return `<div class="timeline-block ${a.irregular?'irregular':''}"
+      style="left:${left}%;width:${Math.max(width,.5)}%;background:${getColor(a.cat)}"
+      data-cat="${a.cat}" data-date="${a.data}" data-status="${a.irregular?'irregular':'normal'}"
+      title="Cat:${a.cat}\n${a.intv}\n${a.dur}">
+      ${width>3?(a.irregular?'IRR':a.cat.slice(0,7)):''}
+    </div>`;
+}
+const getColor=c=>{
+  const k=c.toUpperCase();
+  if(!CATEGORIA_CORES[k])CATEGORIA_CORES[k]=COLOR_PALETTE[dynamicColorIndex++%COLOR_PALETTE.length];
+  return CATEGORIA_CORES[k];
+};
+
+/* ---------- FILTROS TIMELINE ---------- */
+function filtrarTimeline(){
+  const txt=timelineSearch.value.toLowerCase(),
+        dt=timelineDate.value,
+        tp=timelineTypeFilter.value,
+        st=timelineStatusFilter.value,
+        sel=[...equipmentSelectorTimeline.selectedOptions].map(o=>o.value);
+
+  document.querySelectorAll('.timeline-equipment-container').forEach(div=>{
+    const code=div.dataset.code,type=div.dataset.type;
+    let vis=true;
+    if(sel.length&&!sel.includes(code))vis=false;
+    if(vis&&txt&&!code.toLowerCase().includes(txt))vis=false;
+    if(vis&&tp&&tp!==type)vis=false;
+    if(vis){
+      let any=false;
+      div.querySelectorAll('.timeline-block').forEach(b=>{
+        let show=true;
+        if(dt){
+          const [d,m,y]=b.dataset.date.split('/');show=`${y}-${m}-${d}`===dt;
+        }
+        if(show&&st&&b.dataset.status!==st)show=false;
+        b.style.display=show?'flex':'none';if(show)any=true;
+      });
+      if((dt||st)&&!any)vis=false;
+    }
+    div.style.display=vis?'block':'none';
+  });
+}
+
+/* ---------- SELECTOR TIMELINE ---------- */
+function atualizarSelector(arr){
+  const sel=equipmentSelectorTimeline,keep=[...sel.selectedOptions].map(o=>o.value);
+  sel.innerHTML='';
+  arr.forEach(e=>{
+    const opt=document.createElement('option');
+    opt.value=e.codigo;opt.textContent=`${e.codigo} (${e.total})`;
+    if(keep.includes(e.codigo))opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+/* ---------- LEGENDA ---------- */
+function atualizarLegenda(){
+  const cats=new Set();
+  Object.values(equipamentosProcessados).forEach(e=>e.apont.forEach(a=>cats.add(a.cat)));
+  timelineLegend.innerHTML=[...cats].map(c=>
+    `<div class="legend-item"><span class="legend-color-box" style="background:${getColor(c)}"></span>${c}</div>`
+  ).join('')+ (apontamentosIrregulares.length?'<div class="legend-item"><span class="legend-color-box" style="background:transparent;border:2px dashed #c0392b"></span>Irregular</div>':'');
+}
+
+/* ---------- EXPORT XLSX/CSV ---------- */
+function exportarRelatorio(fmt){
+  if(!apontamentosIrregulares.length){erro('Sem irregularidades');return}
+  const dados=apontamentosIrregulares.map(p=>({
+    'Equipamento':p.equipamento,'Regime':'','Supervisor':'','Data De Apontamento':p.intv.split(' ')[0]||'',
+    'Motorista':'','Gravidade':p.gravidade,'Apontamento':p.categoria,
+    'Problemas Identificados':p.tipo,'Hora':p.intv||p.tempo,
+    'Justificativa':'','Tratativa':'','Sugestão':''
+  }));
+  const nome='Irregulares_'+new Date().toLocaleDateString('pt-BR').replace(/\//g,'_');
+  fmt==='xlsx'?toXLSX(dados,nome):toCSV(dados,nome);sucesso('Exportado');
+}
+function exportarApontamentosCompletos(){
+  if(!dadosFiltrados.length){erro('Sem dados');return}
+  const dados=dadosFiltrados.map(l=>{
+    const cod=extrairCodigo(l.Vaga),idx=dadosCSV.indexOf(l);
+    return {'Equipamento':cod,'Regime':'','Supervisor':'','Data De Apontamento':l['Data Inicial'].split(' ')[0],
+      'Motorista':'','Gravidade':apontamentosIrregulares.some(i=>i.idx===idx)?'Irregular':'Normal',
+      'Apontamento':l['Categoria Demora'],'Problemas Identificados':'',
+      'Hora':intervalo(l['Data Inicial'],l['Data Final']),
+      'Justificativa':'','Tratativa':'','Sugestão':''};
+  });
+  toXLSX(dados,'Apontamentos_'+new Date().toLocaleDateString('pt-BR').replace(/\//g,'_'));
+  sucesso('Exportado');
+}
+const toXLSX=(d,n)=>{const ws=XLSX.utils.json_to_sheet(d);XLSX.utils.book_append_sheet(XLSX.utils.book_new(),ws,'Sheet');XLSX.writeFile(XLSX.utils.book_new(),n+'.xlsx')};
+const toCSV =(d,n)=>{const csv=Papa.unparse(d,{delimiter:';',header:true});
+  const blob=new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=n+'.csv';a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* ---------- EXPORT TIMELINE PDF ---------- */
+async function exportarTimelinePDF(tipo){
+  if(!timelineContainer.children.length){erro('Nada para exportar');return}
+  const {jsPDF}=window.jspdf;
+  const wrapper=document.createElement('div');wrapper.className='pdf-tmp';
+  wrapper.style.position='absolute';wrapper.style.left='-9999px';wrapper.innerHTML=`
+    <h2 style="text-align:center">Timeline Equipamentos</h2>`+
+    [...document.querySelectorAll('.timeline-equipment-container')].filter(div=>{
+      if(tipo==='selected'){
+        return [...equipmentSelectorTimeline.selectedOptions].map(o=>o.value).includes(div.dataset.code);
+      }
+      return div.style.display!=='none';
+    }).map(d=>d.cloneNode(true).outerHTML).join('');
+  document.body.appendChild(wrapper);
+  try{
+    sucesso('Gerando PDF...');
+    const canvas=await html2canvas(wrapper,{scale:2,useCORS:true});
+    const pdf=new jsPDF('p','mm','a4');
+    const img=canvas.toDataURL('image/png');
+    const w=pdf.internal.pageSize.getWidth();
+    const h=canvas.height* w/canvas.width;
+    pdf.addImage(img,'PNG',0,0,w,h);
+    pdf.save('Timeline_'+new Date().toLocaleDateString('pt-BR')+'.pdf');
+    sucesso('PDF salvo');
+  }catch(e){erro('Falha PDF: '+e.message)}
+  document.body.removeChild(wrapper);
+}
+
+/* ---------- UTIL ---------- */
+const erro    =msg=>{removeMsg();const d=document.createElement('div');d.className='error';d.textContent=msg;container.prepend(d);setTimeout(removeMsg,6000)};
+const sucesso =msg=>{removeMsg();const d=document.createElement('div');d.className='success';d.textContent=msg;container.prepend(d);setTimeout(removeMsg,4000)};
+const removeMsg=()=>document.querySelectorAll('.error,.success').forEach(el=>el.remove());
+</script>
+</body>
+</html>
