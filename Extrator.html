@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚛 Sistema Gauss Fleet - Extrator Inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .panel h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .logs-panel {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .logs {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .data-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .data-table {
+            max-height: 400px;
+            overflow: auto;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            color: #333;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .alert-info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+
+        .credentials-panel {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px dashed rgba(255,255,255,0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Sistema Gauss Fleet - Extrator Inteligente</h1>
+            <p>Extração automatizada e inteligente de apontamentos com integração Google Sheets</p>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-value" id="systemStatus">🔴 INICIANDO</div>
+                <div class="status-label">Status do Sistema</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="totalRecords">0</div>
+                <div class="status-label">Registros Capturados</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="lastExtraction">Nunca</div>
+                <div class="status-label">Última Extração</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="nextExtraction">-</div>
+                <div class="status-label">Próxima Extração</div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="panel">
+                <h3>⚙️ Configurações de Extração</h3>
+                
+                <div class="form-group">
+                    <label>🔗 URL do Google Apps Script Webhook:</label>
+                    <input type="url" id="gasWebhookUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                    <small style="opacity: 0.8; font-size: 12px;">Cole aqui a URL do seu Google Apps Script</small>
+                </div>
+
+                <div class="form-group">
+                    <label>📅 Data/Hora Inicial:</label>
+                    <input type="datetime-local" id="startDateTime">
+                </div>
+
+                <div class="form-group">
+                    <label>📅 Data/Hora Final:</label>
+                    <input type="datetime-local" id="endDateTime">
+                </div>
+
+                <div class="form-group">
+                    <label>⏱️ Intervalo de Extração (minutos):</label>
+                    <input type="number" id="extractionInterval" value="10" min="1" max="1440">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="autoMode" checked>
+                            <span class="slider"></span>
+                        </div>
+                        Modo Automático (Enviar para Google Sheets)
+                    </label>
+                </div>
+
+                <!-- Seção de Credenciais Opcionais -->
+                <div class="credentials-panel" id="credentialsPanel" style="display: none;">
+                    <h4>🔐 Login Automático (Opcional)</h4>
+                    <div class="form-group">
+                        <label>👤 Usuário/Email:</label>
+                        <input type="text" id="username" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label>🔑 Senha:</label>
+                        <input type="password" id="password" autocomplete="current-password">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="enableAutoLogin">
+                                <span class="slider"></span>
+                            </div>
+                            Ativar Login Automático
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>🎮 Controles do Sistema</h3>
+                
+                <button class="btn btn-primary" onclick="startSystem()" id="startBtn">▶️ Iniciar Sistema</button>
+                <button class="btn btn-danger" onclick="stopSystem()" id="stopBtn" disabled>⏹️ Parar Sistema</button>
+                <br>
+                <button class="btn btn-warning" onclick="extractNow()">🚀 Extrair Agora</button>
+                <button class="btn btn-info" onclick="testConnection()">🔍 Testar Conexão</button>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid rgba(255,255,255,0.2);">
+                
+                <button class="btn btn-info" onclick="openGoogleSheets()">📊 Abrir Google Sheets</button>
+                <button class="btn btn-warning" onclick="toggleCredentials()">🔐 Config. Login</button>
+                <button class="btn btn-danger" onclick="clearData()">🧹 Limpar Dados</button>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Area -->
+        <div id="alertArea"></div>
+
+        <!-- Logs Panel -->
+        <div class="logs-panel">
+            <h3>📝 Logs do Sistema</h3>
+            <div class="logs" id="systemLogs">🚀 Sistema Gauss Fleet Extrator Inteligente inicializado...\n✅ Interface carregada com sucesso\n⚙️ Aguardando configuração...\n</div>
+            <button class="btn btn-warning" onclick="clearLogs()">🧹 Limpar Logs</button>
+            <button class="btn btn-info" onclick="exportLogs()">💾 Exportar Logs</button>
+        </div>
+
+        <!-- Data Panel -->
+        <div class="data-panel">
+            <h3>📊 Dados Capturados em Tempo Real</h3>
+            
+            <div class="data-summary">
+                <div class="summary-card">
+                    <div class="summary-number" id="totalVehicles">0</div>
+                    <div>Veículos</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" id="totalCategories">0</div>
+                    <div>Categorias</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" id="totalTime">0</div>
+                    <div>Tempo Total (h)</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" id="avgTime">0</div>
+                    <div>Tempo Médio (min)</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" id="successRate">0%</div>
+                    <div>Taxa Sucesso</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number" id="duplicatesCount">0</div>
+                    <div>Duplicatas</div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Vaga</th>
+                            <th>Categoria</th>
+                            <th>Data Inicial</th>
+                            <th>Data Final</th>
+                            <th>Tempo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                                🔄 Aguardando primeira extração...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÃO GLOBAL =====
+        const CONFIG = {
+            extractionInterval: 10, // minutos
+            maxRetries: 3,
+            retryDelay: 5000, // 5 segundos
+            apiEndpoint: '/data/hard-driver/telemetry/delays-categorized/',
+            gasWebhookUrl: '',
+            autoMode: true,
+            enableAutoLogin: false
+        };
+
+        // ===== ESTADO DO SISTEMA =====
+        let systemState = {
+            isRunning: false,
+            intervalId: null,
+            lastExtraction: null,
+            totalRecords: 0,
+            totalExtractions: 0,
+            successfulExtractions: 0,
+            extractedData: new Map(), // Para evitar duplicatas
+            retryCount: 0,
+            duplicatesCount: 0
+        };
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+        });
+
+        function initializeSystem() {
+            log('🤖 Inicializando Sistema Gauss Fleet Extrator Inteligente...', 'info');
+            
+            // Configurar datas padrão
+            const now = new Date();
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const endOfWeek = new Date(startOfDay.getTime() + 7*24*60*60*1000);
+            
+            document.getElementById('startDateTime').value = formatDateForInput(startOfDay);
+            document.getElementById('endDateTime').value = formatDateForInput(endOfWeek);
+            
+            // Carregar configurações salvas
+            loadSavedConfig();
+            
+            // Verificar ambiente
+            checkEnvironment();
+            
+            updateUI();
+            
+            log('✅ Sistema inicializado com sucesso', 'success');
+        }
+
+        function checkEnvironment() {
+            if (window.location.hostname.includes('gaussfleet.com')) {
+                log('✅ Detectado: Executando na página do Gauss Fleet', 'success');
+                document.getElementById('systemStatus').textContent = '🟡 PRONTO';
+                showAlert('Sistema detectou que você está na página do Gauss Fleet. Pronto para extração!', 'success');
+            } else if (window.location.protocol === 'file:') {
+                log('ℹ️ Detectado: Executando localmente (arquivo HTML)', 'info');
+                document.getElementById('systemStatus').textContent = '🟠 LOCAL';
+                showAlert('Sistema rodando localmente. Certifique-se de ter uma aba aberta do Gauss Fleet.', 'info');
+            } else {
+                log('⚠️ Ambiente não detectado. Configure manualmente.', 'warning');
+                document.getElementById('systemStatus').textContent = '🟠 MANUAL';
+            }
+        }
+
+        // ===== FUNÇÕES DE LOG E INTERFACE =====
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            const logElement = document.getElementById('systemLogs');
+            
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                warning: '⚠️',
+                error: '❌',
+                data: '📊',
+                auth: '🔐'
+            };
+            
+            const logMessage = `[${timestamp}] ${icons[type] || 'ℹ️'} ${message}\n`;
+            logElement.textContent += logMessage;
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(`[Gauss System] ${message}`);
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertArea = document.getElementById('alertArea');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertArea.appendChild(alert);
+            
+            // Remover após 5 segundos
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function clearLogs() {
+            document.getElementById('systemLogs').textContent = '🧹 Logs limpos...\n⏳ Aguardando atividade...\n';
+        }
+
+        function exportLogs() {
+            const logs = document.getElementById('systemLogs').textContent;
+            const blob = new Blob([logs], { type: 'text/plain; charset=utf-8' });
+            downloadFile(blob, `gauss_logs_${new Date().toISOString().split('T')[0]}.txt`);
+            log('💾 Logs exportados com sucesso', 'success');
+        }
+
+        // ===== CONTROLE DO SISTEMA =====
+        function startSystem() {
+            if (systemState.isRunning) {
+                showAlert('Sistema já está em execução!', 'warning');
+                return;
+            }
+
+            const interval = parseInt(document.getElementById('extractionInterval').value);
+            const gasUrl = document.getElementById('gasWebhookUrl').value.trim();
+            
+            if (!gasUrl && document.getElementById('autoMode').checked) {
+                showAlert('URL do Google Apps Script é obrigatória para modo automático!', 'error');
+                log('❌ URL do Google Apps Script não configurada', 'error');
+                return;
+            }
+
+            // Atualizar configurações
+            CONFIG.extractionInterval = interval;
+            CONFIG.gasWebhookUrl = gasUrl;
+            CONFIG.autoMode = document.getElementById('autoMode').checked;
+            CONFIG.enableAutoLogin = document.getElementById('enableAutoLogin').checked;
+
+            // Iniciar sistema
+            systemState.isRunning = true;
+            systemState.intervalId = setInterval(intelligentExtraction, interval * 60 * 1000);
+
+            // Atualizar interface
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('systemStatus').textContent = '🟢 ATIVO';
+
+            log(`🚀 Sistema iniciado - Extração automática a cada ${interval} minutos`, 'success');
+            showAlert(`Sistema iniciado! Extração automática a cada ${interval} minutos.`, 'success');
+            
+            // Primeira extração em 3 segundos
+            setTimeout(() => {
+                log('🔄 Executando primeira extração...', 'info');
+                intelligentExtraction();
+            }, 3000);
+            
+            updateUI();
+            saveConfig();
+        }
+
+        function stopSystem() {
+            if (!systemState.isRunning) {
+                showAlert('Sistema já está parado!', 'warning');
+                return;
+            }
+
+            clearInterval(systemState.intervalId);
+            systemState.isRunning = false;
+            systemState.intervalId = null;
+
+            // Atualizar interface
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('systemStatus').textContent = '🔴 PARADO';
+
+            log('⏹️ Sistema parado pelo usuário', 'warning');
+            showAlert('Sistema parado com sucesso.', 'info');
+            
+            updateUI();
+        }
+
+        function extractNow() {
+            log('🚀 Extração manual iniciada pelo usuário', 'info');
+            updateProgress(10);
+            intelligentExtraction();
+        }
+
+        // ===== EXTRAÇÃO INTELIGENTE =====
+        async function intelligentExtraction() {
+            systemState.totalExtractions++;
+            
+            try {
+                log('🔄 Iniciando extração inteligente...', 'info');
+                updateProgress(20);
+                
+                // Verificar autenticação se necessário
+                if (CONFIG.enableAutoLogin) {
+                    await ensureAuthenticated();
+                }
+                updateProgress(30);
+
+                // Verificar ambiente
+                if (!await checkGaussFleetAccess()) {
+                    throw new Error('Não foi possível acessar o sistema Gauss Fleet');
+                }
+                updateProgress(50);
+
+                // Preparar requisição
+                const requestData = prepareExtractionRequest();
+                updateProgress(60);
+
+                // Fazer extração
+                const response = await performExtraction(requestData);
+                updateProgress(80);
+
+                if (response && response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.error === false && data.msg) {
+                        await processExtractedData(data.msg);
+                        systemState.successfulExtractions++;
+                        systemState.retryCount = 0; // Reset retry count
+                        
+                        log(`✅ Extração bem-sucedida: ${data.msg.length} registros processados`, 'success');
+                        showAlert(`Extração concluída: ${data.msg.length} registros`, 'success');
+                    } else {
+                        throw new Error('API retornou erro: ' + (data.message || 'Erro desconhecido'));
+                    }
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                updateProgress(100);
+                setTimeout(() => updateProgress(0), 2000);
+
+            } catch (error) {
+                log(`❌ Erro na extração: ${error.message}`, 'error');
+                
+                systemState.retryCount++;
+                if (systemState.retryCount < CONFIG.maxRetries) {
+                    const retryIn = CONFIG.retryDelay / 1000;
+                    log(`🔄 Reagendando tentativa ${systemState.retryCount + 1}/${CONFIG.maxRetries} em ${retryIn}s...`, 'warning');
+                    showAlert(`Erro na extração. Tentativa ${systemState.retryCount + 1}/${CONFIG.maxRetries} em ${retryIn}s`, 'warning');
+                    setTimeout(intelligentExtraction, CONFIG.retryDelay);
+                } else {
+                    log('❌ Máximo de tentativas excedido. Verifique a conexão.', 'error');
+                    showAlert('Máximo de tentativas excedido. Verifique sua conexão e configurações.', 'error');
+                    systemState.retryCount = 0;
+                }
+                
+                updateProgress(0);
+            }
+        }
+
+        async function checkGaussFleetAccess() {
+            try {
+                // Se estiver na página do Gauss Fleet, verificar se está logado
+                if (window.location.hostname.includes('gaussfleet.com')) {
+                    return true;
+                }
+                
+                // Se não estiver, tentar fazer uma requisição de teste
+                const response = await fetch(CONFIG.apiEndpoint, {
+                    method: 'HEAD',
+                    credentials: 'include'
+                });
+                
+                return response.status !== 401 && response.status !== 403;
+                
+            } catch (error) {
+                log(`⚠️ Verificação de acesso falhou: ${error.message}`, 'warning');
+                return false;
+            }
+        }
+
+        function prepareExtractionRequest() {
+            const startDate = document.getElementById('startDateTime').value;
+            const endDate = document.getElementById('endDateTime').value;
+            
+            if (!startDate || !endDate) {
+                throw new Error('Datas de início e fim são obrigatórias');
+            }
+
+            const formData = new FormData();
+            formData.append('start_date', formatDateForAPI(startDate));
+            formData.append('end_date', formatDateForAPI(endDate));
+            formData.append('start_time', '00:00');
+            formData.append('end_time', '23:59');
+            
+            // Hashtags conhecidas do sistema
+            const hashtags = ['#ALTA PRESSAO', '#AUTO VACUO', '#HIPERVACUO'];
+            hashtags.forEach(tag => {
+                formData.append('hashtags[]', tag);
+            });
+
+            log(`📡 Preparando requisição para período: ${formatDateForAPI(startDate)} até ${formatDateForAPI(endDate)}`, 'data');
+            
+            return formData;
+        }
+
+        async function performExtraction(formData) {
+            log(`📡 Fazendo requisição para ${CONFIG.apiEndpoint}...`, 'data');
+
+            return await fetch(CONFIG.apiEndpoint, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        }
+
+        // ===== PROCESSAMENTO DE DADOS =====
+        async function processExtractedData(rawData) {
+            log(`📊 Processando ${rawData.length} registros brutos...`, 'data');
+            
+            let newRecords = 0;
+            let duplicates = 0;
+            
+            const processedData = rawData.map(record => {
+                // Criar chave única para detectar duplicatas
+                const uniqueKey = `${record.cod || record.vehicle_name}_${record.start_time}_${record.end_time}`;
+                
+                if (systemState.extractedData.has(uniqueKey)) {
+                    duplicates++;
+                    return null;
+                } else {
+                    systemState.extractedData.set(uniqueKey, record);
+                    newRecords++;
+                    
+                    // Normalizar dados para o formato esperado pelo Google Sheets
+                    return {
+                        placa: record.vehicle_name || record.cod || 'N/A',
+                        vaga: extractVagaInfo(record.operation_id || record.vehicle_name || ''),
+                        categoria_demora: record.delay_category || extractCategoryFromRecord(record) || 'N/A',
+                        data_inicial: record.start_time || 'N/A',
+                        data_final: record.end_time || 'N/A',
+                        tempo_indisponivel: calculateDuration(record.start_time, record.end_time),
+                        timestamp_extração: new Date().toISOString(),
+                        fonte: 'gauss_fleet_extractor_v2'
+                    };
+                }
+            }).filter(record => record !== null);
+
+            systemState.duplicatesCount += duplicates;
+            
+            log(`📈 Resultado: ${newRecords} novos, ${duplicates} duplicatas`, 'data');
+            
+            if (newRecords > 0) {
+                systemState.totalRecords += newRecords;
+                systemState.lastExtraction = new Date();
+                
+                // Enviar para Google Sheets se configurado
+                if (CONFIG.gasWebhookUrl && CONFIG.autoMode) {
+                    await sendToGoogleSheets(processedData);
+                }
+                
+                updateDataDisplay(Array.from(systemState.extractedData.values()));
+                updateUI();
+                
+                log(`✅ Processamento concluído: ${newRecords} novos registros adicionados`, 'success');
+            } else {
+                log('ℹ️ Nenhum registro novo encontrado nesta extração', 'info');
+            }
+        }
+
+        function extractVagaInfo(fullName) {
+            if (!fullName) return 'N/A';
+            
+            // Extrair informações relevantes da vaga
+            if (fullName.includes('ALTA PRESSÃO') || fullName.includes('ALTA PRESSAO')) {
+                return 'ALTA PRESSÃO';
+            } else if (fullName.includes('AUTO VÁCUO') || fullName.includes('AUTO VACUO')) {
+                return 'AUTO VÁCUO';
+            } else if (fullName.includes('HIPERVÁCUO') || fullName.includes('HIPERVACUO')) {
+                return 'HIPERVÁCUO';
+            }
+            
+            return fullName.substring(0, 50); // Limitar tamanho
+        }
+
+        function extractCategoryFromRecord(record) {
+            // Tentar extrair categoria de diferentes campos
+            return record.category || record.delay_type || record.reason || 'Não Especificado';
+        }
+
+        // ===== INTEGRAÇÃO GOOGLE SHEETS =====
+        async function sendToGoogleSheets(data) {
+            if (!CONFIG.gasWebhookUrl || data.length === 0) return;
+            
+            try {
+                log(`📤 Enviando ${data.length} registros para Google Sheets...`, 'data');
+                
+                const payload = {
+                    timestamp: new Date().toISOString(),
+                    source: 'gauss_fleet_extractor_v2',
+                    extraction_id: generateExtractionId(),
+                    total_records: data.length,
+                    filters: {
+                        start_date: document.getElementById('startDateTime').value,
+                        end_date: document.getElementById('endDateTime').value
+                    },
+                    data: data
+                };
+
+                const response = await fetch(CONFIG.gasWebhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    log(`✅ Dados enviados com sucesso para Google Sheets`, 'success');
+                    
+                    if (result.success) {
+                        log(`📊 Resposta: ${result.message || 'Processamento concluído'}`, 'data');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+            } catch (error) {
+                log(`❌ Erro ao enviar para Google Sheets: ${error.message}`, 'error');
+                showAlert('Erro ao enviar dados para Google Sheets. Verifique a URL do webhook.', 'error');
+            }
+        }
+
+        function generateExtractionId() {
+            return `ext_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        // ===== AUTENTICAÇÃO AUTOMÁTICA =====
+        async function ensureAuthenticated() {
+            if (!CONFIG.enableAutoLogin) return true;
+            
+            try {
+                // Verificar se está na página de login
+                if (window.location.href.includes('login') || 
+                    document.querySelector('.login-form') ||
+                    document.querySelector('#login')) {
+                    
+                    log('🔐 Página de login detectada, realizando login automático...', 'auth');
+                    return await performAutoLogin();
+                }
+                
+                return true; // Já autenticado
+                
+            } catch (error) {
+                log(`❌ Erro na verificação de autenticação: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function performAutoLogin() {
+            try {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                if (!username || !password) {
+                    throw new Error('Credenciais não configuradas');
+                }
+                
+                log('🔐 Tentando login automático...', 'auth');
+                
+                // Encontrar campos de login
+                const usernameField = document.querySelector('input[type="text"], input[type="email"], input[name*="user"], input[name*="login"]');
+                const passwordField = document.querySelector('input[type="password"]');
+                const submitButton = document.querySelector('button[type="submit"], input[type="submit"], .btn-login');
+                
+                if (!usernameField || !passwordField) {
+                    throw new Error('Campos de login não encontrados na página');
+                }
+                
+                // Preencher campos
+                usernameField.value = username;
+                passwordField.value = password;
+                
+                // Disparar eventos
+                usernameField.dispatchEvent(new Event('input', { bubbles: true }));
+                passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // Submeter formulário
+                if (submitButton) {
+                    submitButton.click();
+                } else {
+                    passwordField.form.submit();
+                }
+                
+                log('✅ Login automático executado', 'auth');
+                
+                // Aguardar redirecionamento
+                return new Promise(resolve => {
+                    setTimeout(() => resolve(true), 3000);
+                });
+                
+            } catch (error) {
+                log(`❌ Erro no login automático: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // ===== FUNÇÕES DE UTILIDADE =====
+        function calculateDuration(startTime, endTime) {
+            try {
+                if (!startTime || !endTime) return '00:00';
+                
+                const start = new Date(startTime);
+                const end = new Date(endTime);
+                const diffMs = end - start;
+                
+                if (diffMs < 0) return '00:00';
+                
+                const diffMins = Math.floor(diffMs / 60000);
+                const hours = Math.floor(diffMins / 60);
+                const minutes = diffMins % 60;
+                
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            } catch {
+                return '00:00';
+            }
+        }
+
+        function formatDateForInput(date) {
+            return date.toISOString().slice(0, 16);
+        }
+
+        function formatDateForAPI(dateTimeString) {
+            return new Date(dateTimeString).toISOString().split('T')[0];
+        }
+
+        function updateUI() {
+            // Atualizar contadores
+            document.getElementById('totalRecords').textContent = systemState.totalRecords;
+            document.getElementById('duplicatesCount').textContent = systemState.duplicatesCount;
+            
+            // Atualizar última extração
+            document.getElementById('lastExtraction').textContent = 
+                systemState.lastExtraction ? 
+                systemState.lastExtraction.toLocaleTimeString('pt-BR') : 
+                'Nunca';
+            
+            // Calcular próxima extração
+            if (systemState.isRunning && systemState.lastExtraction) {
+                const next = new Date(systemState.lastExtraction.getTime() + CONFIG.extractionInterval * 60 * 1000);
+                document.getElementById('nextExtraction').textContent = next.toLocaleTimeString('pt-BR');
+            } else {
+                document.getElementById('nextExtraction').textContent = '-';
+            }
+            
+            // Taxa de sucesso
+            const successRate = systemState.totalExtractions > 0 ? 
+                Math.round((systemState.successfulExtractions / systemState.totalExtractions) * 100) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function updateDataDisplay(data) {
+            if (!data || data.length === 0) return;
+            
+            // Converter dados do formato interno para display
+            const displayData = Array.from(systemState.extractedData.values()).map(record => ({
+                placa: record.vehicle_name || record.cod || 'N/A',
+                vaga: extractVagaInfo(record.operation_id || record.vehicle_name || ''),
+                categoria_demora: record.delay_category || 'N/A',
+                data_inicial: record.start_time || 'N/A',
+                data_final: record.end_time || 'N/A',
+                tempo_indisponivel: calculateDuration(record.start_time, record.end_time)
+            }));
+            
+            // Atualizar resumo
+            const vehicles = new Set(displayData.map(d => d.placa));
+            const categories = new Set(displayData.map(d => d.categoria_demora));
+            const totalMinutes = displayData.reduce((sum, d) => {
+                const [hours, mins] = d.tempo_indisponivel.split(':').map(Number);
+                return sum + (hours * 60) + (mins || 0);
+            }, 0);
+            
+            document.getElementById('totalVehicles').textContent = vehicles.size;
+            document.getElementById('totalCategories').textContent = categories.size;
+            document.getElementById('totalTime').textContent = Math.round(totalMinutes / 60);
+            document.getElementById('avgTime').textContent = displayData.length > 0 ? Math.round(totalMinutes / displayData.length) : 0;
+
+            // Atualizar tabela (últimos 50 registros)
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            
+            displayData.slice(-50).reverse().forEach(record => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = record.placa;
+                row.insertCell(1).textContent = record.vaga;
+                row.insertCell(2).textContent = record.categoria_demora;
+                row.insertCell(3).textContent = record.data_inicial;
+                row.insertCell(4).textContent = record.data_final;
+                row.insertCell(5).textContent = record.tempo_indisponivel;
+                row.insertCell(6).innerHTML = '<span style="color: green;">✅ Processado</span>';
+            });
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ===== CONFIGURAÇÕES E PERSISTÊNCIA =====
+        function saveConfig() {
+            const config = {
+                extractionInterval: CONFIG.extractionInterval,
+                gasWebhookUrl: CONFIG.gasWebhookUrl,
+                autoMode: CONFIG.autoMode,
+                enableAutoLogin: CONFIG.enableAutoLogin,
+                startDateTime: document.getElementById('startDateTime').value,
+                endDateTime: document.getElementById('endDateTime').value,
+                username: document.getElementById('username').value,
+                // Nota: senha não é salva por segurança
+            };
+            
+            try {
+                localStorage.setItem('gaussSystemConfig', JSON.stringify(config));
+                log('💾 Configurações salvas localmente', 'success');
+            } catch (error) {
+                log('⚠️ Erro ao salvar configurações: ' + error.message, 'warning');
+            }
+        }
+
+        function loadSavedConfig() {
+            try {
+                const saved = localStorage.getItem('gaussSystemConfig');
+                if (saved) {
+                    const config = JSON.parse(saved);
+                    
+                    document.getElementById('extractionInterval').value = config.extractionInterval || 10;
+                    document.getElementById('gasWebhookUrl').value = config.gasWebhookUrl || '';
+                    document.getElementById('autoMode').checked = config.autoMode !== undefined ? config.autoMode : true;
+                    document.getElementById('enableAutoLogin').checked = config.enableAutoLogin || false;
+                    document.getElementById('username').value = config.username || '';
+                    
+                    if (config.startDateTime) document.getElementById('startDateTime').value = config.startDateTime;
+                    if (config.endDateTime) document.getElementById('endDateTime').value = config.endDateTime;
+                    
+                    log('✅ Configurações carregadas do armazenamento local', 'success');
+                }
+            } catch (error) {
+                log('⚠️ Erro ao carregar configurações salvas: ' + error.message, 'warning');
+            }
+        }
+
+        // ===== FUNÇÕES DE INTERFACE =====
+        async function testConnection() {
+            log('🔍 Testando conexão com sistema Gauss Fleet...', 'info');
+            updateProgress(20);
+            
+            try {
+                // Testar acesso ao Gauss Fleet
+                const gaussResponse = await fetch(CONFIG.apiEndpoint, {
+                    method: 'HEAD',
+                    credentials: 'include'
+                });
+                
+                updateProgress(50);
+                
+                if (gaussResponse.ok || gaussResponse.status === 405) { // 405 é normal para HEAD
+                    log('✅ Conexão com Gauss Fleet: OK', 'success');
+                    
+                    // Testar webhook do Google Sheets se configurado
+                    const webhookUrl = document.getElementById('gasWebhookUrl').value.trim();
+                    if (webhookUrl) {
+                        updateProgress(75);
+                        
+                        const webhookResponse = await fetch(webhookUrl + '?action=health');
+                        
+                        if (webhookResponse.ok) {
+                            const healthData = await webhookResponse.json();
+                            log('✅ Conexão com Google Sheets: OK', 'success');
+                            log(`📊 Total de registros no Sheets: ${healthData.totalRecords || 0}`, 'data');
+                            showAlert('✅ Todas as conexões OK! Sistema pronto para extração.', 'success');
+                        } else {
+                            log('⚠️ Google Sheets: Erro na conexão', 'warning');
+                            showAlert('Gauss Fleet OK, mas Google Sheets com problema. Verifique a URL do webhook.', 'warning');
+                        }
+                    } else {
+                        showAlert('✅ Gauss Fleet OK! Configure a URL do Google Apps Script para teste completo.', 'success');
+                    }
+                } else {
+                    throw new Error(`HTTP ${gaussResponse.status}`);
+                }
+                
+                updateProgress(100);
+                setTimeout(() => updateProgress(0), 2000);
+                
+            } catch (error) {
+                log(`❌ Erro de conexão: ${error.message}`, 'error');
+                showAlert('❌ Erro de conexão. Verifique se está logado no Gauss Fleet.', 'error');
+                updateProgress(0);
+            }
+        }
+
+        function toggleCredentials() {
+            const panel = document.getElementById('credentialsPanel');
+            const isVisible = panel.style.display !== 'none';
+            
+            panel.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                log('🔐 Painel de credenciais aberto', 'info');
+                showAlert('Configure suas credenciais para login automático (opcional).', 'info');
+            }
+        }
+
+        function openGoogleSheets() {
+            const webhookUrl = document.getElementById('gasWebhookUrl').value.trim();
+            
+            if (!webhookUrl) {
+                showAlert('Configure a URL do Google Apps Script primeiro!', 'warning');
+                return;
+            }
+            
+            // Tentar obter informações da planilha
+            fetch(webhookUrl + '?action=info')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.spreadsheetUrl) {
+                        window.open(data.spreadsheetUrl, '_blank');
+                        log('📊 Google Sheets aberto em nova aba', 'success');
+                    } else {
+                        // Fallback: abrir Google Sheets
+                        window.open('https://sheets.google.com', '_blank');
+                        showAlert('Não foi possível obter URL específica. Google Sheets geral aberto.', 'info');
+                    }
+                })
+                .catch(error => {
+                    window.open('https://sheets.google.com', '_blank');
+                    log('⚠️ Erro ao obter URL específica, abrindo Google Sheets geral', 'warning');
+                });
+        }
+
+        function clearData() {
+            if (confirm('⚠️ Tem certeza que deseja limpar todos os dados capturados localmente?\n\nIsso NÃO afetará os dados no Google Sheets.')) {
+                systemState.extractedData.clear();
+                systemState.totalRecords = 0;
+                systemState.duplicatesCount = 0;
+                systemState.lastExtraction = null;
+                
+                document.getElementById('dataTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                            🧹 Dados locais limpos - aguardando nova extração...
+                        </td>
+                    </tr>
+                `;
+                
+                updateUI();
+                log('🧹 Dados locais limpos (Google Sheets não afetado)', 'warning');
+                showAlert('Dados locais limpos. Os dados no Google Sheets permanecem intactos.', 'info');
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        // Salvar configurações ao alterar
+        document.getElementById('gasWebhookUrl').addEventListener('change', saveConfig);
+        document.getElementById('extractionInterval').addEventListener('change', saveConfig);
+        document.getElementById('autoMode').addEventListener('change', saveConfig);
+        document.getElementById('enableAutoLogin').addEventListener('change', saveConfig);
+        document.getElementById('startDateTime').addEventListener('change', saveConfig);
+        document.getElementById('endDateTime').addEventListener('change', saveConfig);
+        document.getElementById('username').addEventListener('change', saveConfig);
+
+        // ===== ATUALIZAÇÃO AUTOMÁTICA DA INTERFACE =====
+        // Atualizar UI a cada segundo
+        setInterval(updateUI, 1000);
+        
+        // Auto-save a cada 30 segundos
+        setInterval(saveConfig, 30000);
+    </script>
+</body>
+</html>
