@@ -6,6 +6,8 @@
     <title>Sistema Monitoramento GrupoGPS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -770,6 +772,98 @@
         .legend-irregular { background: #e74c3c; }
         .legend-excessive { background: #f39c12; }
 
+        /* Seletor de Equipamentos */
+        #equipmentSelector {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.9rem;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        #equipmentSelector option {
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 3px;
+        }
+
+        #equipmentSelector option:checked {
+            background: #3498db;
+            color: white;
+        }
+
+        /* PDF Export Styles */
+        .pdf-timeline-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 30px;
+            max-width: none;
+            box-shadow: none;
+        }
+
+        .pdf-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+        }
+
+        .pdf-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .pdf-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .pdf-date {
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .pdf-timeline-equipment {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #3498db;
+        }
+
+        .pdf-timeline-equipment.status-critico {
+            border-left-color: #e74c3c;
+        }
+
+        .pdf-timeline-equipment.status-atencao {
+            border-left-color: #f39c12;
+        }
+
+        .pdf-timeline-track {
+            position: relative;
+            padding-left: 25px;
+            margin-top: 20px;
+        }
+
+        .pdf-timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .pdf-timeline-item.irregular {
+            background: #fff5f5;
+            border-left: 4px solid #e74c3c;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -822,6 +916,18 @@
             .timeline-legend {
                 flex-direction: column;
                 gap: 10px;
+            }
+
+            #equipmentSelector {
+                height: 80px;
+            }
+
+            .filter-group {
+                margin-bottom: 15px;
+            }
+
+            .filter-group:last-child {
+                margin-bottom: 0;
             }
         }
     </style>
@@ -981,10 +1087,15 @@
             });
 
             // Timeline filters
-            document.getElementById('timelineSearch').addEventListener('input', filtrarTimeline);
-            document.getElementById('timelineDate').addEventListener('change', filtrarTimeline);
-            document.getElementById('timelineTypeFilter').addEventListener('change', filtrarTimeline);
-            document.getElementById('timelineStatusFilter').addEventListener('change', filtrarTimeline);
+            const timelineSearch = document.getElementById('timelineSearch');
+            const timelineDate = document.getElementById('timelineDate');
+            const timelineTypeFilter = document.getElementById('timelineTypeFilter');
+            const timelineStatusFilter = document.getElementById('timelineStatusFilter');
+            
+            if (timelineSearch) timelineSearch.addEventListener('input', filtrarTimeline);
+            if (timelineDate) timelineDate.addEventListener('change', filtrarTimeline);
+            if (timelineTypeFilter) timelineTypeFilter.addEventListener('change', filtrarTimeline);
+            if (timelineStatusFilter) timelineStatusFilter.addEventListener('change', filtrarTimeline);
         });
 
         function handleFile(file) {
@@ -1270,21 +1381,25 @@
                 }
             });
             
-            // Detectar equipamentos com poucos apontamentos
-            Object.values(equipamentosProcessados).forEach(equip => {
-                if (equip.totalApontamentos < 3) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Poucos Apontamentos',
-                        descricao: `${equip.codigo} - Apenas ${equip.totalApontamentos} apontamentos no período`,
-                        equipamento: equip.codigo,
-                        categoria: '-',
-                        tempo: '-',
-                        intervalo: '-',
-                        gravidade: 'ALTA',
-                        index: -1
+            // Detectar equipamentos com poucos apontamentos (após processar equipamentos)
+            setTimeout(() => {
+                if (equipamentosProcessados && Object.keys(equipamentosProcessados).length > 0) {
+                    Object.values(equipamentosProcessados).forEach(equip => {
+                        if (equip.totalApontamentos < 3) {
+                            apontamentosIrregulares.push({
+                                tipo: 'Poucos Apontamentos',
+                                descricao: `${equip.codigo} - Apenas ${equip.totalApontamentos} apontamentos no período`,
+                                equipamento: equip.codigo,
+                                categoria: '-',
+                                tempo: '-',
+                                intervalo: '-',
+                                gravidade: 'ALTA',
+                                index: -1
+                            });
+                        }
                     });
                 }
-            });
+            }, 100);
             
             console.log('⚠️ Irregularidades detectadas:', apontamentosIrregulares.length);
         }
@@ -1346,14 +1461,19 @@
             
             // Se estamos na aba timeline, gerar timeline
             const timelineTab = document.getElementById('timeline-tab');
-            if (!timelineTab.classList.contains('hidden')) {
+            if (timelineTab && !timelineTab.classList.contains('hidden')) {
                 gerarTimeline();
             }
             
-            document.getElementById('exportSection').style.display = 'block';
-            document.getElementById('filtersSection').style.display = 'block';
-            document.getElementById('statsSection').style.display = 'block';
-            document.getElementById('equipamentosSection').style.display = 'block';
+            const exportSection = document.getElementById('exportSection');
+            const filtersSection = document.getElementById('filtersSection');
+            const statsSection = document.getElementById('statsSection');
+            const equipamentosSection = document.getElementById('equipamentosSection');
+            
+            if (exportSection) exportSection.style.display = 'block';
+            if (filtersSection) filtersSection.style.display = 'block';
+            if (statsSection) statsSection.style.display = 'block';
+            if (equipamentosSection) equipamentosSection.style.display = 'block';
         }
 
         function exibirEstatisticas() {
@@ -1642,8 +1762,11 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             
             // Ativar aba selecionada
-            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            const activeBtn = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const activeTab = document.getElementById(`${tabName}-tab`);
+            
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeTab) activeTab.classList.remove('hidden');
             
             // Se for timeline e já temos dados, gerar timeline
             if (tabName === 'timeline' && Object.keys(equipamentosProcessados).length > 0) {
@@ -1661,6 +1784,9 @@
                 return;
             }
 
+            // Atualizar seletor de equipamentos
+            atualizarSeletorEquipamentos(equipamentos);
+
             // Ordenar equipamentos por código
             equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
             
@@ -1674,7 +1800,7 @@
                 });
 
                 timelineHTML += `
-                    <div class="timeline-equipment" data-equipment="${equip.codigo}" data-type="${equip.tipo}">
+                    <div class="timeline-equipment status-${equip.status.toLowerCase()}" data-equipment="${equip.codigo}" data-type="${equip.tipo}">
                         <div class="timeline-header">
                             <div class="timeline-equipment-info">
                                 <div class="timeline-equipment-code">${equip.codigo}</div>
@@ -1710,6 +1836,47 @@
             });
             
             container.innerHTML = timelineHTML;
+        }
+
+        function atualizarSeletorEquipamentos(equipamentos) {
+            const selector = document.getElementById('equipmentSelector');
+            if (!selector) return;
+
+            selector.innerHTML = '';
+            equipamentos.forEach(equip => {
+                const option = document.createElement('option');
+                option.value = equip.codigo;
+                option.textContent = `${equip.codigo} (${equip.totalApontamentos} apontamentos)`;
+                selector.appendChild(option);
+            });
+
+            // Event listener para seleção
+            selector.addEventListener('change', function() {
+                filtrarTimelinePorSelecao();
+            });
+        }
+
+        function filtrarTimelinePorSelecao() {
+            const selector = document.getElementById('equipmentSelector');
+            const selectedEquipments = Array.from(selector.selectedOptions).map(option => option.value);
+            
+            if (selectedEquipments.length === 0) {
+                // Se nenhum selecionado, mostrar todos
+                document.querySelectorAll('.timeline-equipment').forEach(eq => {
+                    eq.style.display = 'block';
+                });
+                return;
+            }
+
+            // Mostrar apenas os selecionados
+            document.querySelectorAll('.timeline-equipment').forEach(eq => {
+                const equipmentCode = eq.dataset.equipment;
+                if (selectedEquipments.includes(equipmentCode)) {
+                    eq.style.display = 'block';
+                } else {
+                    eq.style.display = 'none';
+                }
+            });
         }
 
         function gerarItemTimeline(apontamento) {
@@ -1805,6 +1972,209 @@
                     equipment.style.display = 'none';
                 }
             });
+
+            // Aplicar filtro de seleção se houver equipamentos selecionados
+            const selector = document.getElementById('equipmentSelector');
+            if (selector && selector.selectedOptions.length > 0) {
+                filtrarTimelinePorSelecao();
+            }
+        }
+
+        // ==================== EXPORTAÇÃO PDF TIMELINE ====================
+        async function exportarTimelinePDF(tipo) {
+            try {
+                showSuccess('⏳ Gerando PDF da Timeline...');
+                
+                const equipamentos = obterEquipamentosParaExportacao(tipo);
+                if (equipamentos.length === 0) {
+                    showError('Nenhum equipamento selecionado para exportação.');
+                    return;
+                }
+
+                // Criar container temporário para PDF
+                const pdfContainer = criarContainerPDF(equipamentos);
+                document.body.appendChild(pdfContainer);
+
+                // Gerar PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                await gerarPaginasPDF(pdf, pdfContainer, equipamentos);
+                
+                // Remover container temporário
+                document.body.removeChild(pdfContainer);
+                
+                // Salvar PDF
+                const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
+                const nomeArquivo = `Timeline_Equipamentos_${tipo}_${dataAtual}.pdf`;
+                pdf.save(nomeArquivo);
+                
+                showSuccess(`✅ PDF gerado com sucesso! ${equipamentos.length} equipamentos exportados.`);
+                
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                showError('Erro ao gerar PDF: ' + error.message);
+            }
+        }
+
+        function obterEquipamentosParaExportacao(tipo) {
+            const todosEquipamentos = Object.values(equipamentosProcessados);
+            
+            if (tipo === 'all') {
+                return todosEquipamentos.filter(eq => {
+                    const element = document.querySelector(`[data-equipment="${eq.codigo}"]`);
+                    return element && element.style.display !== 'none';
+                });
+            } else {
+                const selector = document.getElementById('equipmentSelector');
+                const selectedCodes = Array.from(selector.selectedOptions).map(option => option.value);
+                
+                if (selectedCodes.length === 0) {
+                    return todosEquipamentos.slice(0, 5); // Limitar a 5 se nenhum selecionado
+                }
+                
+                return todosEquipamentos.filter(eq => selectedCodes.includes(eq.codigo));
+            }
+        }
+
+        function criarContainerPDF(equipamentos) {
+            const container = document.createElement('div');
+            container.className = 'pdf-timeline-container';
+            container.style.position = 'absolute';
+            container.style.left = '-10000px';
+            container.style.width = '800px';
+            container.style.background = 'white';
+            
+            // Header do PDF
+            const header = document.createElement('div');
+            header.className = 'pdf-header';
+            header.innerHTML = `
+                <div class="pdf-title">🚚 Timeline de Equipamentos - GrupoGPS</div>
+                <div class="pdf-subtitle">Relatório de Apontamentos Cronológicos</div>
+                <div class="pdf-date">Gerado em: ${new Date().toLocaleString('pt-BR')}</div>
+                <div class="pdf-date">Total de Equipamentos: ${equipamentos.length}</div>
+            `;
+            container.appendChild(header);
+
+            // Timeline para cada equipamento
+            equipamentos.forEach(equip => {
+                const equipElement = criarEquipamentoPDF(equip);
+                container.appendChild(equipElement);
+            });
+
+            return container;
+        }
+
+        function criarEquipamentoPDF(equip) {
+            const apontamentosOrdenados = [...equip.apontamentos].sort((a, b) => {
+                const timeA = new Date(a.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
+                const timeB = new Date(b.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
+                return timeA - timeB;
+            });
+
+            const equipDiv = document.createElement('div');
+            equipDiv.className = `pdf-timeline-equipment status-${equip.status.toLowerCase()}`;
+            
+            equipDiv.innerHTML = `
+                <div class="timeline-header">
+                    <div class="timeline-equipment-info">
+                        <div class="timeline-equipment-code" style="font-size: 20px; margin-bottom: 8px;">${equip.codigo}</div>
+                        <div class="timeline-equipment-type" style="display: inline-block; background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
+                            ${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'}
+                        </div>
+                    </div>
+                    <div class="timeline-stats-mini" style="display: flex; gap: 20px; margin-top: 10px;">
+                        <div class="timeline-stat-item">
+                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold;">${equip.totalApontamentos}</div>
+                            <div class="timeline-stat-label">Total Apontamentos</div>
+                        </div>
+                        <div class="timeline-stat-item">
+                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold; color: #e74c3c;">${apontamentosOrdenados.filter(apt => apt.irregular).length}</div>
+                            <div class="timeline-stat-label">Irregulares</div>
+                        </div>
+                        <div class="timeline-stat-item">
+                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold;">${equip.status}</div>
+                            <div class="timeline-stat-label">Status Geral</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pdf-timeline-track">
+                    ${apontamentosOrdenados.length > 0 ? 
+                        apontamentosOrdenados.map(apt => criarItemTimelinePDF(apt)).join('') :
+                        '<div style="text-align: center; padding: 20px; color: #7f8c8d;">Nenhum apontamento registrado</div>'
+                    }
+                </div>
+            `;
+            
+            return equipDiv;
+        }
+
+        function criarItemTimelinePDF(apontamento) {
+            const tempoMinutos = tempoParaMinutos(apontamento.tempoIndisponivel);
+            const isExcessive = (apontamento.categoria.toLowerCase().includes('refeição') && tempoMinutos > 60) || 
+                              (apontamento.categoria.toLowerCase().includes('abastecimento') && tempoMinutos >= 60);
+            
+            const badgeType = apontamento.irregular ? 'irregular' : (isExcessive ? 'excessive' : 'normal');
+            const badgeText = apontamento.irregular ? 'IRREGULAR' : (isExcessive ? 'EXCESSIVO' : 'NORMAL');
+            const badgeColor = apontamento.irregular ? '#e74c3c' : (isExcessive ? '#f39c12' : '#27ae60');
+            
+            return `
+                <div class="pdf-timeline-item ${apontamento.irregular ? 'irregular' : ''}" style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 5px; font-size: 14px;">${apontamento.categoria}</div>
+                            <div style="color: #7f8c8d; font-size: 12px; margin-bottom: 3px;">
+                                📅 ${apontamento.dataInicial?.split(' ')[0] || 'N/A'}
+                            </div>
+                            <div style="color: #7f8c8d; font-size: 12px; margin-bottom: 5px;">
+                                ⏰ ${apontamento.intervalo || 'N/A'}
+                            </div>
+                            <div style="background: #3498db; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block;">
+                                Duração: ${apontamento.tempoIndisponivel}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="background: ${badgeColor}; color: white; padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-bottom: 5px;">
+                                ${badgeText}
+                            </div>
+                            ${apontamento.placa ? `<div style="font-size: 11px; color: #7f8c8d;">🚛 ${apontamento.placa}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function gerarPaginasPDF(pdf, container, equipamentos) {
+            // Capturar o container como imagem usando html2canvas
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                height: container.scrollHeight,
+                windowHeight: container.scrollHeight
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = pdfWidth - 20; // Margens
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            let heightLeft = imgHeight;
+            let position = 10; // Margem superior
+            
+            // Primeira página
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= (pdfHeight - 20);
+            
+            // Páginas adicionais se necessário
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight + 10;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= (pdfHeight - 20);
+            }
         }
 
         function showError(message) {
