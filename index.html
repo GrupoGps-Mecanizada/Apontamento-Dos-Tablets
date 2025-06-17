@@ -509,6 +509,7 @@
 
         .tab-content {
             display: block;
+             padding: 20px; /* Adicionado padding para consistência */
         }
 
         .tab-content.hidden {
@@ -519,7 +520,7 @@
         .timeline-section {
             background: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 20px; /* Removido, pois o tab-content já tem */
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -540,6 +541,7 @@
             border: 1px solid #e9ecef;
             border-radius: 8px;
             background: #fafafa;
+            padding: 15px; /* Adicionado padding interno */
         }
 
         .timeline-equipment {
@@ -606,12 +608,12 @@
 
         .timeline-track {
             position: relative;
-            padding-left: 30px;
+            padding-left: 30px; /* Ajustado para alinhar com o dot */
         }
 
         .timeline-line {
             position: absolute;
-            left: 12px;
+            left: 6px;  /* Ajustado para centralizar com o dot */
             top: 0;
             bottom: 0;
             width: 2px;
@@ -628,6 +630,10 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
+         .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
 
         .timeline-item:hover {
             transform: translateX(5px);
@@ -641,14 +647,15 @@
 
         .timeline-dot {
             position: absolute;
-            left: -19px;
-            top: 15px;
+            left: -24px; /* Ajustado para (padding-left do track - (width/2)) */
+            top: 20px; /* Ajustado para melhor alinhamento vertical */
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background: #3498db;
             border: 3px solid white;
             box-shadow: 0 0 0 2px #3498db;
+            z-index: 1;
         }
 
         .timeline-item.irregular .timeline-dot {
@@ -731,18 +738,8 @@
             font-style: italic;
         }
 
-        .timeline-search {
+        .timeline-search { /* Agora usa .filter-input */
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .timeline-search:focus {
-            outline: none;
-            border-color: #3498db;
         }
 
         .timeline-legend {
@@ -753,6 +750,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .legend-item {
@@ -773,13 +771,8 @@
         .legend-excessive { background: #f39c12; }
 
         /* Seletor de Equipamentos */
-        #equipmentSelector {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            padding: 8px;
-            font-size: 0.9rem;
-            max-height: 120px;
+        #equipmentSelector { /* Agora usa .filter-input */
+            max-height: 120px; /* Ajuste conforme necessário */
             overflow-y: auto;
         }
 
@@ -877,7 +870,7 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .filters-grid {
+            .filters-grid, .timeline-filters {
                 grid-template-columns: 1fr;
             }
 
@@ -887,10 +880,6 @@
 
             .tabs-header {
                 flex-direction: column;
-            }
-
-            .timeline-filters {
-                grid-template-columns: 1fr;
             }
 
             .timeline-header {
@@ -916,6 +905,7 @@
             .timeline-legend {
                 flex-direction: column;
                 gap: 10px;
+                align-items: flex-start;
             }
 
             #equipmentSelector {
@@ -938,7 +928,7 @@
         <p>Dashboard de Acompanhamento de Equipamentos</p>
     </div>
 
-            <div class="container">
+    <div class="container">
         <!-- Sistema de Abas -->
         <div class="tabs-container">
             <div class="tabs-header">
@@ -951,100 +941,163 @@
             </div>
         </div>
 
+        <!-- Conteúdo da Aba Dashboard -->
         <div class="tab-content" id="dashboard-tab">
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
-                <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
-            </div>
-            <input type="file" id="fileInput" accept=".csv" />
-            <button class="btn" onclick="document.getElementById('fileInput').click()">
-                📂 Selecionar Arquivo
-            </button>
-            <button class="btn" id="processBtn" onclick="processarArquivo()" disabled>
-                ⚡ Processar Dados
-            </button>
-        </div>
-
-        <div class="export-section" id="exportSection">
-            <div class="export-title">
-                📊 Exportar Relatórios
-            </div>
-            <div class="export-buttons">
-                <button class="btn btn-success" onclick="exportarRelatorio('xlsx')">
-                    📄 Exportar XLSX
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                    <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+                </div>
+                <input type="file" id="fileInput" accept=".csv" />
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    📂 Selecionar Arquivo
                 </button>
-                <button class="btn btn-warning" onclick="exportarRelatorio('csv')">
-                    📊 Exportar CSV
-                </button>
-                <button class="btn" onclick="exportarApontamentosCompletos()">
-                    📋 Exportar Todos os Apontamentos
+                <button class="btn" id="processBtn" onclick="processarArquivo()" disabled>
+                    ⚡ Processar Dados
                 </button>
             </div>
-        </div>
 
-        <div class="filters-section" id="filtersSection">
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label class="filter-label">📅 Data Inicial</label>
-                    <input type="date" class="filter-input" id="dataInicial">
+            <div class="export-section" id="exportSection">
+                <div class="export-title">
+                    📊 Exportar Relatórios do Dashboard
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">📅 Data Final</label>
-                    <input type="date" class="filter-input" id="dataFinal">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">🕐 Hora Inicial</label>
-                    <input type="time" class="filter-input" id="horaInicial">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">🕐 Hora Final</label>
-                    <input type="time" class="filter-input" id="horaFinal">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">🔍 Tipo</label>
-                    <select class="filter-input" id="tipoFilter">
-                        <option value="">Todos</option>
-                        <option value="AP">Alta Pressão</option>
-                        <option value="AV">Auto Vácuo</option>
-                        <option value="HP">Hiper Vácuo</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <button class="btn" onclick="aplicarFiltros()">🔍 Filtrar</button>
+                <div class="export-buttons">
+                    <button class="btn btn-success" onclick="exportarRelatorio('xlsx')">
+                        📄 Exportar Irregulares (XLSX)
+                    </button>
+                    <button class="btn btn-warning" onclick="exportarRelatorio('csv')">
+                        📊 Exportar Irregulares (CSV)
+                    </button>
+                    <button class="btn" onclick="exportarApontamentosCompletos()">
+                        📋 Exportar Todos Apontamentos (XLSX)
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <div class="stats-section" id="statsSection">
-            <div class="stats-grid" id="statsGrid">
-                <!-- Stats serão inseridas aqui -->
+            <div class="filters-section" id="filtersSection">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label" for="dataInicial">📅 Data Inicial</label>
+                        <input type="date" class="filter-input" id="dataInicial">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="dataFinal">📅 Data Final</label>
+                        <input type="date" class="filter-input" id="dataFinal">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="horaInicial">🕐 Hora Inicial</label>
+                        <input type="time" class="filter-input" id="horaInicial">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="horaFinal">🕐 Hora Final</label>
+                        <input type="time" class="filter-input" id="horaFinal">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="tipoFilter">🔍 Tipo Equipamento</label>
+                        <select class="filter-input" id="tipoFilter">
+                            <option value="">Todos</option>
+                            <option value="AP">Alta Pressão</option>
+                            <option value="AV">Auto Vácuo</option>
+                            <option value="HP">Hiper Vácuo</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn" onclick="aplicarFiltros()">🔍 Filtrar Dashboard</button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="problems-section" id="problemsSection" style="display: none;">
-            <div class="problems-title">
-                ⚠️ Apontamentos Irregulares Detectados
+            <div class="stats-section" id="statsSection">
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Stats serão inseridas aqui -->
+                </div>
             </div>
-            <div id="problemsList">
-                <!-- Problemas serão inseridos aqui -->
-            </div>
-        </div>
 
-        <div class="equipamentos-section" id="equipamentosSection">
-            <div class="equipamentos-grid" id="equipamentosGrid">
-                <!-- Equipamentos serão inseridos aqui -->
+            <div class="problems-section" id="problemsSection" style="display: none;">
+                <div class="problems-title">
+                    ⚠️ Apontamentos Irregulares Detectados (Dashboard)
+                </div>
+                <div id="problemsList">
+                    <!-- Problemas serão inseridos aqui -->
+                </div>
+            </div>
+
+            <div class="equipamentos-section" id="equipamentosSection">
+                 <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">Equipamentos Analisados</h2>
+                <div class="equipamentos-grid" id="equipamentosGrid">
+                    <!-- Equipamentos serão inseridos aqui -->
+                </div>
             </div>
         </div>
-    </div>
+        <!-- Fim do Conteúdo da Aba Dashboard -->
+
+        <!-- Conteúdo da Aba Timeline -->
+        <div class="tab-content hidden" id="timeline-tab">
+            <div class="timeline-section">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">⏰ Timeline Detalhada dos Equipamentos</h2>
+
+                <div class="timeline-filters">
+                    <div class="filter-group">
+                        <label class="filter-label" for="timelineSearch">🔍 Pesquisar Equipamento:</label>
+                        <input type="text" id="timelineSearch" class="filter-input timeline-search" placeholder="Código do equipamento...">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="timelineDate">📅 Filtrar por Data do Apontamento:</label>
+                        <input type="date" id="timelineDate" class="filter-input">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="timelineTypeFilter">⚙️ Filtrar por Tipo de Equipamento:</label>
+                        <select id="timelineTypeFilter" class="filter-input">
+                            <option value="">Todos os Tipos</option>
+                            <option value="AP">Alta Pressão</option>
+                            <option value="AV">Auto Vácuo</option>
+                            <option value="HP">Hiper Vácuo</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label" for="timelineStatusFilter">🚦 Filtrar por Status do Apontamento:</label>
+                        <select id="timelineStatusFilter" class="filter-input">
+                            <option value="">Todos os Status</option>
+                            <option value="normal">Normal</option>
+                            <option value="irregular">Irregular/Excessivo</option>
+                        </select>
+                    </div>
+                     <div class="filter-group" style="grid-column: 1 / -1;">
+                        <label class="filter-label" for="equipmentSelector">🔧 Selecionar Equipamentos (para PDF e foco):</label>
+                        <select id="equipmentSelector" multiple class="filter-input"></select>
+                    </div>
+                    <div class="filter-group" style="grid-column: 1 / -1; margin-top: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                         <button class="btn btn-success" onclick="exportarTimelinePDF('selected')">
+                            📄 Exportar Selecionados (PDF)
+                         </button>
+                         <button class="btn" onclick="exportarTimelinePDF('all')">
+                            📄 Exportar Visíveis na Tela (PDF)
+                         </button>
+                    </div>
+                </div>
+
+                <div class="timeline-legend">
+                    <div class="legend-item"><span class="legend-dot legend-normal"></span> Apontamento Normal</div>
+                    <div class="legend-item"><span class="legend-dot legend-irregular"></span> Apontamento Irregular</div>
+                    <div class="legend-item"><span class="legend-dot legend-excessive"></span> Apontamento Excessivo</div>
+                </div>
+
+                <div class="timeline-container" id="timelineContainer">
+                    <div class="timeline-empty">Carregue um arquivo CSV e processe os dados para visualizar a timeline.</div>
+                </div>
+            </div>
+        </div>
+        <!-- Fim do Conteúdo da Aba Timeline -->
+
+    </div> <!-- Fim do <div class="container"> -->
 
     <script>
         // Dados base
         let dadosCSV = [];
-        let equipamentosProcessados = {};
+        let equipamentosProcessados = {}; // Objeto para armazenar dados processados por equipamento
         let apontamentosIrregulares = [];
-        let dadosFiltrados = [];
+        let dadosFiltrados = []; // Dados CSV após aplicação de filtros do dashboard
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
@@ -1081,21 +1134,38 @@
                 }
             });
 
-            // Filtros
+            // Filtros Dashboard
             ['dataInicial', 'dataFinal', 'horaInicial', 'horaFinal', 'tipoFilter'].forEach(id => {
-                document.getElementById(id).addEventListener('change', aplicarFiltros);
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', aplicarFiltros);
+                } else {
+                    console.warn(`Elemento de filtro do dashboard não encontrado: ${id}`);
+                }
             });
 
-            // Timeline filters
+            // Filtros Timeline (adicionados aqui para garantir que são configurados)
             const timelineSearch = document.getElementById('timelineSearch');
             const timelineDate = document.getElementById('timelineDate');
             const timelineTypeFilter = document.getElementById('timelineTypeFilter');
             const timelineStatusFilter = document.getElementById('timelineStatusFilter');
+            const equipmentSelector = document.getElementById('equipmentSelector');
             
             if (timelineSearch) timelineSearch.addEventListener('input', filtrarTimeline);
+            else console.warn("Elemento timelineSearch não encontrado");
+
             if (timelineDate) timelineDate.addEventListener('change', filtrarTimeline);
+            else console.warn("Elemento timelineDate não encontrado");
+            
             if (timelineTypeFilter) timelineTypeFilter.addEventListener('change', filtrarTimeline);
+            else console.warn("Elemento timelineTypeFilter não encontrado");
+            
             if (timelineStatusFilter) timelineStatusFilter.addEventListener('change', filtrarTimeline);
+            else console.warn("Elemento timelineStatusFilter não encontrado");
+
+            if (equipmentSelector) equipmentSelector.addEventListener('change', filtrarTimelinePorSelecao);
+            else console.warn("Elemento equipmentSelector não encontrado");
+
         });
 
         function handleFile(file) {
@@ -1124,6 +1194,11 @@
                     },
                     error: function(error) {
                         showError('Erro ao ler arquivo CSV: ' + error.message);
+                         uploadArea.innerHTML = `
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                            <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+                        `;
                     }
                 });
             };
@@ -1132,18 +1207,34 @@
 
         function processarArquivoCarregado(results, fileName) {
             dadosCSV = results.data.filter(linha => {
-                return linha.Placa && linha.Vaga && linha['Categoria Demora'];
+                // Verificar se as colunas essenciais existem e não são vazias
+                return linha.hasOwnProperty('Placa') && linha.Placa &&
+                       linha.hasOwnProperty('Vaga') && linha.Vaga &&
+                       linha.hasOwnProperty('Categoria Demora') && linha['Categoria Demora'] &&
+                       linha.hasOwnProperty('Data Inicial') && linha['Data Inicial'] &&
+                       linha.hasOwnProperty('Data Final') && linha['Data Final'] &&
+                       linha.hasOwnProperty('Tempo Indisponível (HH:MM)') && linha['Tempo Indisponível (HH:MM)'];
             });
             
+            if (dadosCSV.length === 0) {
+                 showError('Nenhum registro válido encontrado no CSV. Verifique o formato e as colunas (Placa, Vaga, Categoria Demora, Data Inicial, Data Final, Tempo Indisponível (HH:MM)).');
+                 document.getElementById('uploadArea').innerHTML = `
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Clique aqui ou arraste o arquivo CSV</div>
+                    <div class="upload-subtext">Arquivo: Demoras Categorizadas (CSV)</div>
+                `;
+                return;
+            }
+
             const uploadArea = document.getElementById('uploadArea');
             uploadArea.innerHTML = `
                 <div class="upload-icon">✅</div>
                 <div class="upload-text">${fileName}</div>
-                <div class="upload-subtext">${dadosCSV.length} registros processados</div>
+                <div class="upload-subtext">${dadosCSV.length} registros válidos carregados</div>
             `;
 
             document.getElementById('processBtn').disabled = false;
-            showSuccess(`Arquivo processado: ${dadosCSV.length} registros válidos encontrados`);
+            showSuccess(`Arquivo carregado: ${dadosCSV.length} registros válidos prontos para processar.`);
         }
 
         function processarArquivo() {
@@ -1155,30 +1246,56 @@
             document.getElementById('processBtn').innerHTML = '⏳ Processando...';
             document.getElementById('processBtn').disabled = true;
 
+            // Simular processamento assíncrono
             setTimeout(() => {
                 try {
                     console.log('📊 Iniciando processamento de', dadosCSV.length, 'registros');
                     
-                    // Detectar apontamentos irregulares
-                    detectarApontamentosIrregulares();
+                    // Definir dadosFiltrados como os dadosCSV originais antes de qualquer filtro
+                    dadosFiltrados = [...dadosCSV]; 
                     
-                    // Processar equipamentos baseado nos dados REAIS do CSV
-                    equipamentosProcessados = processarEquipamentosDoCSV(dadosCSV);
+                    // Detectar apontamentos irregulares com base nos dadosFiltrados (que são dadosCSV neste ponto)
+                    detectarApontamentosIrregulares(dadosFiltrados); 
                     
-                    // Mostrar resultados
-                    exibirResultados();
+                    // Processar equipamentos baseado nos dadosFiltrados
+                    equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                    
+                    // Mostrar resultados no Dashboard
+                    exibirResultadosDashboard();
+                    
+                    // Se a aba Timeline estiver ativa, gerar/atualizar ela
+                    const activeTabName = document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+                    if (activeTabName === 'timeline') {
+                        gerarTimeline();
+                    }
                     
                     document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
-                    document.getElementById('processBtn').disabled = false;
-                    showSuccess(`Dados processados com sucesso! ${dadosCSV.length} apontamentos analisados.`);
+                    // Não reabilitar o botão aqui, pois o usuário pode querer aplicar filtros antes de reprocessar.
+                    // Ou reabilitar se o processamento sempre usa o CSV original.
+                    // Para este fluxo, manter desabilitado até novo upload ou reset.
+                    // document.getElementById('processBtn').disabled = false; 
+                    showSuccess(`Dados processados com sucesso! ${dadosFiltrados.length} apontamentos analisados.`);
                     
                     console.log('✅ Processamento concluído:', Object.keys(equipamentosProcessados).length, 'equipamentos encontrados');
                     console.log('🔍 Equipamentos processados:', Object.keys(equipamentosProcessados));
+
+                    // Habilitar seções
+                    document.getElementById('exportSection').style.display = 'block';
+                    document.getElementById('filtersSection').style.display = 'block';
+                    document.getElementById('statsSection').style.display = 'block';
+                    document.getElementById('equipamentosSection').style.display = 'block';
+                     if (apontamentosIrregulares.length > 0) {
+                        document.getElementById('problemsSection').style.display = 'block';
+                    } else {
+                        document.getElementById('problemsSection').style.display = 'none';
+                    }
+
+
                 } catch (error) {
                     console.error('❌ Erro no processamento:', error);
                     showError('Erro ao processar dados: ' + error.message);
                     document.getElementById('processBtn').innerHTML = '⚡ Processar Dados';
-                    document.getElementById('processBtn').disabled = false;
+                    document.getElementById('processBtn').disabled = false; // Reabilitar em caso de erro
                 }
             }, 500);
         }
@@ -1186,17 +1303,13 @@
         function extrairCodigoVaga(nomeVaga) {
             if (!nomeVaga) return null;
             
-            const nome = nomeVaga.toString().trim();
-            console.log('🔍 Analisando vaga:', nome);
+            const nome = nomeVaga.toString().trim().toUpperCase(); // Normalizar para maiúsculas
+            // console.log('🔍 Analisando vaga:', nome); // Descomente para debug detalhado
             
-            // Padrões para extração do código
             const patterns = [
-                // Alta Pressão
-                { regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)( - 24 HS)?/, prefix: 'AP' },
-                // Auto Vácuo  
-                { regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)( - (?:16|24) HS)?/, prefix: 'AV' },
-                // Hiper Vácuo
-                { regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)/, prefix: 'HP' }
+                { regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)(?: - (16 HS|24 HS))?/, prefix: 'AP' },
+                { regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS))?/, prefix: 'AV' },
+                { regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS))?/, prefix: 'HP' } // Adicionado 16/24 HS opcional
             ];
             
             for (const pattern of patterns) {
@@ -1205,65 +1318,62 @@
                     const numero = match[1].padStart(2, '0');
                     let codigo = `${pattern.prefix}-${numero}`;
                     
-                    // Adicionar sufixo se necessário
-                    if (match[2]) {
-                        if (match[2].includes('24 HS')) {
+                    if (match[2]) { // Se o grupo de horas (16 HS ou 24 HS) for capturado
+                         if (match[2] === '24 HS') {
                             codigo += ' - 24HS';
-                        } else if (match[2].includes('16 HS')) {
+                        } else if (match[2] === '16 HS') {
                             codigo += ' - 16HS';
                         }
                     }
-                    
-                    console.log('✅ Código extraído:', codigo, 'de', nome);
+                    // console.log('✅ Código extraído:', codigo, 'de', nomeVaga); // Descomente para debug detalhado
                     return codigo;
                 }
             }
             
-            console.log('❌ Não foi possível extrair código de:', nome);
-            return null;
+            // console.warn('❌ Não foi possível extrair código de:', nomeVaga); // Descomente para debug detalhado
+            return null; // Retornar null explicitamente se nenhum padrão corresponder
         }
 
         function getTipoEquipamento(codigo) {
+            if (!codigo) return 'UNKNOWN';
             if (codigo.startsWith('AP-')) return 'AP';
             if (codigo.startsWith('AV-')) return 'AV';
             if (codigo.startsWith('HP-')) return 'HP';
             return 'UNKNOWN';
         }
 
-        // Nova função para extrair intervalo de tempo
-        function extrairIntervaloTempo(dataInicial, dataFinal) {
-            if (!dataInicial || !dataFinal) return null;
+        function extrairIntervaloTempo(dataInicialStr, dataFinalStr) {
+            if (!dataInicialStr || !dataFinalStr) return 'N/A';
             
             try {
-                const horaInicial = extrairHora(dataInicial);
-                const horaFinal = extrairHora(dataFinal);
+                const horaInicial = extrairHora(dataInicialStr);
+                const horaFinal = extrairHora(dataFinalStr);
                 
                 if (horaInicial && horaFinal) {
                     return `${horaInicial} às ${horaFinal}`;
                 }
-                return horaInicial || horaFinal || null;
+                return horaInicial || horaFinal || 'N/A';
             } catch (e) {
-                return null;
+                console.warn("Erro ao extrair intervalo de tempo:", e);
+                return 'N/A';
             }
         }
 
-        function processarEquipamentosDoCSV(apontamentos) {
+        function processarEquipamentosDoCSV(apontamentosParaProcessar) {
             const equipamentos = {};
             
-            console.log('📋 Processando apontamentos...');
+            // console.log('📋 Processando apontamentos para equipamentos...');
             
-            // Primeiro, identificar todos os equipamentos únicos do CSV
             const equipamentosUnicos = new Set();
-            apontamentos.forEach(apt => {
+            apontamentosParaProcessar.forEach(apt => {
                 const codigo = extrairCodigoVaga(apt.Vaga);
                 if (codigo) {
                     equipamentosUnicos.add(codigo);
                 }
             });
             
-            console.log('🔍 Equipamentos únicos encontrados:', Array.from(equipamentosUnicos));
+            // console.log('🔍 Equipamentos únicos encontrados no subset:', Array.from(equipamentosUnicos));
             
-            // Inicializar todos os equipamentos encontrados
             equipamentosUnicos.forEach(codigo => {
                 equipamentos[codigo] = {
                     codigo: codigo,
@@ -1271,20 +1381,24 @@
                     totalApontamentos: 0,
                     apontamentos: [],
                     primeiroRegistro: null,
-                    status: 'CRITICO'
+                    status: 'CRITICO' // Status inicial
                 };
             });
 
-            // Processar cada apontamento
-            apontamentos.forEach((apt, index) => {
+            apontamentosParaProcessar.forEach((apt, index) => {
                 const codigo = extrairCodigoVaga(apt.Vaga);
                 if (!codigo || !equipamentos[codigo]) {
-                    console.warn('⚠️ Equipamento não encontrado para:', apt.Vaga);
+                    // console.warn('⚠️ Equipamento não encontrado ou não inicializado para Vaga:', apt.Vaga, 'Código extraído:', codigo);
                     return;
                 }
                 
                 const equip = equipamentos[codigo];
-                
+                const originalIndex = dadosCSV.findIndex(originalApt => 
+                    originalApt.Placa === apt.Placa &&
+                    originalApt['Data Inicial'] === apt['Data Inicial'] &&
+                    originalApt['Categoria Demora'] === apt['Categoria Demora']
+                );
+
                 const apontamento = {
                     placa: apt.Placa,
                     categoria: apt['Categoria Demora'],
@@ -1293,210 +1407,154 @@
                     tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'],
                     inicio: extrairHora(apt['Data Inicial']),
                     intervalo: extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']),
-                    irregular: apontamentosIrregulares.some(irreg => irreg.index === index)
+                    // Verifica se este apontamento (pelo índice original) está na lista global de irregulares
+                    irregular: apontamentosIrregulares.some(irreg => irreg.index === originalIndex)
                 };
                 
                 equip.apontamentos.push(apontamento);
                 equip.totalApontamentos++;
                 
-                // Atualizar primeiro registro
-                if (!equip.primeiroRegistro || (apontamento.inicio && apontamento.inicio < equip.primeiroRegistro)) {
+                if (!equip.primeiroRegistro || (apontamento.inicio && horaParaMinutos(apontamento.inicio) < horaParaMinutos(equip.primeiroRegistro))) {
                     equip.primeiroRegistro = apontamento.inicio;
                 }
             });
 
-            // Calcular status de cada equipamento
             Object.values(equipamentos).forEach(equip => {
                 equip.status = calcularStatusInteligente(equip);
-                console.log(`📊 ${equip.codigo}: ${equip.totalApontamentos} apontamentos, status: ${equip.status}`);
+                // console.log(`📊 ${equip.codigo}: ${equip.totalApontamentos} apontamentos, status: ${equip.status}`);
             });
 
             return equipamentos;
         }
 
-        function detectarApontamentosIrregulares() {
-            apontamentosIrregulares = [];
+        function detectarApontamentosIrregulares(dadosParaAnalisar) {
+            apontamentosIrregulares = []; // Resetar a lista global
             
-            dadosCSV.forEach((apt, index) => {
+            dadosParaAnalisar.forEach((apt, indexNoSubset) => {
                 const tempo = apt['Tempo Indisponível (HH:MM)'];
                 const categoria = apt['Categoria Demora'];
                 const minutos = tempoParaMinutos(tempo);
                 const codigo = extrairCodigoVaga(apt.Vaga);
                 const intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
                 
-                // Apontamentos zerados
+                // Encontrar o índice original no dadosCSV
+                const originalIndex = dadosCSV.findIndex(originalApt => 
+                    originalApt.Placa === apt.Placa &&
+                    originalApt['Data Inicial'] === apt['Data Inicial'] &&
+                    originalApt['Categoria Demora'] === apt['Categoria Demora']
+                );
+
                 if (minutos === 0) {
                     apontamentosIrregulares.push({
                         tipo: 'Apontamento Zerado',
-                        descricao: `${codigo} - ${categoria} com tempo 00:00`,
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'BAIXA',
-                        index: index
+                        descricao: `${codigo || 'N/D'} - ${categoria} com tempo 00:00`,
+                        equipamento: codigo, categoria, tempo, intervalo, gravidade: 'BAIXA', index: originalIndex
                     });
                 }
                 
-                // Refeições acima de 1 hora
                 if (categoria && categoria.toLowerCase().includes('refeição') && minutos > 60) {
                     apontamentosIrregulares.push({
                         tipo: 'Refeição Excessiva',
-                        descricao: `${codigo} - Refeição de ${tempo} (acima de 1:00)`,
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'ALTA',
-                        index: index
+                        descricao: `${codigo || 'N/D'} - Refeição de ${tempo} (acima de 1:00)`,
+                        equipamento: codigo, categoria, tempo, intervalo, gravidade: 'ALTA', index: originalIndex
                     });
                 }
                 
-                // Abastecimentos de 1 hora ou mais
                 if (categoria && categoria.toLowerCase().includes('abastecimento') && minutos >= 60) {
                     apontamentosIrregulares.push({
                         tipo: 'Abastecimento Excessivo',
-                        descricao: `${codigo} - Abastecimento de ${tempo} (1 hora ou mais)`,
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'MÉDIA',
-                        index: index
+                        descricao: `${codigo || 'N/D'} - Abastecimento de ${tempo} (1 hora ou mais)`,
+                        equipamento: codigo, categoria, tempo, intervalo, gravidade: 'MÉDIA', index: originalIndex
                     });
                 }
                 
-                // Apontamentos muito curtos (0 a 4 minutos)
                 if (minutos > 0 && minutos <= 4) {
                     apontamentosIrregulares.push({
                         tipo: 'Apontamento Muito Curto',
-                        descricao: `${codigo} - ${categoria} de apenas ${tempo}`,
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'BAIXA',
-                        index: index
+                        descricao: `${codigo || 'N/D'} - ${categoria} de apenas ${tempo}`,
+                        equipamento: codigo, categoria, tempo, intervalo, gravidade: 'BAIXA', index: originalIndex
                     });
                 }
             });
             
-            // Detectar equipamentos com poucos apontamentos (após processar equipamentos)
-            setTimeout(() => {
-                if (equipamentosProcessados && Object.keys(equipamentosProcessados).length > 0) {
-                    Object.values(equipamentosProcessados).forEach(equip => {
-                        if (equip.totalApontamentos < 3) {
-                            apontamentosIrregulares.push({
-                                tipo: 'Poucos Apontamentos',
-                                descricao: `${equip.codigo} - Apenas ${equip.totalApontamentos} apontamentos no período`,
-                                equipamento: equip.codigo,
-                                categoria: '-',
-                                tempo: '-',
-                                intervalo: '-',
-                                gravidade: 'ALTA',
-                                index: -1
-                            });
-                        }
-                    });
-                }
-            }, 100);
-            
-            console.log('⚠️ Irregularidades detectadas:', apontamentosIrregulares.length);
+            // console.log('⚠️ Irregularidades detectadas (baseado no subset atual):', apontamentosIrregulares.length);
         }
 
         function calcularStatusInteligente(equipamento) {
-            // Nova lógica mais inteligente
             const totalApt = equipamento.totalApontamentos;
             const primeiroRegistro = equipamento.primeiroRegistro;
-            const irregulares = equipamento.apontamentos.filter(apt => apt.irregular).length;
+            const irregularesNoEquipamento = equipamento.apontamentos.filter(apt => apt.irregular).length;
             
-            // Crítico: sem apontamentos ou muitos irregulares
-            if (totalApt === 0 || irregulares > totalApt * 0.3) {
-                return 'CRITICO';
-            }
-            
-            // Atenção: poucos apontamentos ou primeiro registro tardio
-            if (totalApt < 3 || (primeiroRegistro && horaParaMinutos(primeiroRegistro) > 480)) {
-                return 'ATENCAO';
-            }
-            
-            // Bom: funcionamento normal
+            if (totalApt === 0) return 'CRITICO';
+            if (irregularesNoEquipamento > totalApt * 0.4) return 'CRITICO'; // Mais de 40% irregulares
+            if (totalApt < 2) return 'CRITICO'; // Muito poucos apontamentos
+
+            if (irregularesNoEquipamento > totalApt * 0.2 || totalApt < 4) return 'ATENCAO'; // Mais de 20% irregulares ou poucos apontamentos
+            if (primeiroRegistro && horaParaMinutos(primeiroRegistro) > 540) return 'ATENCAO'; // Primeiro registro após 09:00
+
             return 'BOM';
         }
 
-        function extrairHora(timestamp) {
-            if (!timestamp) return null;
+        function extrairHora(timestampStr) {
+            if (!timestampStr) return null;
             try {
-                const str = timestamp.toString();
-                if (str.includes(' ')) {
-                    const parts = str.split(' ');
-                    if (parts.length > 1) {
-                        const [hora, minuto] = parts[1].split(':');
-                        return `${hora.padStart(2, '0')}:${minuto.padStart(2, '0')}`;
-                    }
+                const str = timestampStr.toString();
+                // Tenta encontrar um padrão de hora HH:MM ou HH:MM:SS
+                const match = str.match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
+                if (match && match[1]) {
+                    const timeParts = match[1].split(':');
+                    const hora = timeParts[0].padStart(2, '0');
+                    const minuto = timeParts[1].padStart(2, '0');
+                    return `${hora}:${minuto}`;
                 }
                 return null;
             } catch (e) {
+                console.warn("Erro ao extrair hora de:", timestampStr, e);
                 return null;
             }
         }
 
-        function horaParaMinutos(hora) {
-            if (!hora || typeof hora !== 'string' || !hora.includes(':')) return 1440;
-            const [h, m] = hora.split(':').map(Number);
-            return (isNaN(h) || isNaN(m)) ? 1440 : h * 60 + m;
+        function horaParaMinutos(horaStr) {
+            if (!horaStr || typeof horaStr !== 'string' || !horaStr.includes(':')) return 1441; // Um valor alto para ordenação se inválido
+            const [h, m] = horaStr.split(':').map(Number);
+            return (isNaN(h) || isNaN(m)) ? 1441 : h * 60 + m;
         }
 
-        function tempoParaMinutos(tempo) {
-            if (!tempo || typeof tempo !== 'string') return 0;
-            const [h, m] = tempo.split(':').map(Number);
+        function tempoParaMinutos(tempoStr) {
+            if (!tempoStr || typeof tempoStr !== 'string' || !tempoStr.includes(':')) return 0;
+            const [h, m] = tempoStr.split(':').map(Number);
             return (isNaN(h) || isNaN(m)) ? 0 : h * 60 + m;
         }
 
-        function exibirResultados() {
-            dadosFiltrados = dadosCSV;
-            exibirEstatisticas();
-            exibirProblemas();
-            exibirEquipamentos();
-            
-            // Se estamos na aba timeline, gerar timeline
-            const timelineTab = document.getElementById('timeline-tab');
-            if (timelineTab && !timelineTab.classList.contains('hidden')) {
-                gerarTimeline();
-            }
-            
-            const exportSection = document.getElementById('exportSection');
-            const filtersSection = document.getElementById('filtersSection');
-            const statsSection = document.getElementById('statsSection');
-            const equipamentosSection = document.getElementById('equipamentosSection');
-            
-            if (exportSection) exportSection.style.display = 'block';
-            if (filtersSection) filtersSection.style.display = 'block';
-            if (statsSection) statsSection.style.display = 'block';
-            if (equipamentosSection) equipamentosSection.style.display = 'block';
+        function exibirResultadosDashboard() {
+            // As estatísticas e problemas devem refletir os dadosFiltrados
+            exibirEstatisticasDashboard(equipamentosProcessados, dadosFiltrados, apontamentosIrregulares);
+            exibirProblemasDashboard(apontamentosIrregulares); // Passar a lista global de irregulares
+            exibirEquipamentosDashboard(equipamentosProcessados);
         }
 
-        function exibirEstatisticas() {
+        function exibirEstatisticasDashboard(equipamentos, apontamentosAtuais, irregularesAtuais) {
             const stats = {
-                total: Object.keys(equipamentosProcessados).length,
+                total: Object.keys(equipamentos).length,
                 bom: 0,
                 atencao: 0,
                 critico: 0,
-                totalApontamentos: dadosFiltrados.length,
-                irregulares: apontamentosIrregulares.length
+                totalApontamentos: apontamentosAtuais.length,
+                irregulares: irregularesAtuais.length // Usar a contagem de irregulares já filtrada
             };
             
-            Object.values(equipamentosProcessados).forEach(equip => {
+            Object.values(equipamentos).forEach(equip => {
                 if (equip.status === 'BOM') stats.bom++;
                 else if (equip.status === 'ATENCAO') stats.atencao++;
                 else stats.critico++;
             });
             
             const statsGrid = document.getElementById('statsGrid');
+            if (!statsGrid) return;
             statsGrid.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-number">${stats.total}</div>
-                    <div class="stat-label">Total Equipamentos</div>
+                    <div class="stat-label">Total Equipamentos (Filtrados)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" style="color: #27ae60;">${stats.bom}</div>
@@ -1512,28 +1570,30 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">${stats.totalApontamentos}</div>
-                    <div class="stat-label">Total Apontamentos</div>
+                    <div class="stat-label">Total Apontamentos (Filtrados)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" style="color: #e74c3c;">${stats.irregulares}</div>
-                    <div class="stat-label">Apontamentos Irregulares</div>
+                    <div class="stat-label">Apontamentos Irregulares (Filtrados)</div>
                 </div>
             `;
         }
 
-        function exibirProblemas() {
+        function exibirProblemasDashboard(problemasParaExibir) {
             const problemsSection = document.getElementById('problemsSection');
             const problemsList = document.getElementById('problemsList');
+            if (!problemsSection || !problemsList) return;
             
-            if (apontamentosIrregulares.length === 0) {
+            if (problemasParaExibir.length === 0) {
                 problemsSection.style.display = 'none';
+                problemsList.innerHTML = '<p style="text-align:center; color:#7f8c8d;">Nenhuma irregularidade encontrada nos dados atuais.</p>';
                 return;
             }
             
             problemsSection.style.display = 'block';
             
             const problemsByType = {};
-            apontamentosIrregulares.forEach(problema => {
+            problemasParaExibir.forEach(problema => {
                 if (!problemsByType[problema.tipo]) {
                     problemsByType[problema.tipo] = [];
                 }
@@ -1551,19 +1611,24 @@
             `).join('');
         }
 
-        function exibirEquipamentos() {
+        function exibirEquipamentosDashboard(equipamentosParaExibir) {
             const equipamentosGrid = document.getElementById('equipamentosGrid');
-            const equipamentos = Object.values(equipamentosProcessados);
+            if (!equipamentosGrid) return;
+
+            const equipamentosArray = Object.values(equipamentosParaExibir);
+            equipamentosArray.sort((a, b) => a.codigo.localeCompare(b.codigo));
             
-            // Ordenar equipamentos por código
-            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
-            
-            equipamentosGrid.innerHTML = equipamentos.map(equip => `
+            if (equipamentosArray.length === 0) {
+                equipamentosGrid.innerHTML = '<p style="text-align:center; color:#7f8c8d; padding: 20px;">Nenhum equipamento encontrado com os filtros atuais.</p>';
+                return;
+            }
+
+            equipamentosGrid.innerHTML = equipamentosArray.map(equip => `
                 <div class="equipamento-card status-${equip.status.toLowerCase()}" data-tipo="${equip.tipo}">
                     <div class="equipamento-header">
                         <div>
                             <div class="equipamento-codigo">${equip.codigo}</div>
-                            <div class="equipamento-tipo">${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'}</div>
+                            <div class="equipamento-tipo">${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : equip.tipo === 'HP' ? 'Hiper Vácuo' : 'Desconhecido'}</div>
                         </div>
                         <div class="equipamento-status status-${equip.status.toLowerCase()}">${equip.status}</div>
                     </div>
@@ -1594,43 +1659,47 @@
                                 </div>
                             `).join('')}
                         </div>
-                    ` : '<div style="text-align: center; color: #7f8c8d; padding: 15px;">Nenhum apontamento</div>'}
+                    ` : '<div style="text-align: center; color: #7f8c8d; padding: 15px;">Nenhum apontamento para este equipamento com os filtros atuais.</div>'}
                 </div>
             `).join('');
         }
 
         function aplicarFiltros() {
-            const dataInicial = document.getElementById('dataInicial').value;
-            const dataFinal = document.getElementById('dataFinal').value;
-            const horaInicial = document.getElementById('horaInicial').value;
-            const horaFinal = document.getElementById('horaFinal').value;
-            const tipoFilter = document.getElementById('tipoFilter').value;
+            // console.log("Aplicando filtros do dashboard...");
+            const dataInicialEl = document.getElementById('dataInicial');
+            const dataFinalEl = document.getElementById('dataFinal');
+            const horaInicialEl = document.getElementById('horaInicial');
+            const horaFinalEl = document.getElementById('horaFinal');
+            const tipoFilterEl = document.getElementById('tipoFilter');
+
+            const dataInicial = dataInicialEl ? dataInicialEl.value : null;
+            const dataFinal = dataFinalEl ? dataFinalEl.value : null;
+            const horaInicial = horaInicialEl ? horaInicialEl.value : null;
+            const horaFinal = horaFinalEl ? horaFinalEl.value : null;
+            const tipoFilter = tipoFilterEl ? tipoFilterEl.value : null;
             
-            // Filtrar dados
             dadosFiltrados = dadosCSV.filter(apt => {
                 // Filtro por data
-                if (dataInicial) {
-                    const dataApt = apt['Data Inicial']?.split(' ')[0];
-                    if (dataApt && new Date(dataApt.split('/').reverse().join('-')) < new Date(dataInicial)) {
-                        return false;
-                    }
-                }
-                
-                if (dataFinal) {
-                    const dataApt = apt['Data Inicial']?.split(' ')[0];
-                    if (dataApt && new Date(dataApt.split('/').reverse().join('-')) > new Date(dataFinal)) {
-                        return false;
-                    }
+                const dataAptStr = apt['Data Inicial']?.split(' ')[0];
+                if (dataAptStr) {
+                    const [dia, mes, ano] = dataAptStr.split('/');
+                    const dataAptObj = new Date(`${ano}-${mes}-${dia}`);
+                    if (dataInicial && dataAptObj < new Date(dataInicial)) return false;
+                    if (dataFinal && dataAptObj > new Date(dataFinal)) return false;
+                } else if (dataInicial || dataFinal) { // Se não tem data no apontamento mas filtro de data existe
+                    return false;
                 }
                 
                 // Filtro por hora
                 const horaApt = extrairHora(apt['Data Inicial']);
-                if (horaInicial && horaApt && horaApt < horaInicial) {
-                    return false;
-                }
+                if (horaInicial && horaApt && horaApt < horaInicial) return false;
+                if (horaFinal && horaApt && horaApt > horaFinal) return false;
                 
-                if (horaFinal && horaApt && horaApt > horaFinal) {
-                    return false;
+                // Filtro por tipo de equipamento
+                if (tipoFilter) {
+                    const codigoVaga = extrairCodigoVaga(apt.Vaga);
+                    const tipoEquipamento = getTipoEquipamento(codigoVaga);
+                    if (tipoEquipamento !== tipoFilter) return false;
                 }
                 
                 return true;
@@ -1638,164 +1707,169 @@
             
             // Reprocessar com dados filtrados
             if (dadosFiltrados.length > 0) {
-                detectarApontamentosIrregulares();
-                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-                exibirResultados();
+                detectarApontamentosIrregulares(dadosFiltrados); // Atualiza apontamentosIrregulares globais
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados); // Atualiza equipamentosProcessados globais
+                exibirResultadosDashboard();
                 
-                // Filtro por tipo de equipamento na visualização
-                if (tipoFilter) {
-                    const cards = document.querySelectorAll('.equipamento-card');
-                    cards.forEach(card => {
-                        if (card.dataset.tipo === tipoFilter) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
+                // Se a aba Timeline estiver ativa, gerar/atualizar ela
+                const activeTabName = document.querySelector('.tab-btn.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (activeTabName === 'timeline') {
+                    gerarTimeline(); // GerarTimeline usará os equipamentosProcessados globais atualizados
                 }
-                
+
                 showSuccess(`Filtros aplicados! ${dadosFiltrados.length} apontamentos encontrados.`);
             } else {
+                // Limpar exibições se não houver dados
+                equipamentosProcessados = {};
+                apontamentosIrregulares = [];
+                exibirResultadosDashboard();
+                 if (document.getElementById('timelineContainer')) {
+                    document.getElementById('timelineContainer').innerHTML = '<div class="timeline-empty">Nenhum dado encontrado com os filtros aplicados.</div>';
+                }
                 showError('Nenhum apontamento encontrado com os filtros aplicados.');
             }
         }
 
         function exportarRelatorio(formato) {
+            // Usar apontamentosIrregulares globais, que já foram filtrados por aplicarFiltros()
             if (apontamentosIrregulares.length === 0) {
-                showError('Nenhum apontamento irregular encontrado para exportar.');
+                showError('Nenhum apontamento irregular encontrado (com os filtros atuais) para exportar.');
                 return;
             }
 
-            // Preparar dados para exportação no formato do relatório
             const dadosExportacao = apontamentosIrregulares.map(problema => ({
                 'Equipamento': problema.equipamento || '',
-                'Motorista': '',  // Campo em branco para preenchimento manual
+                'Motorista': '', 
                 'Gravidade': problema.gravidade || 'MÉDIA',
                 'Apontamento': problema.categoria || '',
                 'Problemas Identificados': problema.tipo || '',
                 'Hora': problema.intervalo || problema.tempo || '',
-                'Justificativa': '',  // Campo em branco para preenchimento manual
-                'Tratativa': '',      // Campo em branco para preenchimento manual
-                'Sugestão': ''        // Campo em branco para preenchimento manual
+                'Justificativa': '',  
+                'Tratativa': '',      
+                'Sugestão': ''        
             }));
 
             const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-            const nomeArquivo = `Relatorio_Apontamentos_${dataAtual}`;
+            const nomeArquivo = `Relatorio_Irregulares_${dataAtual}`;
 
             if (formato === 'xlsx') {
-                exportarXLSX(dadosExportacao, nomeArquivo);
+                exportarParaXLSX(dadosExportacao, nomeArquivo);
             } else {
-                exportarCSV(dadosExportacao, nomeArquivo);
+                exportarParaCSV(dadosExportacao, nomeArquivo);
             }
 
-            showSuccess(`Relatório exportado com sucesso! ${dadosExportacao.length} registros processados.`);
+            showSuccess(`Relatório de irregulares exportado! ${dadosExportacao.length} registros.`);
         }
 
-        function exportarXLSX(dados, nomeArquivo) {
+        function exportarParaXLSX(dados, nomeArquivo) { // Renomeada para evitar conflito
             const worksheet = XLSX.utils.json_to_sheet(dados);
             const workbook = XLSX.utils.book_new();
             
-            // Adicionar formatação às colunas
-            const range = XLSX.utils.decode_range(worksheet['!ref']);
-            
-            // Definir larguras das colunas
             worksheet['!cols'] = [
-                { width: 15 }, // Equipamento
-                { width: 25 }, // Motorista
-                { width: 12 }, // Gravidade
-                { width: 20 }, // Apontamento
-                { width: 25 }, // Problemas Identificados
-                { width: 20 }, // Hora
-                { width: 30 }, // Justificativa
-                { width: 30 }, // Tratativa
-                { width: 30 }  // Sugestão
+                { width: 15 }, { width: 25 }, { width: 12 }, { width: 20 }, 
+                { width: 25 }, { width: 20 }, { width: 30 }, { width: 30 }, { width: 30 }
             ];
             
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório');
             XLSX.writeFile(workbook, `${nomeArquivo}.xlsx`);
         }
 
-        function exportarCSV(dados, nomeArquivo) {
-            const csv = Papa.unparse(dados, {
-                delimiter: ';',
-                header: true
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        function exportarParaCSV(dados, nomeArquivo) { // Renomeada para evitar conflito
+            const csv = Papa.unparse(dados, { delimiter: ';', header: true });
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' }); // Adicionado BOM para Excel PT-BR
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${nomeArquivo}.csv`;
             link.click();
+            URL.revokeObjectURL(link.href);
         }
 
         function exportarApontamentosCompletos() {
+            // Usar dadosFiltrados globais
             if (dadosFiltrados.length === 0) {
-                showError('Nenhum apontamento encontrado para exportar.');
+                showError('Nenhum apontamento (com os filtros atuais) encontrado para exportar.');
                 return;
             }
 
-            const dadosCompletos = dadosFiltrados.map(apt => ({
-                'Equipamento': extrairCodigoVaga(apt.Vaga) || '',
-                'Placa': apt.Placa || '',
-                'Categoria': apt['Categoria Demora'] || '',
-                'Data Inicial': apt['Data Inicial'] || '',
-                'Data Final': apt['Data Final'] || '',
-                'Intervalo': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
-                'Tempo Indisponível': apt['Tempo Indisponível (HH:MM)'] || '',
-                'Status': apontamentosIrregulares.some(irreg => 
-                    irreg.equipamento === extrairCodigoVaga(apt.Vaga) && 
-                    irreg.categoria === apt['Categoria Demora']
-                ) ? 'Irregular' : 'Normal'
-            }));
+            const dadosCompletos = dadosFiltrados.map(apt => {
+                 const codigoVaga = extrairCodigoVaga(apt.Vaga);
+                 // Encontrar o índice original para verificar irregularidade
+                 const originalIndex = dadosCSV.findIndex(originalApt => 
+                    originalApt.Placa === apt.Placa &&
+                    originalApt['Data Inicial'] === apt['Data Inicial'] &&
+                    originalApt['Categoria Demora'] === apt['Categoria Demora']
+                 );
+                 const isIrregular = apontamentosIrregulares.some(irreg => irreg.index === originalIndex);
+
+                return {
+                    'Equipamento': codigoVaga || '',
+                    'Placa': apt.Placa || '',
+                    'Categoria': apt['Categoria Demora'] || '',
+                    'Data Inicial': apt['Data Inicial'] || '',
+                    'Data Final': apt['Data Final'] || '',
+                    'Intervalo': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Tempo Indisponível': apt['Tempo Indisponível (HH:MM)'] || '',
+                    'Status': isIrregular ? 'Irregular' : 'Normal'
+                };
+            });
 
             const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-            const nomeArquivo = `Apontamentos_Completos_${dataAtual}`;
+            const nomeArquivo = `Apontamentos_Completos_Filtrados_${dataAtual}`;
             
-            exportarXLSX(dadosCompletos, nomeArquivo);
-            showSuccess(`Apontamentos completos exportados! ${dadosCompletos.length} registros processados.`);
+            exportarParaXLSX(dadosCompletos, nomeArquivo);
+            showSuccess(`Apontamentos completos (filtrados) exportados! ${dadosCompletos.length} registros.`);
         }
 
         // ==================== SISTEMA DE ABAS ====================
         function switchTab(tabName) {
-            // Remover classe active de todas as abas
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             
-            // Ativar aba selecionada
             const activeBtn = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
             const activeTab = document.getElementById(`${tabName}-tab`);
             
             if (activeBtn) activeBtn.classList.add('active');
             if (activeTab) activeTab.classList.remove('hidden');
             
-            // Se for timeline e já temos dados, gerar timeline
-            if (tabName === 'timeline' && Object.keys(equipamentosProcessados).length > 0) {
-                gerarTimeline();
+            if (tabName === 'timeline') {
+                if (Object.keys(equipamentosProcessados).length > 0) {
+                    gerarTimeline();
+                } else if (dadosCSV.length > 0) {
+                    // Se há dados CSV mas não processados (ex: após upload sem processar e mudou pra timeline)
+                    // Poderia reprocessar ou mostrar mensagem. Por ora, mensagem.
+                    const container = document.getElementById('timelineContainer');
+                    if (container) container.innerHTML = '<div class="timeline-empty">Processe os dados carregados para ver a timeline.</div>';
+                }
             }
         }
 
         // ==================== SISTEMA DE TIMELINE ====================
         function gerarTimeline() {
             const container = document.getElementById('timelineContainer');
-            const equipamentos = Object.values(equipamentosProcessados);
+            if (!container) {
+                console.error("Elemento #timelineContainer não encontrado!");
+                return;
+            }
+            // Usa equipamentosProcessados globais, que já refletem os filtros do dashboard
+            const equipamentosArray = Object.values(equipamentosProcessados); 
             
-            if (equipamentos.length === 0) {
-                container.innerHTML = '<div class="timeline-empty">📊 Nenhum equipamento encontrado</div>';
+            if (equipamentosArray.length === 0) {
+                container.innerHTML = '<div class="timeline-empty">📊 Nenhum equipamento encontrado com os filtros atuais para exibir na timeline.</div>';
+                atualizarSeletorEquipamentos([]); // Limpar seletor
                 return;
             }
 
-            // Atualizar seletor de equipamentos
-            atualizarSeletorEquipamentos(equipamentos);
-
-            // Ordenar equipamentos por código
-            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+            atualizarSeletorEquipamentos(equipamentosArray);
+            equipamentosArray.sort((a, b) => a.codigo.localeCompare(b.codigo));
             
             let timelineHTML = '';
-            
-            equipamentos.forEach(equip => {
+            equipamentosArray.forEach(equip => {
+                // Apontamentos já estão filtrados dentro do objeto 'equip'
                 const apontamentosOrdenados = [...equip.apontamentos].sort((a, b) => {
-                    const timeA = new Date(a.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
-                    const timeB = new Date(b.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
+                    const dataA = a.dataInicial ? a.dataInicial.split(' ')[0] : null;
+                    const dataB = b.dataInicial ? b.dataInicial.split(' ')[0] : null;
+                    const timeA = dataA ? new Date(dataA.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3') + ' ' + (a.inicio || '00:00')).getTime() : 0;
+                    const timeB = dataB ? new Date(dataB.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3') + ' ' + (b.inicio || '00:00')).getTime() : 0;
                     return timeA - timeB;
                 });
 
@@ -1805,7 +1879,7 @@
                             <div class="timeline-equipment-info">
                                 <div class="timeline-equipment-code">${equip.codigo}</div>
                                 <div class="timeline-equipment-type">
-                                    ${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'}
+                                    ${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : equip.tipo === 'HP' ? 'Hiper Vácuo' : 'Desconhecido'}
                                 </div>
                             </div>
                             <div class="timeline-stats-mini">
@@ -1827,8 +1901,8 @@
                         <div class="timeline-track">
                             <div class="timeline-line"></div>
                             ${apontamentosOrdenados.length > 0 ? 
-                                apontamentosOrdenados.map(apt => gerarItemTimeline(apt)).join('') :
-                                '<div class="timeline-empty">Nenhum apontamento registrado</div>'
+                                apontamentosOrdenados.map(apt => gerarItemTimelineHTML(apt)).join('') :
+                                '<div class="timeline-empty" style="padding:10px 0;">Nenhum apontamento para este equipamento com os filtros atuais.</div>'
                             }
                         </div>
                     </div>
@@ -1836,74 +1910,63 @@
             });
             
             container.innerHTML = timelineHTML;
+            // Após gerar a timeline, aplicar os filtros da timeline, incluindo a seleção
+            filtrarTimeline(); 
         }
 
         function atualizarSeletorEquipamentos(equipamentos) {
             const selector = document.getElementById('equipmentSelector');
             if (!selector) return;
 
-            selector.innerHTML = '';
+            const previouslySelected = Array.from(selector.selectedOptions).map(opt => opt.value);
+            selector.innerHTML = ''; // Limpar opções existentes
+
             equipamentos.forEach(equip => {
                 const option = document.createElement('option');
                 option.value = equip.codigo;
-                option.textContent = `${equip.codigo} (${equip.totalApontamentos} apontamentos)`;
+                option.textContent = `${equip.codigo} (${equip.totalApontamentos} apts)`;
+                if (previouslySelected.includes(equip.codigo)) {
+                    option.selected = true;
+                }
                 selector.appendChild(option);
-            });
-
-            // Event listener para seleção
-            selector.addEventListener('change', function() {
-                filtrarTimelinePorSelecao();
             });
         }
 
         function filtrarTimelinePorSelecao() {
-            const selector = document.getElementById('equipmentSelector');
-            const selectedEquipments = Array.from(selector.selectedOptions).map(option => option.value);
-            
-            if (selectedEquipments.length === 0) {
-                // Se nenhum selecionado, mostrar todos
-                document.querySelectorAll('.timeline-equipment').forEach(eq => {
-                    eq.style.display = 'block';
-                });
-                return;
-            }
-
-            // Mostrar apenas os selecionados
-            document.querySelectorAll('.timeline-equipment').forEach(eq => {
-                const equipmentCode = eq.dataset.equipment;
-                if (selectedEquipments.includes(equipmentCode)) {
-                    eq.style.display = 'block';
-                } else {
-                    eq.style.display = 'none';
-                }
-            });
+            // console.log("Filtrando timeline por seleção...");
+            // Esta função agora é parte de filtrarTimeline()
+            filtrarTimeline();
         }
 
-        function gerarItemTimeline(apontamento) {
+        function gerarItemTimelineHTML(apontamento) {
             const tempoMinutos = tempoParaMinutos(apontamento.tempoIndisponivel);
-            const isExcessive = (apontamento.categoria.toLowerCase().includes('refeição') && tempoMinutos > 60) || 
-                              (apontamento.categoria.toLowerCase().includes('abastecimento') && tempoMinutos >= 60);
+            const categoriaLower = apontamento.categoria ? apontamento.categoria.toLowerCase() : "";
+
+            const isExcessive = (categoriaLower.includes('refeição') && tempoMinutos > 60) || 
+                              (categoriaLower.includes('abastecimento') && tempoMinutos >= 60);
             
             const badgeType = apontamento.irregular ? 'irregular' : (isExcessive ? 'excessive' : 'normal');
             const badgeText = apontamento.irregular ? 'IRREGULAR' : (isExcessive ? 'EXCESSIVO' : 'NORMAL');
             
             return `
-                <div class="timeline-item ${apontamento.irregular ? 'irregular' : ''}" data-status="${badgeType}">
+                <div class="timeline-item ${apontamento.irregular ? 'irregular' : ''} ${isExcessive ? 'excessive' : ''}" data-status="${badgeType}" 
+                     data-category="${categoriaLower}" 
+                     data-date="${apontamento.dataInicial ? apontamento.dataInicial.split(' ')[0] : ''}">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-info">
-                            <div class="timeline-category">${apontamento.categoria}</div>
+                            <div class="timeline-category">${apontamento.categoria || 'N/D'}</div>
                             <div class="timeline-time">
                                 📅 ${apontamento.dataInicial?.split(' ')[0] || 'N/A'}
                             </div>
                             <div class="timeline-time">
                                 ⏰ ${apontamento.intervalo || 'N/A'}
                             </div>
-                            <div class="timeline-duration">${apontamento.tempoIndisponivel}</div>
+                            <div class="timeline-duration">${apontamento.tempoIndisponivel || 'N/A'}</div>
                         </div>
                         <div class="timeline-badges">
                             <div class="timeline-badge badge-${badgeType}">${badgeText}</div>
-                            ${apontamento.placa ? `<div style="font-size: 0.8rem; color: #7f8c8d;">🚛 ${apontamento.placa}</div>` : ''}
+                            ${apontamento.placa ? `<div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 3px;">🚛 ${apontamento.placa}</div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -1911,105 +1974,150 @@
         }
 
         function filtrarTimeline() {
-            const searchTerm = document.getElementById('timelineSearch').value.toLowerCase();
-            const dateFilter = document.getElementById('timelineDate').value;
-            const typeFilter = document.getElementById('timelineTypeFilter').value;
-            const statusFilter = document.getElementById('timelineStatusFilter').value;
+            // console.log("Filtrando timeline completa...");
+            const searchTerm = document.getElementById('timelineSearch')?.value.toLowerCase() || "";
+            const dateFilterInput = document.getElementById('timelineDate')?.value;
+            const typeFilter = document.getElementById('timelineTypeFilter')?.value || "";
+            const statusFilter = document.getElementById('timelineStatusFilter')?.value || "";
+            const equipmentSelector = document.getElementById('equipmentSelector');
+            const selectedEquipCodesInSelector = equipmentSelector ? Array.from(equipmentSelector.selectedOptions).map(option => option.value) : [];
+
+            const equipmentsDivs = document.querySelectorAll('.timeline-equipment');
+            if (equipmentsDivs.length === 0 && Object.keys(equipamentosProcessados).length > 0) {
+                // Se não há divs mas há dados processados, talvez a timeline não tenha sido gerada ainda.
+                // console.log("Tentando gerar timeline antes de filtrar...");
+                // gerarTimeline(); // Pode causar loop se chamado incorretamente. Cuidado.
+                // return; // Melhor evitar, pois pode ser chamado recursivamente.
+            }
             
-            const equipments = document.querySelectorAll('.timeline-equipment');
-            
-            equipments.forEach(equipment => {
-                const equipmentCode = equipment.dataset.equipment.toLowerCase();
-                const equipmentType = equipment.dataset.type;
-                let showEquipment = true;
+            equipmentsDivs.forEach(equipmentDiv => {
+                const equipmentCode = equipmentDiv.dataset.equipment.toLowerCase();
+                const equipmentType = equipmentDiv.dataset.type;
+                let showEquipmentDiv = true;
                 
-                // Filtro por busca
-                if (searchTerm && !equipmentCode.includes(searchTerm)) {
-                    showEquipment = false;
+                // 1. Filtro por Seleção no <select multiple>
+                if (selectedEquipCodesInSelector.length > 0 && !selectedEquipCodesInSelector.includes(equipmentDiv.dataset.equipment)) {
+                    showEquipmentDiv = false;
                 }
                 
-                // Filtro por tipo
-                if (typeFilter && equipmentType !== typeFilter) {
-                    showEquipment = false;
+                // 2. Filtro por busca de texto (se aplicável e se o equipamento ainda estiver visível)
+                if (showEquipmentDiv && searchTerm && !equipmentCode.includes(searchTerm)) {
+                    showEquipmentDiv = false;
                 }
                 
-                if (showEquipment) {
-                    // Filtrar itens do timeline
-                    const timelineItems = equipment.querySelectorAll('.timeline-item');
-                    let hasVisibleItems = false;
+                // 3. Filtro por tipo de equipamento (se aplicável e se o equipamento ainda estiver visível)
+                if (showEquipmentDiv && typeFilter && equipmentType !== typeFilter) {
+                    showEquipmentDiv = false;
+                }
+                
+                // Se o equipamento em si está visível até agora, filtramos seus itens
+                if (showEquipmentDiv) {
+                    const timelineItems = equipmentDiv.querySelectorAll('.timeline-item');
+                    let hasVisibleItemsInEquipment = false;
                     
                     timelineItems.forEach(item => {
                         let showItem = true;
                         
-                        // Filtro por data
-                        if (dateFilter) {
-                            const itemDate = item.querySelector('.timeline-time').textContent.match(/\d{2}\/\d{2}\/\d{4}/);
-                            if (itemDate) {
-                                const [day, month, year] = itemDate[0].split('/');
-                                const itemDateFormatted = `${year}-${month}-${day}`;
-                                if (itemDateFormatted !== dateFilter) {
+                        // Filtro por data do apontamento
+                        if (dateFilterInput) {
+                            const itemDateStr = item.dataset.date; // DD/MM/YYYY
+                            if (itemDateStr) {
+                                const [day, month, year] = itemDateStr.split('/');
+                                const itemDateFormatted = `${year}-${month}-${day}`; // YYYY-MM-DD
+                                if (itemDateFormatted !== dateFilterInput) {
                                     showItem = false;
                                 }
+                            } else { // Se o item não tem data e o filtro de data está ativo
+                                showItem = false;
                             }
                         }
                         
-                        // Filtro por status
-                        if (statusFilter) {
-                            const itemStatus = item.dataset.status;
+                        // Filtro por status do apontamento (normal, irregular/excessive)
+                        if (showItem && statusFilter) {
+                            const itemStatus = item.dataset.status; // 'normal', 'irregular', 'excessive'
                             if (statusFilter === 'normal' && itemStatus !== 'normal') {
                                 showItem = false;
-                            } else if (statusFilter === 'irregular' && itemStatus === 'normal') {
+                            } else if (statusFilter === 'irregular' && (itemStatus !== 'irregular' && itemStatus !== 'excessive')) {
                                 showItem = false;
                             }
                         }
                         
                         item.style.display = showItem ? 'block' : 'none';
-                        if (showItem) hasVisibleItems = true;
+                        if (showItem) hasVisibleItemsInEquipment = true;
                     });
                     
-                    equipment.style.display = hasVisibleItems ? 'block' : 'none';
-                } else {
-                    equipment.style.display = 'none';
+                    // Se, após filtrar os itens, não sobrar nenhum visível, escondemos o equipamento
+                    if (!hasVisibleItemsInEquipment) {
+                        showEquipmentDiv = false;
+                    }
                 }
+                
+                equipmentDiv.style.display = showEquipmentDiv ? 'block' : 'none';
             });
-
-            // Aplicar filtro de seleção se houver equipamentos selecionados
-            const selector = document.getElementById('equipmentSelector');
-            if (selector && selector.selectedOptions.length > 0) {
-                filtrarTimelinePorSelecao();
-            }
         }
 
+
         // ==================== EXPORTAÇÃO PDF TIMELINE ====================
-        async function exportarTimelinePDF(tipo) {
+        async function exportarTimelinePDF(tipoExportacao) { // 'all' para visíveis, 'selected' para os do seletor
             try {
                 showSuccess('⏳ Gerando PDF da Timeline...');
                 
-                const equipamentos = obterEquipamentosParaExportacao(tipo);
-                if (equipamentos.length === 0) {
-                    showError('Nenhum equipamento selecionado para exportação.');
+                let equipamentosParaExportar = [];
+                const todosEquipamentosProcessados = Object.values(equipamentosProcessados);
+
+                if (tipoExportacao === 'selected') {
+                    const selector = document.getElementById('equipmentSelector');
+                    const selectedCodes = selector ? Array.from(selector.selectedOptions).map(option => option.value) : [];
+                    if (selectedCodes.length === 0) {
+                        showError('Nenhum equipamento selecionado no seletor para exportar. Selecione ao menos um.');
+                        return;
+                    }
+                    equipamentosParaExportar = todosEquipamentosProcessados.filter(eq => selectedCodes.includes(eq.codigo));
+                } else { // 'all' - exportar os que estão visíveis na tela após filtros da timeline
+                    document.querySelectorAll('.timeline-equipment').forEach(eqDiv => {
+                        if (eqDiv.style.display !== 'none') {
+                            const equipCode = eqDiv.dataset.equipment;
+                            const equipData = todosEquipamentosProcessados.find(e => e.codigo === equipCode);
+                            if (equipData) {
+                                // Clonar para não modificar o original, e filtrar apontamentos visíveis
+                                const equipClone = JSON.parse(JSON.stringify(equipData));
+                                equipClone.apontamentos = [];
+                                
+                                eqDiv.querySelectorAll('.timeline-item').forEach(itemDiv => {
+                                    if (itemDiv.style.display !== 'none') {
+                                        // Precisamos encontrar o apontamento original correspondente
+                                        // Isso é um pouco complexo sem um ID único no apontamento.
+                                        // Por simplicidade, vamos pegar todos os apontamentos do equipamento se ele estiver visível.
+                                        // Uma melhoria seria filtrar os apontamentos que estão realmente visíveis.
+                                    }
+                                });
+                                // Para esta versão, se o equipamento está visível, todos os seus apontamentos (já filtrados pelo dashboard) são incluídos.
+                                equipamentosParaExportar.push(equipData); 
+                            }
+                        }
+                    });
+                }
+                
+                if (equipamentosParaExportar.length === 0) {
+                    showError('Nenhum equipamento para exportar (verifique os filtros ou seleção).');
                     return;
                 }
 
-                // Criar container temporário para PDF
-                const pdfContainer = criarContainerPDF(equipamentos);
+                const pdfContainer = criarContainerPDF(equipamentosParaExportar);
                 document.body.appendChild(pdfContainer);
 
-                // Gerar PDF
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                await gerarPaginasPDF(pdf, pdfContainer, equipamentos);
+                await gerarPaginasPDF(pdf, pdfContainer); // Removido 'equipamentos' de argumento, pois pdfContainer já tem tudo
                 
-                // Remover container temporário
                 document.body.removeChild(pdfContainer);
                 
-                // Salvar PDF
                 const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-                const nomeArquivo = `Timeline_Equipamentos_${tipo}_${dataAtual}.pdf`;
+                const nomeArquivo = `Timeline_Equipamentos_${tipoExportacao}_${dataAtual}.pdf`;
                 pdf.save(nomeArquivo);
                 
-                showSuccess(`✅ PDF gerado com sucesso! ${equipamentos.length} equipamentos exportados.`);
+                showSuccess(`✅ PDF gerado! ${equipamentosParaExportar.length} equipamentos.`);
                 
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
@@ -2017,84 +2125,65 @@
             }
         }
 
-        function obterEquipamentosParaExportacao(tipo) {
-            const todosEquipamentos = Object.values(equipamentosProcessados);
-            
-            if (tipo === 'all') {
-                return todosEquipamentos.filter(eq => {
-                    const element = document.querySelector(`[data-equipment="${eq.codigo}"]`);
-                    return element && element.style.display !== 'none';
-                });
-            } else {
-                const selector = document.getElementById('equipmentSelector');
-                const selectedCodes = Array.from(selector.selectedOptions).map(option => option.value);
-                
-                if (selectedCodes.length === 0) {
-                    return todosEquipamentos.slice(0, 5); // Limitar a 5 se nenhum selecionado
-                }
-                
-                return todosEquipamentos.filter(eq => selectedCodes.includes(eq.codigo));
-            }
-        }
-
         function criarContainerPDF(equipamentos) {
             const container = document.createElement('div');
             container.className = 'pdf-timeline-container';
             container.style.position = 'absolute';
-            container.style.left = '-10000px';
-            container.style.width = '800px';
+            container.style.left = '-10000px'; // Fora da tela
+            container.style.width = '210mm'; // Largura A4
             container.style.background = 'white';
             
-            // Header do PDF
             const header = document.createElement('div');
             header.className = 'pdf-header';
             header.innerHTML = `
                 <div class="pdf-title">🚚 Timeline de Equipamentos - GrupoGPS</div>
                 <div class="pdf-subtitle">Relatório de Apontamentos Cronológicos</div>
                 <div class="pdf-date">Gerado em: ${new Date().toLocaleString('pt-BR')}</div>
-                <div class="pdf-date">Total de Equipamentos: ${equipamentos.length}</div>
+                <div class="pdf-date">Total de Equipamentos no Relatório: ${equipamentos.length}</div>
             `;
             container.appendChild(header);
 
-            // Timeline para cada equipamento
             equipamentos.forEach(equip => {
                 const equipElement = criarEquipamentoPDF(equip);
                 container.appendChild(equipElement);
             });
-
             return container;
         }
 
         function criarEquipamentoPDF(equip) {
-            const apontamentosOrdenados = [...equip.apontamentos].sort((a, b) => {
-                const timeA = new Date(a.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
-                const timeB = new Date(b.dataInicial.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3')).getTime();
+            // Usar apontamentos já filtrados e ordenados do objeto 'equip'
+             const apontamentosOrdenados = [...equip.apontamentos].sort((a, b) => {
+                const dataA = a.dataInicial ? a.dataInicial.split(' ')[0] : null;
+                const dataB = b.dataInicial ? b.dataInicial.split(' ')[0] : null;
+                const timeA = dataA ? new Date(dataA.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3') + ' ' + (a.inicio || '00:00')).getTime() : 0;
+                const timeB = dataB ? new Date(dataB.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3') + ' ' + (b.inicio || '00:00')).getTime() : 0;
                 return timeA - timeB;
             });
+
 
             const equipDiv = document.createElement('div');
             equipDiv.className = `pdf-timeline-equipment status-${equip.status.toLowerCase()}`;
             
             equipDiv.innerHTML = `
-                <div class="timeline-header">
-                    <div class="timeline-equipment-info">
-                        <div class="timeline-equipment-code" style="font-size: 20px; margin-bottom: 8px;">${equip.codigo}</div>
-                        <div class="timeline-equipment-type" style="display: inline-block; background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px;">
-                            ${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'}
+                <div class="timeline-header" style="border-bottom: 2px solid #3498db; padding-bottom:10px; margin-bottom:15px;">
+                    <div class="timeline-equipment-info" style="margin-bottom:10px;">
+                        <div class="timeline-equipment-code" style="font-size: 18px; font-weight: bold; color: #2c3e50;">${equip.codigo}</div>
+                        <div class="timeline-equipment-type" style="display: inline-block; background: #3498db; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; margin-left:10px;">
+                            ${equip.tipo === 'AP' ? 'Alta Pressão' : equip.tipo === 'AV' ? 'Auto Vácuo' : equip.tipo === 'HP' ? 'Hiper Vácuo' : 'Desconhecido'}
                         </div>
                     </div>
-                    <div class="timeline-stats-mini" style="display: flex; gap: 20px; margin-top: 10px;">
-                        <div class="timeline-stat-item">
-                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold;">${equip.totalApontamentos}</div>
-                            <div class="timeline-stat-label">Total Apontamentos</div>
+                    <div class="timeline-stats-mini" style="display: flex; gap: 15px; font-size:12px;">
+                        <div class="timeline-stat-item" style="text-align:left;">
+                            <span class="timeline-stat-number" style="font-weight: bold;">${equip.totalApontamentos}</span>
+                            <span class="timeline-stat-label"> Apontamentos</span>
                         </div>
-                        <div class="timeline-stat-item">
-                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold; color: #e74c3c;">${apontamentosOrdenados.filter(apt => apt.irregular).length}</div>
-                            <div class="timeline-stat-label">Irregulares</div>
+                        <div class="timeline-stat-item" style="text-align:left;">
+                            <span class="timeline-stat-number" style="font-weight: bold; color: #e74c3c;">${apontamentosOrdenados.filter(apt => apt.irregular).length}</span>
+                            <span class="timeline-stat-label"> Irregulares</span>
                         </div>
-                        <div class="timeline-stat-item">
-                            <div class="timeline-stat-number" style="font-size: 18px; font-weight: bold;">${equip.status}</div>
-                            <div class="timeline-stat-label">Status Geral</div>
+                        <div class="timeline-stat-item" style="text-align:left;">
+                            <span class="timeline-stat-number" style="font-weight: bold;">${equip.status}</span>
+                            <span class="timeline-stat-label"> Status</span>
                         </div>
                     </div>
                 </div>
@@ -2102,103 +2191,134 @@
                 <div class="pdf-timeline-track">
                     ${apontamentosOrdenados.length > 0 ? 
                         apontamentosOrdenados.map(apt => criarItemTimelinePDF(apt)).join('') :
-                        '<div style="text-align: center; padding: 20px; color: #7f8c8d;">Nenhum apontamento registrado</div>'
+                        '<div style="text-align: center; padding: 15px; font-size:12px; color: #7f8c8d;">Nenhum apontamento para este equipamento.</div>'
                     }
                 </div>
             `;
-            
             return equipDiv;
         }
 
         function criarItemTimelinePDF(apontamento) {
             const tempoMinutos = tempoParaMinutos(apontamento.tempoIndisponivel);
-            const isExcessive = (apontamento.categoria.toLowerCase().includes('refeição') && tempoMinutos > 60) || 
-                              (apontamento.categoria.toLowerCase().includes('abastecimento') && tempoMinutos >= 60);
+            const categoriaLower = apontamento.categoria ? apontamento.categoria.toLowerCase() : "";
+            const isExcessive = (categoriaLower.includes('refeição') && tempoMinutos > 60) || 
+                              (categoriaLower.includes('abastecimento') && tempoMinutos >= 60);
             
             const badgeType = apontamento.irregular ? 'irregular' : (isExcessive ? 'excessive' : 'normal');
             const badgeText = apontamento.irregular ? 'IRREGULAR' : (isExcessive ? 'EXCESSIVO' : 'NORMAL');
-            const badgeColor = apontamento.irregular ? '#e74c3c' : (isExcessive ? '#f39c12' : '#27ae60');
+            
+            let badgeStyle = 'background: #d5f4e6; color: #27ae60;'; // normal
+            if (badgeType === 'irregular') badgeStyle = 'background: #fdedec; color: #e74c3c;';
+            else if (badgeType === 'excessive') badgeStyle = 'background: #fef9e7; color: #f39c12;';
             
             return `
-                <div class="pdf-timeline-item ${apontamento.irregular ? 'irregular' : ''}" style="margin-bottom: 12px;">
+                <div class="pdf-timeline-item ${apontamento.irregular ? 'irregular' : ''}" style="margin-bottom: 10px; border-left: 3px solid ${badgeType === 'irregular' || badgeType === 'excessive' ? (badgeType === 'irregular' ? '#e74c3c' : '#f39c12') : '#3498db'};">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="flex: 1;">
-                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 5px; font-size: 14px;">${apontamento.categoria}</div>
-                            <div style="color: #7f8c8d; font-size: 12px; margin-bottom: 3px;">
+                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 4px; font-size: 13px;">${apontamento.categoria || 'N/D'}</div>
+                            <div style="color: #555; font-size: 11px; margin-bottom: 2px;">
                                 📅 ${apontamento.dataInicial?.split(' ')[0] || 'N/A'}
+                                <span style="margin-left:10px;">⏰ ${apontamento.intervalo || 'N/A'}</span>
                             </div>
-                            <div style="color: #7f8c8d; font-size: 12px; margin-bottom: 5px;">
-                                ⏰ ${apontamento.intervalo || 'N/A'}
-                            </div>
-                            <div style="background: #3498db; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block;">
-                                Duração: ${apontamento.tempoIndisponivel}
+                            <div style="background: #eee; color: #333; padding: 2px 6px; border-radius: 8px; font-size: 10px; font-weight: 600; display: inline-block;">
+                                Duração: ${apontamento.tempoIndisponivel || 'N/A'}
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="background: ${badgeColor}; color: white; padding: 4px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-bottom: 5px;">
+                        <div style="text-align: right; margin-left:10px;">
+                            <div style="${badgeStyle} padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 600; margin-bottom: 3px; display: inline-block;">
                                 ${badgeText}
                             </div>
-                            ${apontamento.placa ? `<div style="font-size: 11px; color: #7f8c8d;">🚛 ${apontamento.placa}</div>` : ''}
+                            ${apontamento.placa ? `<div style="font-size: 10px; color: #7f8c8d;">🚛 ${apontamento.placa}</div>` : ''}
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        async function gerarPaginasPDF(pdf, container, equipamentos) {
-            // Capturar o container como imagem usando html2canvas
+        async function gerarPaginasPDF(pdf, container) {
             const canvas = await html2canvas(container, {
-                scale: 2,
+                scale: 2, // Melhor qualidade
                 useCORS: true,
                 backgroundColor: '#ffffff',
-                height: container.scrollHeight,
-                windowHeight: container.scrollHeight
+                height: container.scrollHeight, 
+                windowHeight: container.scrollHeight 
             });
             
             const imgData = canvas.toDataURL('image/png');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            const imgWidth = pdfWidth - 20; // Margens
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
-            let heightLeft = imgHeight;
-            let position = 10; // Margem superior
-            
+            // Proporção da imagem
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const ratio = canvasWidth / canvasHeight;
+
+            const margin = 10; // mm
+            const usablePdfWidth = pdfWidth - 2 * margin;
+            const usablePdfHeight = pdfHeight - 2 * margin;
+
+            const imgEffectiveWidth = usablePdfWidth;
+            const imgEffectiveHeight = imgEffectiveWidth / ratio;
+
+            let heightLeft = imgEffectiveHeight;
+            let currentPositionOnImage = 0; // Posição Y na imagem original do canvas
+
             // Primeira página
-            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            heightLeft -= (pdfHeight - 20);
-            
-            // Páginas adicionais se necessário
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight + 10;
+            pdf.addImage(imgData, 'PNG', margin, margin, imgEffectiveWidth, imgEffectiveHeight);
+            heightLeft -= usablePdfHeight;
+            currentPositionOnImage += usablePdfHeight * (canvasHeight / imgEffectiveHeight) ;
+
+
+            while (heightLeft > 0) {
                 pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                heightLeft -= (pdfHeight - 20);
+                // O y no addImage para o source canvas é em pixels da imagem original, não em mm do PDF.
+                // A altura da parte da imagem a ser cortada é 'usablePdfHeight' em termos de mm no PDF,
+                // que corresponde a usablePdfHeight * (canvasHeight / imgEffectiveHeight) em termos de pixels da imagem.
+                const sourceRectHeight = usablePdfHeight * (canvasHeight / imgEffectiveHeight);
+
+                pdf.addImage(
+                    imgData, 'PNG', 
+                    margin, margin, // Posição no PDF (x, y)
+                    imgEffectiveWidth, imgEffectiveHeight, // Tamanho no PDF (largura, altura)
+                    null, // alias
+                    'NONE', // compressão
+                    0, // rotação
+                    0, // xOffset no canvas (sempre 0)
+                    currentPositionOnImage, // yOffset no canvas
+                    canvasWidth, // sourceImageWidth
+                    sourceRectHeight // sourceImageHeight (altura da fatia a ser desenhada)
+                );
+                heightLeft -= usablePdfHeight;
+                currentPositionOnImage += sourceRectHeight;
             }
         }
 
+
         function showError(message) {
-            const existing = document.querySelector('.error');
-            if (existing) existing.remove();
+            // Remover mensagens existentes para evitar acúmulo
+            document.querySelectorAll('.error, .success').forEach(el => el.remove());
             
-            const error = document.createElement('div');
-            error.className = 'error';
-            error.textContent = message;
-            document.querySelector('.container').appendChild(error);
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'error';
+            msgDiv.textContent = message;
             
-            setTimeout(() => error.remove(), 5000);
+            const containerDiv = document.querySelector('.container') || document.body;
+            containerDiv.insertBefore(msgDiv, containerDiv.firstChild); // Inserir no topo do container
+            
+            setTimeout(() => msgDiv.remove(), 5000);
         }
 
         function showSuccess(message) {
-            const existing = document.querySelector('.success');
-            if (existing) existing.remove();
+            document.querySelectorAll('.error, .success').forEach(el => el.remove());
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'success';
+            msgDiv.textContent = message;
+
+            const containerDiv = document.querySelector('.container') || document.body;
+            containerDiv.insertBefore(msgDiv, containerDiv.firstChild);
             
-            const success = document.createElement('div');
-            success.className = 'success';
-            success.textContent = message;
-            document.querySelector('.container').appendChild(success);
-            
-            setTimeout(() => success.remove(), 3000);
+            setTimeout(() => msgDiv.remove(), 3000);
         }
     </script>
 </body>
