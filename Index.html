@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle De Apontamentos - GrupoGPS</title>
+
+    <!-- libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --accent-bg: #f8fafc;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #94a3b8;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+            --accent-bg: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--background) 0%, var(--accent-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #ffffff;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Compact Controls Section */
+        .controls-bar {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .control-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .compact-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            min-width: 120px;
+        }
+
+        .compact-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgb(37 99 235 / 0.1);
+        }
+
+        /* Upload Area Compact */
+        .upload-compact {
+            background: var(--accent-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 200px;
+        }
+
+        .upload-compact:hover {
+            border-color: var(--primary-color);
+            background: var(--surface);
+        }
+
+        .upload-compact-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .upload-compact-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background: var(--accent-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: var(--surface);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            background: var(--surface);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            padding: 1rem;
+        }
+
+        .tab-content.hidden {
+            display: none;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Dashboard Controls */
+        .dashboard-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .stat-bom { color: var(--success-color); }
+        .stat-atencao { color: var(--warning-color); }
+        .stat-critico { color: var(--danger-color); }
+
+        /* Problems Section */
+        .problems-container {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problems-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .problems-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .problems-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .problems-title::before {
+            content: '⚠️';
+            font-size: 1.5rem;
+        }
+
+        .problem-item {
+            background: var(--surface);
+            border-left: 4px solid #f59e0b;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .problem-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .problem-type {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .problem-details {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Equipment Grid with Status Colors */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .equipment-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Status-based coloring */
+        .equipment-card.status-colored.status-bom {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: var(--success-color);
+        }
+
+        .equipment-card.status-colored.status-atencao {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: var(--warning-color);
+        }
+
+        .equipment-card.status-colored.status-critico {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            border-color: var(--danger-color);
+        }
+
+        .equipment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .equipment-code-card {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .equipment-type {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--accent-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .equipment-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-bom {
+            background: rgb(5 150 105 / 0.1);
+            color: var(--success-color);
+        }
+
+        .status-atencao {
+            background: rgb(217 119 6 / 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-critico {
+            background: rgb(220 38 38 / 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Appointments list */
+        .appointments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            background: var(--accent-bg);
+        }
+
+        .appointment-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--surface);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .appointment-item:hover {
+            transform: translateX(2px);
+            box-shadow: var(--shadow);
+        }
+
+        .appointment-item.irregular {
+            border-left-color: var(--danger-color);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        /* Enhanced Timeline */
+        .timeline-container {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--accent-bg);
+            border-radius: 8px;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .timeline-columns-selector {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .timeline-options {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .column-btn {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border-color);
+            background: var(--surface);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .column-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .timeline-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .zoom-btn {
+            padding: 0.25rem 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .zoom-level {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .timeline-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .timeline-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .timeline-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .timeline-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+        .timeline-equipment {
+            background: var(--accent-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transform: scale(1);
+            transition: all 0.2s ease;
+        }
+
+        .timeline-equipment-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.75rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .equipment-code {
+            font-weight: 700;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .equipment-info {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .timeline-content {
+            display: flex;
+            height: 600px;
+            position: relative;
+            background: var(--surface);
+            transform-origin: top left;
+            transition: transform 0.2s ease;
+        }
+
+        .timeline-hours {
+            width: 60px;
+            flex-shrink: 0;
+            background: var(--accent-bg);
+            border-right: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .timeline-hour {
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .timeline-hour::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .timeline-lane {
+            flex: 1;
+            position: relative;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        /* Enhanced appointment styling */
+        .timeline-appointment {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            z-index: 2;
+            opacity: 1;
+        }
+
+        .timeline-appointment:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+        .timeline-appointment.irregular {
+            border: 2px dashed #ff4757;
+            border-left: 4px solid #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-appointment.overlapping {
+            right: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .timeline-appointment.overlapping:nth-child(even) {
+            left: 50%;
+            right: 2px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .appointment-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Time gap styling */
+        .time-gap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 3px,
+                rgba(156, 163, 175, 0.15) 3px,
+                rgba(156, 163, 175, 0.15) 6px
+            );
+            border-left: 3px solid rgba(156, 163, 175, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .gap-label {
+            background: rgba(156, 163, 175, 0.1);
+            color: var(--text-secondary);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+        }
+
+        /* Enhanced Category Colors - All solid, no transparency */
+        .categoria-refeicao-motorista { background: #3498db !important; }
+        .categoria-aguardando-area { background: #3742fa !important; }
+        .categoria-documentacao { background: #e67e22 !important; }
+        .categoria-preparacao { background: #8e44ad !important; }
+        .categoria-abastecimento { background: #f39c12 !important; }
+        .categoria-descarregamento { background: #5f27cd !important; }
+        .categoria-bloqueio { background: #7f8c8d !important; }
+        .categoria-aguardando-permissao-da-area { background: #ff4757 !important; }
+        .categoria-falta-de-acessorio { background: #00d2d3 !important; }
+        .categoria-aguardando-carreta-bascular { background: #ff9ff3 !important; }
+        .categoria-aguardando-passagem-de-locomotiva { background: #54a0ff !important; }
+        .categoria-pequenas-manutencoes { background: #ff6b6b !important; }
+        .categoria-troca-de-equipamento { background: #ee5a24 !important; }
+        .categoria-pausas-diversas-agua-banheiro { background: #a55eea !important; }
+        .categoria-aguardando-semaforo-cancela { background: #ff3838 !important; }
+        .categoria-abastecimento-empilhadeira { background: #ffa502 !important; }
+        .categoria-abordagem-de-seguranca { background: #2f3542 !important; }
+        .categoria-manutencao-corretiva { background: #e74c3c !important; }
+        .categoria-manutencao-preventiva { background: #d35400 !important; }
+        .categoria-deslocamento { background: #2ecc71 !important; }
+        .categoria-checklist { background: #9b59b6 !important; }
+        .categoria-espera { background: #1abc9c !important; }
+        .categoria-limpeza { background: #f1c40f !important; }
+
+        /* Fallback colors for any uncategorized items */
+        .categoria-default { background: #7f8c8d !important; }
+        .categoria-unknown { background: #95a5a6 !important; }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        #appointmentModal {
+            z-index: 1500;
+        }
+
+        #appointmentModal .modal-content {
+            z-index: 1501;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-bg);
+            color: var(--text-primary);
+        }
+
+        .modal-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-detail:last-child {
+            border-bottom: none;
+        }
+
+        .modal-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .modal-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.success {
+            background: var(--success-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 0.75rem 1rem;
+            }
+
+            .header-controls {
+                gap: 0.5rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .control-group {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .compact-input {
+                min-width: auto;
+                flex: 1;
+            }
+
+            .tabs-nav {
+                flex-direction: column;
+            }
+
+            .stats-grid,
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .timeline-content {
+                height: 400px;
+            }
+
+            .timeline-hours {
+                width: 50px;
+            }
+
+            .timeline-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .timeline-options {
+                justify-content: space-between;
+            }
+
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+
+            .dashboard-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--accent-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Hidden utilities */
+        .hidden { display: none !important; }
+        
+        /* File input hidden */
+        #fileInput { display: none; }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="header">
+        <div class="header-content">
+            <h1>Controle De Apontamentos - GrupoGPS</h1>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Compact Controls Bar -->
+        <div class="controls-bar">
+            <div class="control-group">
+                <div class="upload-compact" id="uploadArea">
+                    <div class="upload-compact-text">Upload CSV</div>
+                    <div class="upload-compact-sub" id="uploadStatus">Clique para selecionar</div>
+                </div>
+                <input type="file" id="fileInput" accept=".csv" />
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">Selecionar</button>
+                <button class="btn btn-primary btn-sm" id="processBtn" onclick="processarArquivo()" disabled>Processar</button>
+            </div>
+
+            <div class="control-group hidden" id="exportControls">
+                <button class="btn btn-success btn-sm" onclick="exportarRelatorioAutomatizado('xlsx')">Excel</button>
+                <button class="btn btn-warning btn-sm" onclick="exportarRelatorioAutomatizado('csv')">CSV</button>
+                <button class="btn btn-danger btn-sm" onclick="exportarIrregularesApenas()">Irregulares</button>
+            </div>
+
+            <div class="control-group hidden" id="filterControls">
+                <label>Data:</label>
+                <input type="date" class="compact-input" id="dataInicial">
+                <input type="date" class="compact-input" id="dataFinal">
+                <label>Tipo:</label>
+                <select class="compact-input" id="tipoFilter">
+                    <option value="">Todos</option>
+                    <option value="AP">Alta Pressão</option>
+                    <option value="AV">Auto Vácuo</option>
+                    <option value="HP">Hiper Vácuo</option>
+                </select>
+                <button class="btn btn-primary btn-sm" onclick="aplicarFiltros()">Filtrar</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tabs-nav">
+                <button class="tab-button active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="tab-button" onclick="switchTab('regimes')">Regimes & Turnos</button>
+                <button class="tab-button" onclick="switchTab('timeline')">Timeline</button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-content" id="dashboard-tab">
+                <div class="dashboard-controls hidden" id="dashboardControls">
+                    <h3 style="color: var(--text-primary); margin: 0;">Configurações de Visualização</h3>
+                    <div class="status-toggle">
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">Colorir por Status:</span>
+                        <div class="toggle-switch" id="statusColorToggle" onclick="toggleStatusColors()"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid hidden" id="statsSection">
+                    <!-- Stats will be populated here -->
+                </div>
+
+                <div class="problems-container hidden" id="problemsSection">
+                    <div class="problems-header">
+                        <h2 class="problems-title">Apontamentos Irregulares</h2>
+                        <button class="btn btn-warning btn-sm" id="viewAllProblemsBtn" onclick="showAllProblems()">Ver Todos</button>
+                    </div>
+                    <div id="problemsList">
+                        <!-- Problems will be populated here -->
+                    </div>
+                </div>
+
+                <div class="equipment-grid hidden" id="equipmentGrid">
+                    <!-- Equipment cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Regimes Tab -->
+            <div class="tab-content hidden" id="regimes-tab">
+                <div id="regimeContainer">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        Carregue e processe um arquivo CSV para visualizar os regimes disponíveis.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Tab -->
+            <div class="tab-content hidden" id="timeline-tab">
+                <div class="timeline-container">
+                    <div class="timeline-controls">
+                        <div class="control-group">
+                            <label>Pesquisar:</label>
+                            <input type="text" id="timelineSearch" class="compact-input" placeholder="Ex: AV-01" style="min-width: 150px;">
+                            <label>Data:</label>
+                            <input type="date" id="timelineDate" class="compact-input">
+                            <button class="btn btn-primary btn-sm" onclick="filtrarTimeline()">Filtrar</button>
+                        </div>
+
+                        <div class="timeline-options">
+                            <div class="timeline-columns-selector">
+                                <label style="margin-right: 0.5rem;">Colunas:</label>
+                                <button class="column-btn active" onclick="setTimelineColumns(2)">2</button>
+                                <button class="column-btn" onclick="setTimelineColumns(3)">3</button>
+                                <button class="column-btn" onclick="setTimelineColumns(4)">4</button>
+                                <button class="column-btn" onclick="setTimelineColumns(5)">5</button>
+                            </div>
+
+                            <div class="timeline-toggle">
+                                <span>Gaps de Tempo:</span>
+                                <div class="toggle-switch active" id="gapsToggle" onclick="toggleTimeGaps()"></div>
+                            </div>
+
+                            <div class="zoom-controls">
+                                <button class="zoom-btn" onclick="adjustZoom(-0.2)">-</button>
+                                <div class="zoom-level" id="zoomLevel">1.0x</div>
+                                <button class="zoom-btn" onclick="adjustZoom(0.2)">+</button>
+                                <button class="btn btn-primary btn-sm" onclick="resetZoom()">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-grid" id="timelineGrid">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">
+                            Carregue um arquivo CSV e processe os dados para visualizar a timeline.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Desenvolvido por Warlison Abreu
+    </div>
+
+    <!-- Modal for appointment details -->
+    <div class="modal" id="appointmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalhes do Apontamento</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="appointmentDetails">
+                <!-- Details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for all problems -->
+    <div class="modal" id="problemsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Todos os Apontamentos Irregulares</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="allProblemsContainer">
+                <!-- All problems will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dadosCSV = [];
+        let equipamentosProcessados = {};
+        let apontamentosIrregulares = [];
+        let dadosFiltrados = [];
+        let regimesDisponiveis = {};
+        let regimeAtivo = null;
+        let timelineColumns = 2;
+        let showTimeGaps = true;
+        let statusColorsEnabled = false;
+        let timelineZoom = 1;
+
+        // Touch zoom variables for mobile
+        let isZooming = false;
+        let initialDistance = 0;
+        let initialZoom = 1;
+
+        const CATEGORIA_CORES = {
+            'REFEIÇÃO MOTORISTA': '#3498db',
+            'AGUARDANDO ÁREA': '#3742fa',
+            'DOCUMENTAÇÃO': '#e67e22',
+            'PREPARAÇÃO': '#8e44ad',
+            'ABASTECIMENTO': '#f39c12',
+            'DESCARREGAMENTO': '#5f27cd',
+            'BLOQUEIO': '#7f8c8d',
+            'AGUARDANDO PERMISSÃO DA ÁREA': '#ff4757',
+            'FALTA DE ACESSÓRIO': '#00d2d3',
+            'AGUARDANDO CARRETA BASCULAR': '#ff9ff3',
+            'AGUARDANDO PASSAGEM DE LOCOMOTIVA': '#54a0ff',
+            'PEQUENAS MANUTENÇÕES': '#ff6b6b',
+            'TROCA DE EQUIPAMENTO': '#ee5a24',
+            'PAUSAS DIVERSAS (ÁGUA, BANHEIRO)': '#a55eea',
+            'AGUARDANDO SEMÁFORO/CANCELA': '#ff3838',
+            'ABASTECIMENTO EMPILHADEIRA': '#ffa502',
+            'ABORDAGEM DE SEGURANÇA': '#2f3542',
+            'MANUTENÇÃO CORRETIVA': '#e74c3c',
+            'MANUTENÇÃO PREVENTIVA': '#d35400',
+            'DESLOCAMENTO': '#2ecc71',
+            'CHECKLIST': '#9b59b6',
+            'ESPERA': '#1abc9c',
+            'LIMPEZA': '#f1c40f'
+        };
+
+        const REGIMES_CONFIG = {
+            '24HS': {
+                nome: '24 Horas',
+                turnos: [
+                    { nome: 'Turno A', inicio: '07:00', fim: '19:00' },
+                    { nome: 'Turno B', inicio: '19:00', fim: '07:00' }
+                ],
+                identificadores: ['24 HS', '24HS', '24H']
+            },
+            '16HS': {
+                nome: '16 Horas',
+                turnos: [
+                    { nome: 'Turno A', inicio: '07:00', fim: '15:00' },
+                    { nome: 'Turno B', inicio: '15:00', fim: '23:00' },
+                    { nome: 'Turno C', inicio: '23:00', fim: '07:00' }
+                ],
+                identificadores: ['16 HS', '16HS', '16H']
+            },
+            'ADM': {
+                nome: 'Administrativo',
+                turnos: [
+                    { nome: 'Expediente', inicio: '07:00', fim: '17:00' }
+                ],
+                identificadores: ['ADM', 'ADMIN']
+            }
+        };
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Status colors toggle
+        function toggleStatusColors() {
+            statusColorsEnabled = !statusColorsEnabled;
+            const toggle = document.getElementById('statusColorToggle');
+            toggle.classList.toggle('active', statusColorsEnabled);
+            
+            // Update equipment cards
+            updateEquipmentCardsColors();
+        }
+
+        function updateEquipmentCardsColors() {
+            const cards = document.querySelectorAll('.equipment-card');
+            cards.forEach(card => {
+                if (statusColorsEnabled) {
+                    card.classList.add('status-colored');
+                } else {
+                    card.classList.remove('status-colored');
+                }
+            });
+        }
+
+        // Toggle time gaps
+        function toggleTimeGaps() {
+            showTimeGaps = !showTimeGaps;
+            const toggle = document.getElementById('gapsToggle');
+            toggle.classList.toggle('active', showTimeGaps);
+            
+            if (!document.getElementById('timeline-tab').classList.contains('hidden')) {
+                gerarTimelineVertical();
+            }
+        }
+
+        // Enhanced zoom functionality
+        function adjustZoom(delta) {
+            timelineZoom = Math.max(0.5, Math.min(3, timelineZoom + delta));
+            updateTimelineZoom();
+        }
+
+        function resetZoom() {
+            timelineZoom = 1;
+            updateTimelineZoom();
+        }
+
+        function updateTimelineZoom() {
+            document.getElementById('zoomLevel').textContent = timelineZoom.toFixed(1) + 'x';
+            
+            document.querySelectorAll('.timeline-content').forEach(content => {
+                content.style.transform = `scale(${timelineZoom})`;
+            });
+
+            document.querySelectorAll('.timeline-equipment').forEach(equipment => {
+                const originalHeight = 600;
+                equipment.style.height = `${(originalHeight * timelineZoom) + 80}px`; // +80 for header
+            });
+        }
+
+        function getDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            // Upload area events
+            uploadArea.addEventListener('dragover', e => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', e => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', e => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if(e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+            });
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', () => {
+                if(fileInput.files.length > 0) handleFile(fileInput.files[0]);
+            });
+
+            // Filter events
+            ['dataInicial','dataFinal','tipoFilter'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('change', aplicarFiltros);
+            });
+
+            ['timelineSearch','timelineDate'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', filtrarTimeline);
+            });
+
+            // Enhanced zoom controls for timeline
+            document.addEventListener('wheel', (e) => {
+                if (e.ctrlKey && !document.getElementById('timeline-tab').classList.contains('hidden')) {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    adjustZoom(delta);
+                }
+            }, { passive: false });
+
+            // Touch zoom for mobile
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2 && !document.getElementById('timeline-tab').classList.contains('hidden')) {
+                    isZooming = true;
+                    initialDistance = getDistance(e.touches[0], e.touches[1]);
+                    initialZoom = timelineZoom;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', (e) => {
+                if (isZooming && e.touches.length === 2) {
+                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    const scale = currentDistance / initialDistance;
+                    const newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+                    
+                    timelineZoom = newZoom;
+                    updateTimelineZoom();
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', (e) => {
+                if (isZooming) {
+                    isZooming = false;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Modal events
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const tab = document.getElementById(tabName + '-tab');
+
+            button.classList.add('active');
+            tab.classList.remove('hidden');
+
+            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) {
+                gerarTimelineVertical();
+            }
+        }
+
+        function handleFile(file) {
+            if(!file.name.endsWith('.csv')) {
+                showNotification('Selecione um arquivo CSV válido.', 'error');
+                return;
+            }
+
+            document.getElementById('uploadStatus').textContent = 'Analisando...';
+            document.getElementById('processBtn').disabled = true;
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                delimiter: ';',
+                complete: result => processarArquivoCarregado(result, file.name),
+                error: error => {
+                    showNotification('Erro ao ler CSV: ' + error.message, 'error');
+                    document.getElementById('uploadStatus').textContent = 'Erro no arquivo';
+                }
+            });
+        }
+
+        function processarArquivoCarregado(result, fileName) {
+            dadosCSV = result.data.filter(linha => 
+                linha.Placa && linha.Vaga && linha['Categoria Demora'] && 
+                linha['Data Inicial'] && linha['Data Final'] && 
+                linha['Tempo Indisponível (HH:MM)']
+            );
+
+            if(!dadosCSV.length) {
+                showNotification('Nenhum registro válido no CSV.', 'error');
+                document.getElementById('uploadStatus').textContent = 'Arquivo inválido';
+                return;
+            }
+
+            document.getElementById('uploadStatus').textContent = `${dadosCSV.length} registros`;
+            document.getElementById('processBtn').disabled = false;
+            showNotification('Arquivo carregado: ' + dadosCSV.length + ' registros prontos.', 'success');
+        }
+
+        function processarArquivo() {
+            if(!dadosCSV.length) {
+                showNotification('Nenhum dado para processar.', 'error');
+                return;
+            }
+
+            document.getElementById('processBtn').textContent = 'Processando...';
+            document.getElementById('processBtn').disabled = true;
+
+            setTimeout(() => {
+                try {
+                    dadosFiltrados = [...dadosCSV];
+                    detectarRegimes(dadosFiltrados);
+                    detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                    equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                    
+                    exibirResultadosDashboard();
+                    exibirRegimes();
+
+                    document.getElementById('processBtn').textContent = 'Processar';
+                    document.getElementById('processBtn').disabled = false;
+
+                    // Show controls
+                    document.getElementById('exportControls').classList.remove('hidden');
+                    document.getElementById('filterControls').classList.remove('hidden');
+                    document.getElementById('dashboardControls').classList.remove('hidden');
+
+                    ['statsSection','equipmentGrid'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el) el.classList.remove('hidden');
+                    });
+
+                    const problemsEl = document.getElementById('problemsSection');
+                    if(problemsEl) {
+                        if(apontamentosIrregulares.length) {
+                            problemsEl.classList.remove('hidden');
+                        } else {
+                            problemsEl.classList.add('hidden');
+                        }
+                    }
+
+                    showNotification('Dados processados com sucesso! ' + dadosFiltrados.length + ' apontamentos analisados.', 'success');
+
+                } catch(err) {
+                    console.error(err);
+                    showNotification('Erro ao processar: ' + err.message, 'error');
+                    document.getElementById('processBtn').textContent = 'Processar';
+                    document.getElementById('processBtn').disabled = false;
+                }
+            }, 100);
+        }
+
+        function detectarRegimes(dados) {
+            regimesDisponiveis = {};
+            
+            dados.forEach(apt => {
+                const vaga = apt.Vaga;
+                if(!vaga) return;
+
+                let regime = 'ADM';
+                
+                Object.keys(REGIMES_CONFIG).forEach(key => {
+                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                        if(vaga.toUpperCase().includes(id)) {
+                            regime = key;
+                        }
+                    });
+                });
+
+                if(!regimesDisponiveis[regime]) {
+                    regimesDisponiveis[regime] = {
+                        ...REGIMES_CONFIG[regime],
+                        equipamentos: new Set(),
+                        apontamentos: 0
+                    };
+                }
+
+                const codigo = extrairCodigoVaga(vaga);
+                if(codigo) {
+                    regimesDisponiveis[regime].equipamentos.add(codigo);
+                }
+                regimesDisponiveis[regime].apontamentos++;
+            });
+
+            Object.keys(regimesDisponiveis).forEach(regime => {
+                regimesDisponiveis[regime].equipamentos = Array.from(regimesDisponiveis[regime].equipamentos);
+            });
+        }
+
+        function detectarApontamentosIrregularesInteligente(dados) {
+            apontamentosIrregulares = [];
+            const equipamentosContador = {};
+
+            dados.forEach(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if(codigo) {
+                    equipamentosContador[codigo] = (equipamentosContador[codigo] || 0) + 1;
+                }
+            });
+
+            dados.forEach((apt, idx) => {
+                const tempo = apt['Tempo Indisponível (HH:MM)'];
+                const categoria = apt['Categoria Demora'];
+                const minutos = tempoParaMinutos(tempo);
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
+                const idxOriginal = dadosCSV.indexOf(apt);
+
+                if(minutos === 0) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Zerado',
+                        descricao: `${codigo || 'N/D'} - ${categoria} 00:00`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'BAIXA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+
+                if(minutos > 0 && minutos <= 4) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Muito Curto',
+                        descricao: `${codigo || 'N/D'} - ${categoria} de ${tempo}`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'BAIXA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+
+                if(codigo && equipamentosContador[codigo] <= 3) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Equipamento com Poucos Apontamentos',
+                        descricao: `${codigo} - Total de apenas ${equipamentosContador[codigo]} apontamento(s)`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'ALTA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+            });
+        }
+
+        function extrairCodigoVaga(nomeVaga) {
+            if(!nomeVaga) return null;
+
+            const nome = nomeVaga.toString().trim().toUpperCase();
+            
+            const patterns = [
+                {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AP'},
+                {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AV'},
+                {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'HP'}
+            ];
+
+            for(const pattern of patterns) {
+                const match = nome.match(pattern.regex);
+                if(match) {
+                    const numero = match[1].padStart(2, '0');
+                    let codigo = `${pattern.prefix}-${numero}`;
+                    
+                    if(match[2]) {
+                        if(match[2] === '24 HS') codigo += ' - 24HS';
+                        else if(match[2] === '16 HS') codigo += ' - 16HS';
+                        else if(match[2] === 'ADM') codigo += ' - ADM';
+                    }
+                    
+                    return codigo;
+                }
+            }
+
+            return null;
+        }
+
+        function getTipoEquipamento(codigo) {
+            if(!codigo) return 'UNKNOWN';
+            if(codigo.startsWith('AP-')) return 'AP';
+            if(codigo.startsWith('AV-')) return 'AV';
+            if(codigo.startsWith('HP-')) return 'HP';
+            return 'UNKNOWN';
+        }
+
+        function extrairIntervaloTempo(dataInicial, dataFinal) {
+            if(!dataInicial || !dataFinal) return 'N/A';
+            
+            const horaInicial = extrairHora(dataInicial);
+            const horaFinal = extrairHora(dataFinal);
+            
+            return horaInicial && horaFinal ? `${horaInicial} às ${horaFinal}` : horaInicial || horaFinal || 'N/A';
+        }
+
+        function parseDataHora(str) {
+            if(!str) return null;
+            const pattern = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})(?::\d{2})?/);
+            return pattern ? new Date(pattern[3], pattern[2]-1, pattern[1], pattern[4], pattern[5], 0) : null;
+        }
+
+        function processarEquipamentosDoCSV(apontamentos) {
+            const equipamentos = {};
+            const codigosUnicos = new Set(apontamentos.map(apt => extrairCodigoVaga(apt.Vaga)).filter(Boolean));
+
+            codigosUnicos.forEach(codigo => {
+                equipamentos[codigo] = {
+                    codigo: codigo,
+                    tipo: getTipoEquipamento(codigo),
+                    totalApontamentos: 0,
+                    apontamentos: [],
+                    primeiroRegistro: null,
+                    status: 'CRITICO'
+                };
+            });
+
+            apontamentos.forEach((apt) => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if(!codigo || !equipamentos[codigo]) return;
+
+                const equipamento = equipamentos[codigo];
+                const indexOriginal = dadosCSV.indexOf(apt);
+
+                const dataHoraInicio = parseDataHora(apt['Data Inicial']);
+                const dataHoraFim = parseDataHora(apt['Data Final']);
+
+                const objApontamento = {
+                    categoria: apt['Categoria Demora'],
+                    dataInicialOriginal: apt['Data Inicial'],
+                    dataFinalOriginal: apt['Data Final'],
+                    dataHoraInicio: dataHoraInicio,
+                    dataHoraFim: dataHoraFim,
+                    tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'],
+                    inicioHHMM: extrairHora(apt['Data Inicial']),
+                    intervalo: extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']),
+                    irregular: apontamentosIrregulares.some(irr => irr.index === indexOriginal),
+                    placa: apt.Placa,
+                    vaga: apt.Vaga,
+                    originalData: apt
+                };
+
+                equipamento.apontamentos.push(objApontamento);
+                equipamento.totalApontamentos++;
+
+                if(!equipamento.primeiroRegistro || 
+                   (objApontamento.inicioHHMM && horaParaMinutos(objApontamento.inicioHHMM) < horaParaMinutos(equipamento.primeiroRegistro))) {
+                    equipamento.primeiroRegistro = objApontamento.inicioHHMM;
+                }
+            });
+
+            Object.values(equipamentos).forEach(equipamento => {
+                equipamento.status = calcularStatusInteligente(equipamento);
+            });
+
+            return equipamentos;
+        }
+
+        function calcularStatusInteligente(equipamento) {
+            const { totalApontamentos, apontamentos } = equipamento;
+            const irregulares = apontamentos.filter(apt => apt.irregular).length;
+
+            if(totalApontamentos <= 3) return 'CRITICO';
+            if(irregulares > totalApontamentos * 0.4) return 'CRITICO';
+            if(irregulares > totalApontamentos * 0.2 || totalApontamentos < 6) return 'ATENCAO';
+            
+            return 'BOM';
+        }
+
+        function extrairHora(timestamp) {
+            if(!timestamp) return null;
+            const match = timestamp.toString().match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
+            if(match && match[1]) {
+                const [horas, minutos] = match[1].split(':');
+                return `${horas.padStart(2, '0')}:${minutos.padStart(2, '0')}`;
+            }
+            return null;
+        }
+
+        const horaParaMinutos = hora => {
+            if(!hora || !hora.includes(':')) return 1441;
+            return hora.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
+        };
+
+        const tempoParaMinutos = tempo => {
+            if(!tempo || !tempo.includes(':')) return 0;
+            return tempo.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
+        };
+
+        function getCorCategoria(categoria) {
+            const key = categoria.toUpperCase();
+            return CATEGORIA_CORES[key] || '#7f8c8d';
+        }
+
+        function getCategoriaCSS(categoria) {
+            const cleanCategory = categoria.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[()]/g, '')
+                .replace(/ç/g, 'c')
+                .replace(/ã/g, 'a')
+                .replace(/á/g, 'a')
+                .replace(/é/g, 'e')
+                .replace(/í/g, 'i')
+                .replace(/ó/g, 'o')
+                .replace(/ú/g, 'u')
+                .replace(/--+/g, '-');
+            
+            return 'categoria-' + cleanCategory;
+        }
+
+        function exibirResultadosDashboard() {
+            exibirEstatisticas();
+            exibirProblemas();
+            exibirEquipamentos();
+        }
+
+        function exibirEstatisticas() {
+            const stats = {
+                total: Object.keys(equipamentosProcessados).length,
+                bom: 0,
+                atencao: 0,
+                critico: 0,
+                totalApontamentos: dadosFiltrados.length,
+                irregulares: apontamentosIrregulares.length
+            };
+
+            Object.values(equipamentosProcessados).forEach(eq => {
+                stats[eq.status.toLowerCase()]++;
+            });
+
+            const container = document.getElementById('statsSection');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Equipamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-bom">${stats.bom}</div>
+                    <div class="stat-label">Status Bom</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-atencao">${stats.atencao}</div>
+                    <div class="stat-label">Status Atenção</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-critico">${stats.critico}</div>
+                    <div class="stat-label">Status Crítico</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalApontamentos}</div>
+                    <div class="stat-label">Apontamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-critico">${stats.irregulares}</div>
+                    <div class="stat-label">Irregulares</div>
+                </div>
+            `;
+        }
+
+        function exibirProblemas() {
+            const container = document.getElementById('problemsList');
+            if(!apontamentosIrregulares.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada nos dados atuais.</p>';
+                return;
+            }
+
+            const displayCount = Math.min(3, apontamentosIrregulares.length);
+            const byType = apontamentosIrregulares.slice(0, displayCount).reduce((acc, problema) => {
+                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
+                <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(items[0].appointment).replace(/"/g, '&quot;')})">
+                    <div class="problem-type">${tipo} (${items.length})</div>
+                    <div class="problem-details">
+                        ${items.slice(0, 2).map(p => p.descricao).join('<br>')}
+                        ${items.length > 2 ? `<br>...(+${items.length - 2} outros)` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            const viewAllBtn = document.getElementById('viewAllProblemsBtn');
+            if(apontamentosIrregulares.length > 3) {
+                viewAllBtn.textContent = `Ver Todos (${apontamentosIrregulares.length})`;
+                viewAllBtn.style.display = 'inline-flex';
+            } else {
+                viewAllBtn.style.display = 'none';
+            }
+        }
+
+        function showAllProblems() {
+            const modal = document.getElementById('problemsModal');
+            const container = document.getElementById('allProblemsContainer');
+            
+            const byType = apontamentosIrregulares.reduce((acc, problema) => {
+                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">${tipo} (${items.length})</h4>
+                    ${items.map(problema => `
+                        <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(problema.appointment).replace(/"/g, '&quot;')})" style="margin-bottom: 0.5rem; cursor: pointer;">
+                            <div class="problem-details">${problema.descricao}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            modal.classList.add('show');
+        }
+
+        function exibirEquipamentos() {
+            const container = document.getElementById('equipmentGrid');
+            const equipamentos = Object.values(equipamentosProcessados).sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+            if(!equipamentos.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento encontrado.</p>';
+                return;
+            }
+
+            container.innerHTML = equipamentos.map(eq => `
+                <div class="equipment-card ${statusColorsEnabled ? 'status-colored' : ''} status-${eq.status.toLowerCase()}">
+                    <div class="equipment-header">
+                        <div>
+                            <div class="equipment-code-card">${eq.codigo}</div>
+                            <div class="equipment-type">
+                                ${eq.tipo === 'AP' ? 'Alta Pressão' : 
+                                  eq.tipo === 'AV' ? 'Auto Vácuo' : 
+                                  eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D'}
+                            </div>
+                        </div>
+                        <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">${eq.totalApontamentos}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${eq.primeiroRegistro || 'N/A'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>
+                        </div>
+                    </div>
+                    ${eq.apontamentos.length ? `
+                        <div class="appointments-list">
+                            ${eq.apontamentos.map(apt => `
+                                <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">${apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria}</span>
+                                        <span style="font-size: 0.7rem; color: var(--text-secondary);">${apt.tempoIndisponivel}</span>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${apt.intervalo}</div>
+                                    ${apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>'}
+                </div>
+            `).join('');
+        }
+
+        function exibirRegimes() {
+            const container = document.getElementById('regimeContainer');
+            
+            if(!Object.keys(regimesDisponiveis).length) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum regime detectado nos dados carregados.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    ${Object.entries(regimesDisponiveis).map(([key, regime]) => `
+                        <div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ${regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)'};">
+                            <h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">${regime.nome}</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">
+                                ${regime.turnos.map(turno => `${turno.inicio} - ${turno.fim}`).join(' | ')}
+                            </p>
+                            <button class="btn ${regimeAtivo === key ? 'btn-success' : 'btn-primary'} btn-sm" onclick="ativarRegime('${key}')" style="width: 100%; margin-bottom: 0.75rem;">
+                                ${regimeAtivo === key ? 'Ativo' : 'Ativar'}
+                            </button>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.equipamentos.length}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>
+                                </div>
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.apontamentos}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn btn-success" onclick="exportarPorRegime()" ${!regimeAtivo ? 'disabled' : ''} style="margin-right: 0.5rem;">
+                        Exportar Regime Ativo
+                    </button>
+                    <button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>
+                </div>
+            `;
+        }
+
+        function ativarRegime(regime) {
+            regimeAtivo = regime;
+            exibirRegimes();
+            aplicarFiltroRegime();
+            showNotification(`Regime ${regimesDisponiveis[regime].nome} ativado!`, 'success');
+        }
+
+        function limparRegime() {
+            regimeAtivo = null;
+            exibirRegimes();
+            dadosFiltrados = [...dadosCSV];
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
+            showNotification('Filtro de regime removido.', 'success');
+        }
+
+        function aplicarFiltroRegime() {
+            if(!regimeAtivo) return;
+
+            const config = regimesDisponiveis[regimeAtivo];
+            dadosFiltrados = dadosCSV.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
+        }
+
+        function aplicarFiltros() {
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+            const tipoFilter = document.getElementById('tipoFilter').value;
+
+            dadosFiltrados = dadosCSV.filter(apt => {
+                const dataStr = apt['Data Inicial']?.split(' ')[0];
+                if(dataStr) {
+                    const [day, month, year] = dataStr.split('/');
+                    const dataObj = new Date(`${year}-${month}-${day}T00:00:00`);
+                    
+                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00')) return false;
+                    if(dataFinal && dataObj > new Date(dataFinal + 'T00:00:00')) return false;
+                } else if(dataInicial || dataFinal) {
+                    return false;
+                }
+
+                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
+
+                return true;
+            });
+
+            if(regimeAtivo) {
+                const config = regimesDisponiveis[regimeAtivo];
+                dadosFiltrados = dadosFiltrados.filter(apt => {
+                    const codigo = extrairCodigoVaga(apt.Vaga);
+                    return config.equipamentos.includes(codigo);
+                });
+            }
+
+            if(dadosFiltrados.length) {
+                detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                exibirResultadosDashboard();
+                gerarTimelineVertical();
+                showNotification('Filtros aplicados! ' + dadosFiltrados.length + ' apontamentos encontrados.', 'success');
+            } else {
+                equipamentosProcessados = {};
+                apontamentosIrregulares = [];
+                exibirResultadosDashboard();
+                showNotification('Nenhum apontamento encontrado com os filtros aplicados.', 'error');
+            }
+        }
+
+        // Enhanced Timeline Functions
+        function setTimelineColumns(columns) {
+            timelineColumns = columns;
+            
+            document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const grid = document.getElementById('timelineGrid');
+            grid.className = `timeline-grid cols-${columns}`;
+            
+            gerarTimelineVertical();
+        }
+
+        function gerarTimelineVertical() {
+            const container = document.getElementById('timelineGrid');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            if(!equipamentos.length) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">Nenhum equipamento encontrado para exibir na timeline.</div>';
+                return;
+            }
+
+            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+            container.innerHTML = equipamentos.map(equipamento => {
+                const apontamentosOrdenados = [...equipamento.apontamentos].sort((a, b) => 
+                    (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0)
+                );
+
+                return `
+                    <div class="timeline-equipment" data-equipment-code="${equipamento.codigo}" data-equipment-type="${equipamento.tipo}">
+                        <div class="timeline-equipment-header">
+                            <div class="equipment-code">${equipamento.codigo}</div>
+                            <div class="equipment-info">
+                                ${equipamento.tipo === 'AP' ? 'Alta Pressão' : 
+                                  equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'} | 
+                                ${equipamento.totalApontamentos} apontamentos | 
+                                ${equipamento.status}
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-hours">
+                                ${Array.from({length: 24}, (_, i) => `
+                                    <div class="timeline-hour">${String(i).padStart(2, '0')}</div>
+                                `).join('')}
+                            </div>
+                            <div class="timeline-lane">
+                                ${gerarApontamentosTimelineInteligente(apontamentosOrdenados)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateTimelineZoom();
+            filtrarTimeline();
+        }
+
+        function gerarApontamentosTimelineInteligente(apontamentos) {
+            if(!apontamentos.length) return '';
+
+            let html = '';
+            
+            // Group by date and sort
+            const appointmentsByDate = {};
+            apontamentos.forEach(apt => {
+                const dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
+                if(!appointmentsByDate[dateStr]) {
+                    appointmentsByDate[dateStr] = [];
+                }
+                appointmentsByDate[dateStr].push(apt);
+            });
+
+            // Process each date
+            Object.keys(appointmentsByDate).forEach(date => {
+                const dayAppointments = appointmentsByDate[date].sort((a, b) => 
+                    horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00')
+                );
+                
+                let lastEndTime = 0;
+
+                // Detect overlapping appointments
+                const processedAppointments = [];
+                dayAppointments.forEach((apt, index) => {
+                    if(!apt.inicioHHMM || !apt.tempoIndisponivel) return;
+
+                    const inicioMinutos = horaParaMinutos(apt.inicioHHMM);
+                    const duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
+
+                    if(!duracaoMinutos) return;
+
+                    // Check for overlaps with previous appointments
+                    let isOverlapping = false;
+                    if(index > 0) {
+                        const prevApt = processedAppointments[processedAppointments.length - 1];
+                        if(prevApt && inicioMinutos < prevApt.endTime) {
+                            isOverlapping = true;
+                        }
+                    }
+
+                    processedAppointments.push({
+                        ...apt,
+                        startTime: inicioMinutos,
+                        endTime: inicioMinutos + duracaoMinutos,
+                        isOverlapping: isOverlapping
+                    });
+                });
+
+                // Generate gaps
+                processedAppointments.forEach((apt, index) => {
+                    if(showTimeGaps) {
+                        if(index === 0 && apt.startTime > 420) { // Start gap after 7AM
+                            const gapHeight = ((apt.startTime - 420) / 1440) * 600;
+                            if(gapHeight > 25) {
+                                const gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${(420 / 1440) * 600}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h sem atividade</div>
+                                    </div>
+                                `;
+                            }
+                        } else if(index > 0 && apt.startTime > lastEndTime + 30) {
+                            const gapStart = (lastEndTime / 1440) * 600;
+                            const gapDuration = apt.startTime - lastEndTime;
+                            const gapHeight = (gapDuration / 1440) * 600;
+                            
+                            if(gapHeight > 20) {
+                                const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+
+                    // Generate appointment block
+                    const top = (apt.startTime / 1440) * 600;
+                    const height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
+                    const cssClass = getCategoriaCSS(apt.categoria);
+
+                    html += `
+                        <div class="timeline-appointment ${cssClass} ${apt.irregular ? 'irregular' : ''} ${apt.isOverlapping ? 'overlapping' : ''}" 
+                             style="top: ${top.toFixed(2)}px; height: ${height.toFixed(2)}px;" 
+                             onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})"
+                             data-category="${apt.categoria.toLowerCase()}"
+                             data-date="${apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : ''}"
+                             data-status="${apt.irregular ? 'irregular' : 'normal'}">
+                            <div class="appointment-text">${apt.categoria}</div>
+                        </div>
+                    `;
+
+                    lastEndTime = Math.max(lastEndTime, apt.endTime);
+                });
+
+                // End of day gap
+                if(showTimeGaps && lastEndTime < 1320 && lastEndTime > 0) {
+                    const gapStart = (lastEndTime / 1440) * 600;
+                    const gapDuration = 1320 - lastEndTime;
+                    const gapHeight = (gapDuration / 1440) * 600;
+                    
+                    if(gapHeight > 25) {
+                        const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                        html += `
+                            <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                <div class="gap-label">${gapHours}h sem atividade</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            return html;
+        }
+
+        function filtrarTimeline() {
+            const pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
+            const data = document.getElementById('timelineDate').value;
+
+            document.querySelectorAll('.timeline-equipment').forEach(div => {
+                const codigo = div.dataset.equipmentCode;
+                let mostrar = true;
+
+                if(pesquisa && !codigo.toLowerCase().includes(pesquisa)) mostrar = false;
+
+                if(mostrar && data) {
+                    let temBlocoVisivel = false;
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        const [dia, mes, ano] = bloco.dataset.date.split('/');
+                        const blocoData = `${ano}-${mes}-${dia}`;
+                        const mostrarBloco = blocoData === data;
+                        
+                        bloco.style.display = mostrarBloco ? 'flex' : 'none';
+                        if(mostrarBloco) temBlocoVisivel = true;
+                    });
+
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = data ? 'none' : 'flex';
+                    });
+                    
+                    if(!temBlocoVisivel && data) mostrar = false;
+                } else {
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        bloco.style.display = 'flex';
+                    });
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = showTimeGaps ? 'flex' : 'none';
+                    });
+                }
+
+                div.style.display = mostrar ? 'block' : 'none';
+            });
+        }
+
+        // Modal Functions
+        function showAppointmentDetails(appointment) {
+            closeModal();
+            
+            setTimeout(() => {
+                const modal = document.getElementById('appointmentModal');
+                const container = document.getElementById('appointmentDetails');
+                
+                const codigo = extrairCodigoVaga(appointment.Vaga);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === dadosCSV.indexOf(appointment));
+                
+                container.innerHTML = `
+                    <div class="modal-detail">
+                        <span class="modal-label">Status:</span>
+                        <span class="modal-value" style="color: ${isIrregular ? 'var(--danger-color)' : 'var(--success-color)'};">
+                            ${isIrregular ? 'IRREGULAR' : 'NORMAL'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Equipamento:</span>
+                        <span class="modal-value">${codigo || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Categoria:</span>
+                        <span class="modal-value">${appointment['Categoria Demora'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Inicial:</span>
+                        <span class="modal-value">${appointment['Data Inicial'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Final:</span>
+                        <span class="modal-value">${appointment['Data Final'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Tempo Indisponível:</span>
+                        <span class="modal-value" style="color: ${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)'};">
+                            ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Placa:</span>
+                        <span class="modal-value">${appointment.Placa || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Vaga Completa:</span>
+                        <span class="modal-value">${appointment.Vaga || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Intervalo:</span>
+                        <span class="modal-value">${extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final'])}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Duração (minutos):</span>
+                        <span class="modal-value">${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)'])} min</span>
+                    </div>
+                `;
+
+                modal.classList.add('show');
+            }, 100);
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('show');
+            });
+        }
+
+        // Export Functions
+        function exportarRelatorioAutomatizado(formato) {
+            if(!dadosFiltrados.length) {
+                showNotification('Nenhum apontamento para exportar.', 'error');
+                return;
+            }
+
+            const dados = dadosFiltrados.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                let regime = 'ADM';
+                Object.keys(REGIMES_CONFIG).forEach(key => {
+                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                        if(apt.Vaga && apt.Vaga.toUpperCase().includes(id)) {
+                            regime = REGIMES_CONFIG[key].nome;
+                        }
+                    });
+                });
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': regime,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Relatorio_Automatizado_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            
+            if(formato === 'xlsx') {
+                exportarParaXLSX(dados, nome);
+            } else {
+                exportarParaCSV(dados, nome);
+            }
+
+            showNotification(`Relatório automatizado exportado! ${dados.length} registros processados.`, 'success');
+        }
+
+        function exportarIrregularesApenas() {
+            if(!apontamentosIrregulares.length) {
+                showNotification('Nenhum apontamento irregular para exportar.', 'error');
+                return;
+            }
+
+            const dados = apontamentosIrregulares.map(problema => ({
+                'Equipamento': problema.equipamento || '',
+                'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
+                'Supervisor': '',
+                'Data De Apontamento': problema.intervalo?.split(' ')[0] || '',
+                'Motorista': '',
+                'Gravidade': problema.gravidade || 'MÉDIA',
+                'Apontamento': problema.categoria || '',
+                'Problemas Identificados': problema.tipo || '',
+                'Hora': problema.intervalo || problema.tempo || '',
+                'Justificativa': '',
+                'Tratativa': '',
+                'Sugestão': ''
+            }));
+
+            const nome = `Irregulares_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório de irregulares exportado! ${dados.length} registros.`, 'success');
+        }
+
+        function exportarPorRegime() {
+            if(!regimeAtivo) {
+                showNotification('Nenhum regime ativo para exportar.', 'error');
+                return;
+            }
+
+            const config = regimesDisponiveis[regimeAtivo];
+            const dadosRegime = dadosFiltrados.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            const dados = dadosRegime.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': config.nome,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Regime_${config.nome.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório do regime ${config.nome} exportado! ${dados.length} registros.`, 'success');
+        }
+
+        function exportarParaXLSX(dados, nome) {
+            const ws = XLSX.utils.json_to_sheet(dados);
+            
+            ws['!cols'] = [
+                {width: 20}, {width: 15}, {width: 25}, {width: 20}, {width: 25}, {width: 12},
+                {width: 20}, {width: 25}, {width: 20}, {width: 30}, {width: 30}, {width: 30}
+            ];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
+            XLSX.writeFile(wb, `${nome}.xlsx`);
+        }
+
+        function exportarParaCSV(dados, nome) {
+            const csv = Papa.unparse(dados, {delimiter: ';', header: true});
+            const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${nome}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
