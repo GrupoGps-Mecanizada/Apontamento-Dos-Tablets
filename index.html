@@ -2378,3 +2378,677 @@
             const container = document.getElementById('allProblemsContainer');
             
             const byType = apontamentosIrregulares.reduce((acc, problema) => {
+                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">${tipo} (${items.length})</h4>
+                    ${items.map(problema => `
+                        <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(problema.appointment).replace(/"/g, '&quot;')})" style="margin-bottom: 0.5rem; cursor: pointer;">
+                            <div class="problem-details">${problema.descricao}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            modal.classList.add('show');
+        }
+
+        function exibirEquipamentos() {
+            const container = document.getElementById('equipmentGrid');
+            const equipamentos = Object.values(equipamentosProcessados).sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+            if(!equipamentos.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento encontrado.</p>';
+                return;
+            }
+
+            container.innerHTML = equipamentos.map(eq => `
+                <div class="equipment-card ${statusColorsEnabled ? 'status-colored' : ''} status-${eq.status.toLowerCase()}">
+                    <div class="equipment-header">
+                        <div>
+                            <div class="equipment-code-card">${eq.codigo}</div>
+                            <div class="equipment-type">
+                                ${eq.tipo === 'AP' ? 'Alta Pressão' : 
+                                  eq.tipo === 'AV' ? 'Auto Vácuo' : 
+                                  eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D'}
+                            </div>
+                        </div>
+                        <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">${eq.totalApontamentos}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${eq.primeiroRegistro || 'N/A'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>
+                        </div>
+                    </div>
+                    ${eq.apontamentos.length ? `
+                        <div class="appointments-list">
+                            ${eq.apontamentos.map(apt => `
+                                <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">${apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria}</span>
+                                        <span style="font-size: 0.7rem; color: var(--text-secondary);">${apt.tempoIndisponivel}</span>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${apt.intervalo}</div>
+                                    ${apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>'}
+                </div>
+            `).join('');
+        }
+
+        function exibirRegimes() {
+            const container = document.getElementById('regimeContainer');
+            
+            if(!Object.keys(regimesDisponiveis).length) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum regime detectado nos dados carregados.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    ${Object.entries(regimesDisponiveis).map(([key, regime]) => `
+                        <div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ${regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)'};">
+                            <h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">${regime.nome}</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">
+                                ${regime.turnos.map(turno => `${turno.inicio} - ${turno.fim}`).join(' | ')}
+                            </p>
+                            <button class="btn ${regimeAtivo === key ? 'btn-success' : 'btn-primary'} btn-sm" onclick="ativarRegime('${key}')" style="width: 100%; margin-bottom: 0.75rem;">
+                                ${regimeAtivo === key ? 'Ativo' : 'Ativar'}
+                            </button>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.equipamentos.length}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>
+                                </div>
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.apontamentos}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn btn-success" onclick="exportarPorRegime()" ${!regimeAtivo ? 'disabled' : ''} style="margin-right: 0.5rem;">
+                        Exportar Regime Ativo
+                    </button>
+                    <button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>
+                </div>
+            `;
+        }
+
+        function ativarRegime(regime) {
+            regimeAtivo = regime;
+            exibirRegimes();
+            aplicarFiltroRegime();
+            showNotification(`Regime ${regimesDisponiveis[regime].nome} ativado!`, 'success');
+        }
+
+        function limparRegime() {
+            regimeAtivo = null;
+            exibirRegimes();
+            dadosFiltrados = [...dadosCSV];
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
+            showNotification('Filtro de regime removido.', 'success');
+        }
+
+        function aplicarFiltroRegime() {
+            if(!regimeAtivo) return;
+
+            const config = regimesDisponiveis[regimeAtivo];
+            dadosFiltrados = dadosCSV.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
+        }
+
+        function aplicarFiltros() {
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+            const tipoFilter = document.getElementById('tipoFilter').value;
+
+            dadosFiltrados = dadosCSV.filter(apt => {
+                const dataStr = apt['Data Inicial']?.split(' ')[0];
+                if(dataStr) {
+                    const [day, month, year] = dataStr.split('/');
+                    const dataObj = new Date(`${year}-${month}-${day}T00:00:00`);
+                    
+                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00')) return false;
+                    if(dataFinal && dataObj > new Date(dataFinal + 'T00:00:00')) return false;
+                } else if(dataInicial || dataFinal) {
+                    return false;
+                }
+
+                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
+
+                return true;
+            });
+
+            if(regimeAtivo) {
+                const config = regimesDisponiveis[regimeAtivo];
+                dadosFiltrados = dadosFiltrados.filter(apt => {
+                    const codigo = extrairCodigoVaga(apt.Vaga);
+                    return config.equipamentos.includes(codigo);
+                });
+            }
+
+            if(dadosFiltrados.length) {
+                detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                exibirResultadosDashboard();
+                gerarTimelineVertical();
+                showNotification('Filtros aplicados! ' + dadosFiltrados.length + ' apontamentos encontrados.', 'success');
+            } else {
+                equipamentosProcessados = {};
+                apontamentosIrregulares = [];
+                exibirResultadosDashboard();
+                showNotification('Nenhum apontamento encontrado com os filtros aplicados.', 'error');
+            }
+        }
+
+        // Enhanced Timeline Functions
+        function setTimelineColumns(columns) {
+            timelineColumns = columns;
+            
+            document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const grid = document.getElementById('timelineGrid');
+            grid.className = `timeline-grid cols-${columns}`;
+            
+            gerarTimelineVertical();
+        }
+
+        function gerarTimelineVertical() {
+            const container = document.getElementById('timelineGrid');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
+            if(!equipamentos.length) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">Nenhum equipamento encontrado para exibir na timeline.</div>';
+                return;
+            }
+
+            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+            container.innerHTML = equipamentos.map(equipamento => {
+                const apontamentosOrdenados = [...equipamento.apontamentos].sort((a, b) => 
+                    (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0)
+                );
+
+                return `
+                    <div class="timeline-equipment" data-equipment-code="${equipamento.codigo}" data-equipment-type="${equipamento.tipo}">
+                        <div class="timeline-equipment-header">
+                            <div class="equipment-code">${equipamento.codigo}</div>
+                            <div class="equipment-info">
+                                ${equipamento.tipo === 'AP' ? 'Alta Pressão' : 
+                                  equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'} | 
+                                ${equipamento.totalApontamentos} apontamentos | 
+                                ${equipamento.status}
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-hours">
+                                ${Array.from({length: 24}, (_, i) => `
+                                    <div class="timeline-hour">${String(i).padStart(2, '0')}</div>
+                                `).join('')}
+                            </div>
+                            <div class="timeline-lane">
+                                ${gerarApontamentosTimelineInteligente(apontamentosOrdenados)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateTimelineZoom();
+            filtrarTimeline();
+        }
+
+        function gerarApontamentosTimelineInteligente(apontamentos) {
+            if(!apontamentos.length) return '';
+
+            let html = '';
+            
+            // Group by date and sort
+            const appointmentsByDate = {};
+            apontamentos.forEach(apt => {
+                const dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
+                if(!appointmentsByDate[dateStr]) {
+                    appointmentsByDate[dateStr] = [];
+                }
+                appointmentsByDate[dateStr].push(apt);
+            });
+
+            // Process each date
+            Object.keys(appointmentsByDate).forEach(date => {
+                const dayAppointments = appointmentsByDate[date].sort((a, b) => 
+                    horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00')
+                );
+                
+                let lastEndTime = 0;
+
+                // Detect overlapping appointments
+                const processedAppointments = [];
+                dayAppointments.forEach((apt, index) => {
+                    if(!apt.inicioHHMM || !apt.tempoIndisponivel) return;
+
+                    const inicioMinutos = horaParaMinutos(apt.inicioHHMM);
+                    const duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
+
+                    if(!duracaoMinutos) return;
+
+                    // Check for overlaps with previous appointments
+                    let isOverlapping = false;
+                    if(index > 0) {
+                        const prevApt = processedAppointments[processedAppointments.length - 1];
+                        if(prevApt && inicioMinutos < prevApt.endTime) {
+                            isOverlapping = true;
+                        }
+                    }
+
+                    processedAppointments.push({
+                        ...apt,
+                        startTime: inicioMinutos,
+                        endTime: inicioMinutos + duracaoMinutos,
+                        isOverlapping: isOverlapping
+                    });
+                });
+
+                // Generate gaps
+                processedAppointments.forEach((apt, index) => {
+                    if(showTimeGaps) {
+                        if(index === 0 && apt.startTime > 420) { // Start gap after 7AM
+                            const gapHeight = ((apt.startTime - 420) / 1440) * 600;
+                            if(gapHeight > 25) {
+                                const gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${(420 / 1440) * 600}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h sem atividade</div>
+                                    </div>
+                                `;
+                            }
+                        } else if(index > 0 && apt.startTime > lastEndTime + 30) {
+                            const gapStart = (lastEndTime / 1440) * 600;
+                            const gapDuration = apt.startTime - lastEndTime;
+                            const gapHeight = (gapDuration / 1440) * 600;
+                            
+                            if(gapHeight > 20) {
+                                const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+
+                    // Generate appointment block
+                    const top = (apt.startTime / 1440) * 600;
+                    const height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
+                    const cssClass = getCategoriaCSS(apt.categoria);
+
+                    html += `
+                        <div class="timeline-appointment ${cssClass} ${apt.irregular ? 'irregular' : ''} ${apt.isOverlapping ? 'overlapping' : ''}" 
+                             style="top: ${top.toFixed(2)}px; height: ${height.toFixed(2)}px;" 
+                             onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})"
+                             data-category="${apt.categoria.toLowerCase()}"
+                             data-date="${apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : ''}"
+                             data-status="${apt.irregular ? 'irregular' : 'normal'}">
+                            <div class="appointment-text">${apt.categoria}</div>
+                        </div>
+                    `;
+
+                    lastEndTime = Math.max(lastEndTime, apt.endTime);
+                });
+
+                // End of day gap
+                if(showTimeGaps && lastEndTime < 1320 && lastEndTime > 0) {
+                    const gapStart = (lastEndTime / 1440) * 600;
+                    const gapDuration = 1320 - lastEndTime;
+                    const gapHeight = (gapDuration / 1440) * 600;
+                    
+                    if(gapHeight > 25) {
+                        const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                        html += `
+                            <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                <div class="gap-label">${gapHours}h sem atividade</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            return html;
+        }
+
+        function filtrarTimeline() {
+            const pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
+            const data = document.getElementById('timelineDate').value;
+
+            document.querySelectorAll('.timeline-equipment').forEach(div => {
+                const codigo = div.dataset.equipmentCode;
+                let mostrar = true;
+
+                if(pesquisa && !codigo.toLowerCase().includes(pesquisa)) mostrar = false;
+
+                if(mostrar && data) {
+                    let temBlocoVisivel = false;
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        const [dia, mes, ano] = bloco.dataset.date.split('/');
+                        const blocoData = `${ano}-${mes}-${dia}`;
+                        const mostrarBloco = blocoData === data;
+                        
+                        bloco.style.display = mostrarBloco ? 'flex' : 'none';
+                        if(mostrarBloco) temBlocoVisivel = true;
+                    });
+
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = data ? 'none' : 'flex';
+                    });
+                    
+                    if(!temBlocoVisivel && data) mostrar = false;
+                } else {
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        bloco.style.display = 'flex';
+                    });
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = showTimeGaps ? 'flex' : 'none';
+                    });
+                }
+
+                div.style.display = mostrar ? 'block' : 'none';
+            });
+        }
+
+        // Modal Functions
+        function showAppointmentDetails(appointment) {
+            closeModal();
+            
+            setTimeout(() => {
+                const modal = document.getElementById('appointmentModal');
+                const container = document.getElementById('appointmentDetails');
+                
+                const codigo = extrairCodigoVaga(appointment.Vaga);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === dadosCSV.indexOf(appointment));
+                
+                container.innerHTML = `
+                    <div class="modal-detail">
+                        <span class="modal-label">Status:</span>
+                        <span class="modal-value" style="color: ${isIrregular ? 'var(--danger-color)' : 'var(--success-color)'};">
+                            ${isIrregular ? 'IRREGULAR' : 'NORMAL'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Equipamento:</span>
+                        <span class="modal-value">${codigo || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Categoria:</span>
+                        <span class="modal-value">${appointment['Categoria Demora'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Inicial:</span>
+                        <span class="modal-value">${appointment['Data Inicial'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Final:</span>
+                        <span class="modal-value">${appointment['Data Final'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Tempo Indisponível:</span>
+                        <span class="modal-value" style="color: ${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)'};">
+                            ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Placa:</span>
+                        <span class="modal-value">${appointment.Placa || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Vaga Completa:</span>
+                        <span class="modal-value">${appointment.Vaga || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Intervalo:</span>
+                        <span class="modal-value">${extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final'])}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Duração (minutos):</span>
+                        <span class="modal-value">${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)'])} min</span>
+                    </div>
+                `;
+
+                modal.classList.add('show');
+            }, 100);
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('show');
+            });
+        }
+
+        // Export Functions
+        function exportarRelatorioAutomatizado(formato) {
+            if(!dadosFiltrados.length) {
+                showNotification('Nenhum apontamento para exportar.', 'error');
+                return;
+            }
+
+            const dados = dadosFiltrados.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                let regime = 'ADM';
+                Object.keys(REGIMES_CONFIG).forEach(key => {
+                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                        if(apt.Vaga && apt.Vaga.toUpperCase().includes(id)) {
+                            regime = REGIMES_CONFIG[key].nome;
+                        }
+                    });
+                });
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': regime,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Relatorio_Automatizado_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            
+            if(formato === 'xlsx') {
+                exportarParaXLSX(dados, nome);
+            } else {
+                exportarParaCSV(dados, nome);
+            }
+
+            showNotification(`Relatório automatizado exportado! ${dados.length} registros processados.`, 'success');
+        }
+
+        function exportarIrregularesApenas() {
+            if(!apontamentosIrregulares.length) {
+                showNotification('Nenhum apontamento irregular para exportar.', 'error');
+                return;
+            }
+
+            const dados = apontamentosIrregulares.map(problema => ({
+                'Equipamento': problema.equipamento || '',
+                'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
+                'Supervisor': '',
+                'Data De Apontamento': problema.intervalo?.split(' ')[0] || '',
+                'Motorista': '',
+                'Gravidade': problema.gravidade || 'MÉDIA',
+                'Apontamento': problema.categoria || '',
+                'Problemas Identificados': problema.tipo || '',
+                'Hora': problema.intervalo || problema.tempo || '',
+                'Justificativa': '',
+                'Tratativa': '',
+                'Sugestão': ''
+            }));
+
+            const nome = `Irregulares_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório de irregulares exportado! ${dados.length} registros.`, 'success');
+        }
+
+        function exportarPorRegime() {
+            if(!regimeAtivo) {
+                showNotification('Nenhum regime ativo para exportar.', 'error');
+                return;
+            }
+
+            const config = regimesDisponiveis[regimeAtivo];
+            const dadosRegime = dadosFiltrados.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            const dados = dadosRegime.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': config.nome,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Regime_${config.nome.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório do regime ${config.nome} exportado! ${dados.length} registros.`, 'success');
+        }
+
+        function exportarParaXLSX(dados, nome) {
+            const ws = XLSX.utils.json_to_sheet(dados);
+            
+            ws['!cols'] = [
+                {width: 20}, {width: 15}, {width: 25}, {width: 20}, {width: 25}, {width: 12},
+                {width: 20}, {width: 25}, {width: 20}, {width: 30}, {width: 30}, {width: 30}
+            ];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
+            XLSX.writeFile(wb, `${nome}.xlsx`);
+        }
+
+        function exportarParaCSV(dados, nome) {
+            const csv = Papa.unparse(dados, {delimiter: ';', header: true});
+            const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${nome}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        /*********************************
+         * FUNÇÕES AUXILIARES COMPLETAS  *
+         *********************************/
+        
+        // Função switchTab principal
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            // Activate selected tab
+            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const tab = document.getElementById(tabName + '-tab');
+
+            if (button) button.classList.add('active');
+            if (tab) tab.classList.remove('hidden');
+
+            // Special actions for specific tabs
+            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) {
+                gerarTimelineVertical();
+            }
+            
+            if(tabName === 'github' && githubData) {
+                updateGitHubDataTab(githubData);
+            }
+        }
+
+        // Função de inicialização completa
+        function initializeApp() {
+            console.log('🚛 Inicializando GrupoGPS Sistema de Apontamentos v2.1...');
+            
+            // Set default values
+            updateSyncStatus('success', 'Pronto para sincronizar');
+            
+            // Auto-sync initial check
+            if (autoSyncEnabled) {
+                setTimeout(() => {
+                    manualGitHubSync();
+                }, 2000);
+            }
+            
+            console.log('✅ Sistema inicializado com sucesso!');
+            console.log('🔗 GitHub: GrupoGps-Mecanizada/Apontamento-Dos-Tablets');
+        }
+
+        // Call initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Inicialização
+        console.log('🚛 GrupoGPS Sistema de Apontamentos v2.1 - Carregado com sucesso!');
+    </script>
+</body>
+</html>
