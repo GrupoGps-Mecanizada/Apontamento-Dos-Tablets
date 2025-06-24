@@ -1215,6 +1215,7 @@
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">📁 Arquivo Local</button>
                 <button class="btn btn-success btn-sm" onclick="manualGitHubSync()" id="syncDataBtn">📡 Sync GitHub</button>
                 <button class="btn btn-primary btn-sm" id="processBtn" onclick="processarArquivo()" disabled>⚙️ Processar</button>
+                <button class="btn btn-warning btn-sm" onclick="debugDados()" style="display: none;" id="debugBtn">🔍 Debug</button>
             </div>
 
             <div class="control-group hidden" id="exportControls">
@@ -1492,33 +1493,43 @@
 
         async function manualGitHubSync() {
             updateSyncStatus('syncing', 'Sincronizando...');
+            console.log('🔄 Iniciando sincronização manual com GitHub...');
             
             try {
                 const data = await fetchGitHubData();
+                console.log('📦 Dados recebidos do GitHub:', data);
                 
                 if (data && data.files && data.files.length > 0) {
+                    console.log(`📁 ${data.files.length} arquivos encontrados no GitHub`);
+                    
                     githubData = data;
                     lastSyncTime = new Date();
                     
                     // Processa os dados CSV dos arquivos baixados
+                    const dadosAnteriores = dadosCSV.length;
                     processGitHubData(data);
+                    const novosRegistros = dadosCSV.length - dadosAnteriores;
                     
-                    updateSyncStatus('success', `${data.files.length} arquivos sincronizados`);
+                    console.log(`📊 ${novosRegistros} novos registros processados`);
+                    
+                    updateSyncStatus('success', `${data.files.length} arquivos, ${dadosCSV.length} registros`);
                     updateLastSyncTime();
-                    showNotification(`GitHub sincronizado! ${data.files.length} arquivos encontrados.`, 'success');
+                    showNotification(`GitHub sincronizado! ${data.files.length} arquivos, ${dadosCSV.length} registros processados.`, 'success');
                     
                     dataSource = 'github';
                     document.getElementById('uploadStatus').innerHTML = 
-                        `<span id="uploadMethod">GitHub: ${data.files.length} arquivos</span>`;
+                        `<span id="uploadMethod">GitHub: ${data.files.length} arquivos (${dadosCSV.length} registros)</span>`;
                     document.getElementById('processBtn').disabled = false;
                     
                 } else {
-                    updateSyncStatus('error', 'Nenhum dado encontrado');
-                    showNotification('Nenhum dado encontrado no GitHub.', 'error');
+                    console.warn('⚠️ Nenhum arquivo encontrado no GitHub');
+                    updateSyncStatus('error', 'Nenhum arquivo encontrado');
+                    showNotification('Nenhum arquivo encontrado no GitHub.', 'error');
                 }
                 
             } catch (error) {
-                updateSyncStatus('error', 'Erro na sincronização');
+                console.error('❌ Erro na sincronização:', error);
+                updateSyncStatus('error', 'Erro: ' + error.message);
                 showNotification('Erro ao sincronizar: ' + error.message, 'error');
             }
         }
@@ -1532,18 +1543,32 @@
             // Processa cada arquivo CSV/dados processados
             if (data.files) {
                 data.files.forEach(file => {
+                    console.log('🔍 Processando arquivo:', file.filename, 'Tipo:', file.type);
+                    
                     if (file.processedData && file.processedData.type === 'gaussfleet_timeline') {
                         // Dados já processados do GaussFleet
+                        console.log('📊 Processando dados GaussFleet já parseados');
                         const processedCSV = convertGaussFleetData(file.processedData.data);
                         dadosCSV = dadosCSV.concat(processedCSV);
-                    } else if (file.content && file.filename.includes('.csv')) {
-                        // Arquivo CSV bruto
-                        const parsedData = parseCSVContent(file.content);
-                        if (parsedData.length > 0) {
-                            dadosCSV = dadosCSV.concat(parsedData);
+                    } else if (file.content) {
+                        // Detecta se é CSV baseado no conteúdo
+                        const isCSV = file.content.includes('"Placa";"Vaga";"Categoria Demora"') || 
+                                     file.content.includes('Placa,Vaga,Categoria') ||
+                                     file.filename.toLowerCase().includes('.csv') ||
+                                     file.filename.toLowerCase().includes('export');
+                        
+                        if (isCSV) {
+                            console.log('📄 Processando arquivo CSV:', file.filename);
+                            const parsedData = parseCSVContent(file.content);
+                            console.log('✅ CSV parseado:', parsedData.length, 'registros');
+                            if (parsedData.length > 0) {
+                                dadosCSV = dadosCSV.concat(parsedData);
+                            }
                         }
                     }
                 });
+                
+                console.log('📊 Total de registros processados do GitHub:', dadosCSV.length);
             }
             
             // Atualiza a aba GitHub Data
@@ -1564,19 +1589,59 @@
 
         function parseCSVContent(csvContent) {
             try {
-                const result = Papa.parse(csvContent, {
+                console.log('🔄 Iniciando parse do CSV...');
+                console.log('📝 Primeiros 200 caracteres:', csvContent.substring(0, 200));
+                
+                // Remove caracteres de controle e normaliza quebras de linha
+                let cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Detecta o delimitador (ponto e vírgula é mais comum nos dados do GrupoGPS)
+                const delimiter = cleanContent.includes('";') ? ';' : ',';
+                console.log('🔍 Delimitador detectado:', delimiter);
+                
+                const result = Papa.parse(cleanContent, {
                     header: true,
                     skipEmptyLines: true,
-                    delimiter: ';'
+                    delimiter: delimiter,
+                    quoteChar: '"',
+                    escapeChar: '"',
+                    trimHeaders: true,
+                    transform: (value) => {
+                        // Remove aspas extras e trim
+                        return value.replace(/^"|"$/g, '').trim();
+                    }
                 });
                 
-                return result.data.filter(linha => 
-                    linha.Placa && linha.Vaga && linha['Categoria Demora'] && 
-                    linha['Data Inicial'] && linha['Data Final'] && 
-                    linha['Tempo Indisponível (HH:MM)']
-                );
+                console.log('📊 Headers detectados:', result.meta.fields);
+                console.log('📈 Total de linhas parseadas:', result.data.length);
+                
+                if (result.errors.length > 0) {
+                    console.warn('⚠️ Erros no parse:', result.errors);
+                }
+                
+                // Filtra apenas registros válidos com todos os campos necessários
+                const validData = result.data.filter(linha => {
+                    const hasRequiredFields = linha.Placa && 
+                                            linha.Vaga && 
+                                            linha['Categoria Demora'] && 
+                                            linha['Data Inicial'] && 
+                                            linha['Data Final'] && 
+                                            linha['Tempo Indisponível (HH:MM)'];
+                    
+                    if (!hasRequiredFields) {
+                        console.log('❌ Registro inválido:', linha);
+                    }
+                    
+                    return hasRequiredFields;
+                });
+                
+                console.log('✅ Registros válidos filtrados:', validData.length);
+                
+                return validData;
+                
             } catch (error) {
-                console.error('Erro ao parsear CSV:', error);
+                console.error('❌ Erro ao parsear CSV:', error);
+                console.error('📄 Conteúdo que causou erro:', csvContent.substring(0, 500));
                 return [];
             }
         }
@@ -1594,6 +1659,7 @@
             }
             
             const metadata = data.metadata || {};
+            const totalRegistros = dadosCSV.length;
             
             container.innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
@@ -1602,12 +1668,16 @@
                         <div style="font-size: 0.8rem; color: var(--text-secondary);">Arquivos Sincronizados</div>
                     </div>
                     <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">${metadata.totalDownloaded || 0}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Total Downloads</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">${totalRegistros}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Registros Processados</div>
                     </div>
                     <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
                         <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${metadata.currentSite || 'N/A'}</div>
                         <div style="font-size: 0.8rem; color: var(--text-secondary);">Site Origem</div>
+                    </div>
+                    <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1rem; font-weight: bold; color: var(--primary-color);">${metadata.totalDownloaded || 0}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Total Downloads</div>
                     </div>
                 </div>
                 
@@ -1625,25 +1695,50 @@
                         
                         <span style="font-weight: 600; color: var(--text-secondary);">URL Atual:</span>
                         <span style="color: var(--text-primary); word-break: break-all;">${metadata.currentUrl || 'N/A'}</span>
+                        
+                        <span style="font-weight: 600; color: var(--text-secondary);">Data Source:</span>
+                        <span style="color: var(--text-primary);">${dataSource}</span>
                     </div>
                 </div>
                 
                 <div style="background: var(--accent-bg); border-radius: 8px; padding: 1rem;">
                     <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📁 Arquivos Sincronizados</h4>
-                    <div style="max-height: 300px; overflow-y: auto;">
-                        ${data.files.map((file, index) => `
-                            <div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                                    <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${file.filename}</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-secondary);">${formatFileSize(file.size)}</span>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${data.files.map((file, index) => {
+                            const isCSV = file.content && (
+                                file.content.includes('"Placa";"Vaga";"Categoria Demora"') ||
+                                file.content.includes('Placa,Vaga,Categoria') ||
+                                file.filename.toLowerCase().includes('.csv') ||
+                                file.filename.toLowerCase().includes('export')
+                            );
+                            
+                            const hasContent = file.content && file.content.length > 0;
+                            const contentPreview = file.content ? file.content.substring(0, 100) + '...' : 'Sem conteúdo';
+                            
+                            return `
+                                <div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid ${isCSV ? 'var(--success-color)' : 'var(--primary-color)'};">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                        <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${file.filename}</span>
+                                        <span style="font-size: 0.75rem; color: var(--text-secondary);">${formatFileSize(file.size)}</span>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                        📅 ${new Date(file.capturedAt).toLocaleString('pt-BR')}
+                                        ${file.processedData ? '• ✅ Dados processados' : ''}
+                                        ${isCSV ? '• 📊 CSV detectado' : ''}
+                                        ${hasContent ? '• 📄 Com conteúdo' : '• ❌ Sem conteúdo'}
+                                    </div>
+                                    ${file.site ? `<div style="font-size: 0.75rem; color: var(--text-secondary);">🌐 ${file.site}</div>` : ''}
+                                    ${file.type ? `<div style="font-size: 0.75rem; color: var(--text-secondary);">📋 Tipo: ${file.type}</div>` : ''}
+                                    
+                                    <details style="margin-top: 0.5rem;">
+                                        <summary style="cursor: pointer; font-size: 0.75rem; color: var(--primary-color);">👁️ Ver prévia do conteúdo</summary>
+                                        <div style="background: var(--accent-bg); border-radius: 4px; padding: 0.5rem; margin-top: 0.25rem; font-family: monospace; font-size: 0.7rem; max-height: 100px; overflow-y: auto;">
+                                            ${contentPreview}
+                                        </div>
+                                    </details>
                                 </div>
-                                <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                                    📅 ${new Date(file.capturedAt).toLocaleString('pt-BR')}
-                                    ${file.processedData ? '• ✅ Dados processados' : ''}
-                                </div>
-                                ${file.site ? `<div style="font-size: 0.75rem; color: var(--text-secondary);">🌐 ${file.site}</div>` : ''}
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `;
@@ -1717,22 +1812,38 @@
             syncInterval = setInterval(async () => {
                 if (autoSyncEnabled) {
                     try {
-                        await fetchGitHubData().then(data => {
-                            if (data && data.files) {
-                                githubData = data;
-                                lastSyncTime = new Date();
-                                processGitHubData(data);
-                                updateSyncStatus('success', `Auto-sync: ${data.files.length} arquivos`);
-                                updateLastSyncTime();
+                        console.log('🔄 Auto-sync executando...');
+                        const data = await fetchGitHubData();
+                        
+                        if (data && data.files) {
+                            const dadosAnteriores = dadosCSV.length;
+                            githubData = data;
+                            lastSyncTime = new Date();
+                            processGitHubData(data);
+                            
+                            const novosRegistros = dadosCSV.length - dadosAnteriores;
+                            
+                            if (novosRegistros > 0) {
+                                updateSyncStatus('success', `Auto: ${data.files.length} arquivos, ${novosRegistros} novos`);
+                                console.log(`✅ Auto-sync: ${novosRegistros} novos registros processados`);
                                 
-                                // Auto-processa se já havia dados carregados
+                                // Auto-processa se já havia dados carregados ou se é a primeira vez
                                 if (dataSource === 'github' && dadosCSV.length > 0) {
-                                    processarArquivo();
+                                    console.log('🔄 Auto-processando dados...');
+                                    document.getElementById('processBtn').disabled = false;
+                                    dataSource = 'github';
+                                    document.getElementById('uploadStatus').innerHTML = 
+                                        `<span id="uploadMethod">GitHub: ${data.files.length} arquivos (${dadosCSV.length} registros)</span>`;
                                 }
+                            } else {
+                                updateSyncStatus('success', `Auto: ${data.files.length} arquivos, sem novos registros`);
                             }
-                        });
+                            
+                            updateLastSyncTime();
+                        }
                     } catch (error) {
-                        console.error('Erro no auto-sync:', error);
+                        console.error('❌ Erro no auto-sync:', error);
+                        updateSyncStatus('error', 'Auto-sync falhou');
                     }
                 }
             }, GITHUB_CONFIG.SYNC_INTERVAL);
@@ -1859,6 +1970,20 @@
                 if(fileInput.files.length > 0) handleFile(fileInput.files[0]);
             });
 
+            // Debug mode toggle - duplo clique no header
+            document.querySelector('.header h1').addEventListener('dblclick', () => {
+                const debugBtn = document.getElementById('debugBtn');
+                if (debugBtn.style.display === 'none') {
+                    debugBtn.style.display = 'inline-flex';
+                    console.log('🔧 Modo debug ativado');
+                    showNotification('Modo debug ativado!', 'info');
+                } else {
+                    debugBtn.style.display = 'none';
+                    console.log('🔧 Modo debug desativado');
+                    showNotification('Modo debug desativado!', 'info');
+                }
+            });
+
             // Filter events
             ['dataInicial','dataFinal','tipoFilter'].forEach(id => {
                 const el = document.getElementById(id);
@@ -1979,20 +2104,34 @@
         }
 
         function processarArquivo() {
+            let fonte = 'arquivo local';
+            
             if(!dadosCSV.length) {
-                showNotification('Nenhum dado para processar.', 'error');
+                showNotification('Nenhum dado para processar. Faça upload de um arquivo ou sincronize com GitHub.', 'error');
                 return;
             }
 
+            if (dataSource === 'github') {
+                fonte = 'GitHub';
+            }
+
+            console.log(`🔄 Processando ${dadosCSV.length} registros de ${fonte}...`);
             document.getElementById('processBtn').textContent = 'Processando...';
             document.getElementById('processBtn').disabled = true;
 
             setTimeout(() => {
                 try {
                     dadosFiltrados = [...dadosCSV];
+                    console.log('📊 Dados filtrados:', dadosFiltrados.length);
+                    
                     detectarRegimes(dadosFiltrados);
+                    console.log('⚙️ Regimes detectados:', Object.keys(regimesDisponiveis));
+                    
                     detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                    console.log('⚠️ Irregularidades detectadas:', apontamentosIrregulares.length);
+                    
                     equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                    console.log('🚛 Equipamentos processados:', Object.keys(equipamentosProcessados).length);
                     
                     exibirResultadosDashboard();
                     exibirRegimes();
@@ -2019,11 +2158,10 @@
                         }
                     }
 
-                    const sourceText = dataSource === 'github' ? 'GitHub' : 'arquivo local';
-                    showNotification(`Dados processados com sucesso via ${sourceText}! ${dadosFiltrados.length} apontamentos analisados.`, 'success');
+                    showNotification(`✅ Dados processados com sucesso via ${fonte}! ${dadosFiltrados.length} apontamentos analisados.`, 'success');
 
                 } catch(err) {
-                    console.error(err);
+                    console.error('❌ Erro ao processar:', err);
                     showNotification('Erro ao processar: ' + err.message, 'error');
                     document.getElementById('processBtn').textContent = '⚙️ Processar';
                     document.getElementById('processBtn').disabled = false;
@@ -2996,6 +3134,53 @@
         }
 
         /*********************************
+         * FUNÇÕES DE DEBUG              *
+         *********************************/
+        function debugDados() {
+            console.log('🔍 === DEBUG DADOS ===');
+            console.log('📊 dadosCSV.length:', dadosCSV.length);
+            console.log('📋 dadosFiltrados.length:', dadosFiltrados.length);
+            console.log('🏭 equipamentosProcessados:', Object.keys(equipamentosProcessados).length);
+            console.log('⚠️ apontamentosIrregulares.length:', apontamentosIrregulares.length);
+            console.log('📦 githubData:', githubData);
+            console.log('🔗 dataSource:', dataSource);
+            
+            if (dadosCSV.length > 0) {
+                console.log('📄 Amostra dadosCSV[0]:', dadosCSV[0]);
+                console.log('📋 Headers detectados:', Object.keys(dadosCSV[0]));
+            }
+            
+            if (githubData && githubData.files) {
+                console.log('📁 Arquivos GitHub:', githubData.files.length);
+                githubData.files.forEach((file, index) => {
+                    console.log(`📄 Arquivo ${index}:`, {
+                        filename: file.filename,
+                        size: file.size,
+                        hasContent: !!file.content,
+                        contentPreview: file.content ? file.content.substring(0, 100) : 'N/A'
+                    });
+                });
+            }
+            
+            // Mostra/esconde botão debug
+            const debugBtn = document.getElementById('debugBtn');
+            if (debugBtn.style.display === 'none') {
+                debugBtn.style.display = 'inline-flex';
+            } else {
+                debugBtn.style.display = 'none';
+            }
+            
+            alert(`Debug Info:
+📊 CSV Records: ${dadosCSV.length}
+🏭 Equipment: ${Object.keys(equipamentosProcessados).length}
+⚠️ Irregulares: ${apontamentosIrregulares.length}
+🔗 Source: ${dataSource}
+📦 GitHub Files: ${githubData?.files?.length || 0}
+
+Verifique o console para mais detalhes.`);
+        }
+
+        /*********************************
          * FUNÇÕES AUXILIARES COMPLETAS  *
          *********************************/
         
@@ -3029,15 +3214,23 @@
             // Set default values
             updateSyncStatus('success', 'Pronto para sincronizar');
             
+            // Mostra botão de debug em modo desenvolvimento
+            if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
+                document.getElementById('debugBtn').style.display = 'inline-flex';
+                console.log('🔧 Modo debug ativado');
+            }
+            
             // Auto-sync initial check
             if (autoSyncEnabled) {
+                console.log('🔄 Auto-sync habilitado, executando primeira sincronização em 3 segundos...');
                 setTimeout(() => {
                     manualGitHubSync();
-                }, 2000);
+                }, 3000);
             }
             
             console.log('✅ Sistema inicializado com sucesso!');
             console.log('🔗 GitHub: GrupoGps-Mecanizada/Apontamento-Dos-Tablets');
+            console.log('💡 Dica: Use Ctrl+Shift+I para abrir DevTools e ver logs detalhados');
         }
 
         // Call initialization when DOM is ready
