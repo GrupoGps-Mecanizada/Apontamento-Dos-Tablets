@@ -1448,6 +1448,74 @@
         /*********************************
          * VARIÁVEIS GLOBAIS             *
          *********************************/
+        let dadosCSV = [];
+        let equipamentosProcessados = {};
+        let apontamentosIrregulares = [];
+        let dadosFiltrados = [];
+        let regimesDisponiveis = {};
+        let regimeAtivo = null;
+        let timelineColumns = 2;
+        let showTimeGaps = true;
+        let statusColorsEnabled = false;
+        let timelineZoom = 1;
+
+        // Touch zoom variables for mobile
+        let isZooming = false;
+        let initialDistance = 0;
+        let initialZoom = 1;
+
+        const CATEGORIA_CORES = {
+            'REFEIÇÃO MOTORISTA': '#3498db',
+            'AGUARDANDO ÁREA': '#3742fa',
+            'DOCUMENTAÇÃO': '#e67e22',
+            'PREPARAÇÃO': '#8e44ad',
+            'ABASTECIMENTO': '#f39c12',
+            'DESCARREGAMENTO': '#5f27cd',
+            'BLOQUEIO': '#7f8c8d',
+            'AGUARDANDO PERMISSÃO DA ÁREA': '#ff4757',
+            'FALTA DE ACESSÓRIO': '#00d2d3',
+            'AGUARDANDO CARRETA BASCULAR': '#ff9ff3',
+            'AGUARDANDO PASSAGEM DE LOCOMOTIVA': '#54a0ff',
+            'PEQUENAS MANUTENÇÕES': '#ff6b6b',
+            'TROCA DE EQUIPAMENTO': '#ee5a24',
+            'PAUSAS DIVERSAS (ÁGUA, BANHEIRO)': '#a55eea',
+            'AGUARDANDO SEMÁFORO/CANCELA': '#ff3838',
+            'ABASTECIMENTO EMPILHADEIRA': '#ffa502',
+            'ABORDAGEM DE SEGURANÇA': '#2f3542',
+            'MANUTENÇÃO CORRETIVA': '#e74c3c',
+            'MANUTENÇÃO PREVENTIVA': '#d35400',
+            'DESLOCAMENTO': '#2ecc71',
+            'CHECKLIST': '#9b59b6',
+            'ESPERA': '#1abc9c',
+            'LIMPEZA': '#f1c40f'
+        };
+
+        const REGIMES_CONFIG = {
+            '24HS': {
+                nome: '24 Horas',
+                turnos: [
+                    { nome: 'Turno A', inicio: '07:00', fim: '19:00' },
+                    { nome: 'Turno B', inicio: '19:00', fim: '07:00' }
+                ],
+                identificadores: ['24 HS', '24HS', '24H']
+            },
+            '16HS': {
+                nome: '16 Horas',
+                turnos: [
+                    { nome: 'Turno A', inicio: '07:00', fim: '15:00' },
+                    { nome: 'Turno B', inicio: '15:00', fim: '23:00' },
+                    { nome: 'Turno C', inicio: '23:00', fim: '07:00' }
+                ],
+                identificadores: ['16 HS', '16HS', '16H']
+            },
+            'ADM': {
+                nome: 'Administrativo',
+                turnos: [
+                    { nome: 'Expediente', inicio: '07:00', fim: '17:00' }
+                ],
+                identificadores: ['ADM', 'ADMIN']
+            }
+        };
 
         /*********************************
          * PROCESSAMENTO DADOS TAMPERMONKEY *
@@ -1667,76 +1735,6 @@
             console.log('🔔 Listener Tampermonkey configurado');
             updateTampermonkeyStatus('connected', 'Aguardando dados');
         }
-        var equipamentosProcessados = {};
-        var apontamentosIrregulares = [];
-        var dadosFiltrados = [];
-        var regimesDisponiveis = {};
-        var regimeAtivo = null;
-        var timelineColumns = 2;
-        var showTimeGaps = true;
-        var statusColorsEnabled = false;
-        var timelineZoom = 1;
-        var arquivosProcessados = [];
-        var dadosUnicos = new Map(); // Para controle de duplicatas
-
-        // Touch zoom variables for mobile
-        var isZooming = false;
-        var initialDistance = 0;
-        var initialZoom = 1;
-
-        var CATEGORIA_CORES = {
-            'REFEIÇÃO MOTORISTA': '#3498db',
-            'AGUARDANDO ÁREA': '#3742fa',
-            'DOCUMENTAÇÃO': '#e67e22',
-            'PREPARAÇÃO': '#8e44ad',
-            'ABASTECIMENTO': '#f39c12',
-            'DESCARREGAMENTO': '#5f27cd',
-            'BLOQUEIO': '#7f8c8d',
-            'AGUARDANDO PERMISSÃO DA ÁREA': '#ff4757',
-            'FALTA DE ACESSÓRIO': '#00d2d3',
-            'AGUARDANDO CARRETA BASCULAR': '#ff9ff3',
-            'AGUARDANDO PASSAGEM DE LOCOMOTIVA': '#54a0ff',
-            'PEQUENAS MANUTENÇÕES': '#ff6b6b',
-            'TROCA DE EQUIPAMENTO': '#ee5a24',
-            'PAUSAS DIVERSAS (ÁGUA, BANHEIRO)': '#a55eea',
-            'AGUARDANDO SEMÁFORO/CANCELA': '#ff3838',
-            'ABASTECIMENTO EMPILHADEIRA': '#ffa502',
-            'ABORDAGEM DE SEGURANÇA': '#2f3542',
-            'MANUTENÇÃO CORRETIVA': '#e74c3c',
-            'MANUTENÇÃO PREVENTIVA': '#d35400',
-            'DESLOCAMENTO': '#2ecc71',
-            'CHECKLIST': '#9b59b6',
-            'ESPERA': '#1abc9c',
-            'LIMPEZA': '#f1c40f'
-        };
-
-        var REGIMES_CONFIG = {
-            '24HS': {
-                nome: '24 Horas',
-                turnos: [
-                    { nome: 'Turno A', inicio: '07:00', fim: '19:00' },
-                    { nome: 'Turno B', inicio: '19:00', fim: '07:00' }
-                ],
-                identificadores: ['24 HS', '24HS', '24H']
-            },
-            '16HS': {
-                nome: '16 Horas',
-                turnos: [
-                    { nome: 'Turno A', inicio: '07:00', fim: '15:00' },
-                    { nome: 'Turno B', inicio: '15:00', fim: '23:00' },
-                    { nome: 'Turno C', inicio: '23:00', fim: '07:00' }
-                ],
-                identificadores: ['16 HS', '16HS', '16H']
-            },
-            'ADM': {
-                nome: 'Administrativo',
-                turnos: [
-                    { nome: 'Expediente', inicio: '07:00', fim: '17:00' }
-                ],
-                identificadores: ['ADM', 'ADMIN']
-            }
-        };
-
         /*********************************
          * SISTEMA INTELIGENTE DE DUPLICATAS *
          *********************************/
