@@ -872,6 +872,38 @@
         .categoria-default { background: #7f8c8d !important; }
         .categoria-unknown { background: #95a5a6 !important; }
 
+        /* Status Bar Styles */
+        #statusBar {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #statusBar.error {
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .status-control-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        /* Hidden utilities */
+        .hidden { display: none !important; }
+        
+        /* File input hidden */
+        #fileInput { display: none; }
+
         /* Modal */
         .modal {
             position: fixed;
@@ -1126,14 +1158,72 @@
             background: var(--text-secondary);
         }
 
-        /* Hidden utilities */
-        .hidden { display: none !important; }
+        /* Status Bar Styles */
+        #statusBar {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #statusBar.error {
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .status-control-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .status-control-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
         
         /* File input hidden */
         #fileInput { display: none; }
     </style>
 </head>
 <body data-theme="light">
+    <!-- Status Bar Minimalista -->
+    <div id="statusBar" style="
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: white;
+        padding: 0.5rem 2rem;
+        font-size: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        transition: all 0.3s ease;
+    ">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="display: flex; align-items: center; gap: 0.25rem;">
+                <span id="statusIcon">🟢</span>
+                <span id="statusText">Sistema Online</span>
+            </span>
+            <span style="opacity: 0.8; font-size: 0.7rem;" id="lastUpdateText">
+                Última atualização: <span id="lastUpdateTime">Verificando...</span>
+            </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.7rem; opacity: 0.9;">
+            <span>📊 <span id="totalRegistrosStatus">0</span> registros</span>
+            <span>🚛 <span id="equipamentosStatus">0</span> equipamentos</span>
+            <span id="autoSyncStatus">🔄 Auto-sync ativo</span>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="header">
         <div class="header-content">
@@ -1314,8 +1404,17 @@
                                 <span style="font-weight: 600; color: var(--text-secondary);">Análise de Irregularidades:</span>
                                 <span style="color: var(--success-color); font-weight: 600;">✅ Ativo</span>
                                 
+                                <span style="font-weight: 600; color: var(--text-secondary);">Auto-Fetch GitHub:</span>
+                                <span style="color: var(--success-color); font-weight: 600;" id="autoFetchStatusConfig">✅ Ativo (30s)</span>
+                                
                                 <span style="font-weight: 600; color: var(--text-secondary);">Formatos Suportados:</span>
                                 <span style="color: var(--text-primary);">CSV, JSON</span>
+                            </div>
+                            
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary btn-sm" onclick="manualFetchGitHub()">🔄 Fetch Manual</button>
+                                <button class="btn btn-warning btn-sm" onclick="toggleAutoFetch()" id="toggleAutoFetchBtn">⏸️ Pausar Auto-Fetch</button>
+                                <button class="btn btn-success btn-sm" onclick="forceProcessData()">⚙️ Reprocessar Dados</button>
                             </div>
                         </div>
                         
@@ -1365,27 +1464,251 @@
 
     <script>
         /*********************************
-         * ESTADO GLOBAL                 *
+         * CONFIGURAÇÕES GITHUB FETCH   *
          *********************************/
-        let dadosCSV = [];
-        let equipamentosProcessados = {};
-        let apontamentosIrregulares = [];
-        let dadosFiltrados = [];
-        let regimesDisponiveis = {};
-        let regimeAtivo = null;
-        let timelineColumns = 2;
-        let showTimeGaps = true;
-        let statusColorsEnabled = false;
-        let timelineZoom = 1;
-        let arquivosProcessados = [];
-        let dadosUnicos = new Map(); // Para controle de duplicatas
+        var GITHUB_CONFIG = {
+            OWNER: 'GrupoGps-Mecanizada',
+            REPO: 'Apontamento-Dos-Tablets', 
+            FILE_PATH: 'data/latest-export-data.json',
+            AUTO_FETCH: true,
+            FETCH_INTERVAL: 30000 // 30 segundos
+        };
+
+        var autoFetchInterval = null;
+        var lastFetchTime = null;
+        var githubConnected = false;
+
+        /*********************************
+         * SISTEMA GITHUB AUTO-FETCH     *
+         *********************************/
+        function fetchGitHubData() {
+            return new Promise(function(resolve, reject) {
+                try {
+                    updateStatusBar('fetching', 'Verificando atualizações...');
+                    
+                    fetch(
+                        'https://api.github.com/repos/' + GITHUB_CONFIG.OWNER + '/' + GITHUB_CONFIG.REPO + '/contents/' + GITHUB_CONFIG.FILE_PATH,
+                        {
+                            headers: {
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    )
+                    .then(function(response) {
+                        if (!response.ok) {
+                            if (response.status === 404) {
+                                throw new Error('Arquivo de dados não encontrado');
+                            }
+                            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(function(fileData) {
+                        var content = atob(fileData.content);
+                        var data = JSON.parse(content);
+                        
+                        console.log('📦 Dados GitHub recebidos:', data);
+                        
+                        if (data && data.files && data.files.length > 0) {
+                            var dadosAnteriores = dadosCSV.length;
+                            processarDadosGitHub(data);
+                            
+                            var novosRegistros = dadosCSV.length - dadosAnteriores;
+                            lastFetchTime = new Date();
+                            githubConnected = true;
+                            
+                            if (novosRegistros > 0) {
+                                updateStatusBar('success', novosRegistros + ' novos registros processados');
+                                showNotification('✅ ' + novosRegistros + ' novos apontamentos sincronizados do GitHub!', 'success');
+                            } else {
+                                updateStatusBar('success', 'Sistema atualizado');
+                            }
+                            
+                            updateStatusBarStats();
+                            resolve(true);
+                        } else {
+                            updateStatusBar('warning', 'Nenhum dado encontrado');
+                            resolve(false);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('❌ Erro no fetch GitHub:', error);
+                        githubConnected = false;
+                        updateStatusBar('error', 'Erro na conexão: ' + error.message);
+                        reject(error);
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Erro no fetch GitHub:', error);
+                    githubConnected = false;
+                    updateStatusBar('error', 'Erro na conexão: ' + error.message);
+                    reject(error);
+                }
+            });
+        }
+
+        function processarDadosGitHub(data) {
+            console.log('📁 Processando ' + data.files.length + ' arquivos do GitHub...');
+            
+            var novosApontamentosProcessados = [];
+            
+            data.files.forEach(function(file) {
+                console.log('🔍 Processando arquivo:', file.filename);
+                
+                if (file.processedData && file.processedData.data) {
+                    // Dados já processados do GaussFleet
+                    console.log('📊 Usando dados já processados');
+                    file.processedData.data.forEach(function(row) {
+                        var apontamento = converterRowParaApontamento(row);
+                        if (apontamento) {
+                            novosApontamentosProcessados.push(apontamento);
+                        }
+                    });
+                } else if (file.content) {
+                    // Processa conteúdo CSV
+                    console.log('🔄 Processando conteúdo CSV');
+                    var csvApontamentos = processarCSV(file.content);
+                    novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
+                }
+            });
+
+            if (novosApontamentosProcessados.length > 0) {
+                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos do GitHub');
+                
+                // Adiciona ao array principal
+                dadosCSV = dadosCSV.concat(novosApontamentosProcessados);
+                
+                // Remove duplicatas
+                limparDuplicatas();
+                
+                // Registra o arquivo processado
+                arquivosProcessados.push({
+                    nome: 'GitHub Sync - ' + data.files.length + ' arquivos',
+                    tipo: 'json',
+                    timestamp: new Date().toISOString(),
+                    totalRegistros: novosApontamentosProcessados.length,
+                    registrosUnicos: dadosCSV.length
+                });
+
+                // Processamento automático
+                processarDadosAutomatico();
+                
+                // Atualiza configurações
+                atualizarConfiguracoes();
+            }
+        }
+
+        function startAutoFetch() {
+            if (autoFetchInterval) {
+                clearInterval(autoFetchInterval);
+            }
+            
+            // Primeira execução imediata
+            setTimeout(fetchGitHubData, 2000);
+            
+            // Execuções periódicas
+            autoFetchInterval = setInterval(fetchGitHubData, GITHUB_CONFIG.FETCH_INTERVAL);
+            
+            console.log('🔄 Auto-fetch GitHub iniciado (30s)');
+        }
+
+        function stopAutoFetch() {
+            if (autoFetchInterval) {
+                clearInterval(autoFetchInterval);
+                autoFetchInterval = null;
+            }
+            console.log('⏹️ Auto-fetch GitHub parado');
+        }
+
+        /*********************************
+         * FUNÇÕES STATUS BAR            *
+         *********************************/
+        function updateStatusBar(status, message) {
+            var statusBar = document.getElementById('statusBar');
+            var statusIcon = document.getElementById('statusIcon');
+            var statusText = document.getElementById('statusText');
+            var lastUpdateTime = document.getElementById('lastUpdateTime');
+            var autoSyncStatus = document.getElementById('autoSyncStatus');
+            
+            if (!statusBar) return;
+
+            // Cores e ícones baseados no status
+            var statusConfig = {
+                'online': { 
+                    bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                    icon: '🟢',
+                    text: 'Sistema Online'
+                },
+                'fetching': { 
+                    bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                    icon: '🔄',
+                    text: 'Verificando...'
+                },
+                'success': { 
+                    bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                    icon: '✅',
+                    text: message || 'Atualizado'
+                },
+                'warning': { 
+                    bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                    icon: '⚠️',
+                    text: message || 'Atenção'
+                },
+                'error': { 
+                    bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                    icon: '🔴',
+                    text: message || 'Offline'
+                }
+            };
+
+            var config = statusConfig[status] || statusConfig.online;
+            
+            statusBar.style.background = config.bg;
+            statusIcon.textContent = config.icon;
+            statusText.textContent = config.text;
+            
+            // Atualiza tempo
+            if (lastFetchTime) {
+                lastUpdateTime.textContent = lastFetchTime.toLocaleTimeString('pt-BR');
+            }
+            
+            // Status do auto-sync
+            if (autoFetchInterval) {
+                autoSyncStatus.textContent = '🔄 Auto-sync ativo';
+                autoSyncStatus.style.opacity = '1';
+            } else {
+                autoSyncStatus.textContent = '⏸️ Auto-sync parado';
+                autoSyncStatus.style.opacity = '0.7';
+            }
+        }
+
+        function updateStatusBarStats() {
+            var totalRegistros = document.getElementById('totalRegistrosStatus');
+            var equipamentos = document.getElementById('equipamentosStatus');
+            
+            if (totalRegistros) totalRegistros.textContent = dadosCSV.length;
+            if (equipamentos) equipamentos.textContent = Object.keys(equipamentosProcessados).length;
+        }
+
+        var dadosCSV = [];
+        var equipamentosProcessados = {};
+        var apontamentosIrregulares = [];
+        var dadosFiltrados = [];
+        var regimesDisponiveis = {};
+        var regimeAtivo = null;
+        var timelineColumns = 2;
+        var showTimeGaps = true;
+        var statusColorsEnabled = false;
+        var timelineZoom = 1;
+        var arquivosProcessados = [];
+        var dadosUnicos = new Map(); // Para controle de duplicatas
 
         // Touch zoom variables for mobile
-        let isZooming = false;
-        let initialDistance = 0;
-        let initialZoom = 1;
+        var isZooming = false;
+        var initialDistance = 0;
+        var initialZoom = 1;
 
-        const CATEGORIA_CORES = {
+        var CATEGORIA_CORES = {
             'REFEIÇÃO MOTORISTA': '#3498db',
             'AGUARDANDO ÁREA': '#3742fa',
             'DOCUMENTAÇÃO': '#e67e22',
@@ -1411,7 +1734,7 @@
             'LIMPEZA': '#f1c40f'
         };
 
-        const REGIMES_CONFIG = {
+        var REGIMES_CONFIG = {
             '24HS': {
                 nome: '24 Horas',
                 turnos: [
@@ -1443,7 +1766,7 @@
          *********************************/
         function gerarHashApontamento(apontamento) {
             // Gera um hash único baseado nos campos principais do apontamento
-            const campos = [
+            var campos = [
                 apontamento.Placa || '',
                 apontamento.Vaga || '',
                 apontamento['Categoria Demora'] || '',
@@ -1455,7 +1778,7 @@
         }
 
         function adicionarApontamentoUnico(apontamento) {
-            const hash = gerarHashApontamento(apontamento);
+            var hash = gerarHashApontamento(apontamento);
             
             if (!dadosUnicos.has(hash)) {
                 dadosUnicos.set(hash, apontamento);
@@ -1466,10 +1789,10 @@
 
         function limparDuplicatas() {
             dadosUnicos.clear();
-            const dadosLimpos = [];
-            let duplicatasRemovidas = 0;
+            var dadosLimpos = [];
+            var duplicatasRemovidas = 0;
 
-            dadosCSV.forEach(apontamento => {
+            dadosCSV.forEach(function(apontamento) {
                 if (adicionarApontamentoUnico(apontamento)) {
                     dadosLimpos.push(apontamento);
                 } else {
@@ -1480,8 +1803,8 @@
             dadosCSV = dadosLimpos;
             
             if (duplicatasRemovidas > 0) {
-                showNotification(`${duplicatasRemovidas} apontamentos duplicados foram removidos.`, 'info');
-                console.log(`🧹 Removidas ${duplicatasRemovidas} duplicatas. Total único: ${dadosCSV.length}`);
+                showNotification(duplicatasRemovidas + ' apontamentos duplicados foram removidos.', 'info');
+                console.log('🧹 Removidas ' + duplicatasRemovidas + ' duplicatas. Total único: ' + dadosCSV.length);
             }
         }
 
@@ -1489,9 +1812,10 @@
          * PROCESSAMENTO INTELIGENTE DE ARQUIVOS *
          *********************************/
         function processarArquivoInteligente(data, nomeArquivo, tipoArquivo) {
-            console.log(`📋 Processando arquivo: ${nomeArquivo} (${tipoArquivo})`);
+            console.log('📋 Processando arquivo: ' + nomeArquivo + ' (' + tipoArquivo + ')');
+            updateStatusBar('fetching', 'Processando ' + nomeArquivo + '...');
             
-            let novosApontamentos = [];
+            var novosApontamentos = [];
             
             if (tipoArquivo === 'json') {
                 novosApontamentos = processarJSON(data);
@@ -1500,7 +1824,7 @@
             }
 
             if (novosApontamentos.length > 0) {
-                const totalAnterior = dadosCSV.length;
+                var totalAnterior = dadosCSV.length;
                 
                 // Adiciona novos apontamentos ao array principal
                 dadosCSV = dadosCSV.concat(novosApontamentos);
@@ -1508,7 +1832,7 @@
                 // Remove duplicatas
                 limparDuplicatas();
                 
-                const novosUnicos = dadosCSV.length - totalAnterior;
+                var novosUnicos = dadosCSV.length - totalAnterior;
                 
                 // Registra arquivo processado
                 arquivosProcessados.push({
@@ -1525,18 +1849,21 @@
                 // Processamento automático
                 processarDadosAutomatico();
                 
-                showNotification(`✅ Arquivo processado! ${novosUnicos} novos apontamentos únicos adicionados.`, 'success');
+                updateStatusBar('success', novosUnicos + ' novos registros adicionados');
+                updateStatusBarStats();
+                showNotification('✅ Arquivo processado! ' + novosUnicos + ' novos apontamentos únicos adicionados.', 'success');
                 
                 return true;
             } else {
-                showNotification(`❌ Nenhum dado válido encontrado no arquivo.`, 'error');
+                updateStatusBar('warning', 'Nenhum dado válido encontrado');
+                showNotification('❌ Nenhum dado válido encontrado no arquivo.', 'error');
                 return false;
             }
         }
 
         function processarJSON(jsonData) {
             try {
-                let data;
+                var data;
                 if (typeof jsonData === 'string') {
                     data = JSON.parse(jsonData);
                 } else {
@@ -1545,58 +1872,42 @@
 
                 console.log('📊 Estrutura JSON detectada:', data);
                 
-                const apontamentos = [];
+                var apontamentos = [];
 
-                // 1. PRIORIDADE: Verificar se existe um array 'processedData' na raiz.
-                // Esta é a fonte de dados mais provável e consolidada.
-                if (data.processedData && Array.isArray(data.processedData)) {
-                    console.log('✅ Encontrado array "processedData" na raiz. Processando...');
-                    data.processedData.forEach(item => {
-                        // O item pode ser o próprio objeto de dados ou estar aninhado
-                        const rows = item.data && Array.isArray(item.data) ? item.data : [item];
-                        rows.forEach(row => {
-                            const apontamento = converterRowParaApontamento(row);
-                            if (apontamento) apontamentos.push(apontamento);
-                        });
-                    });
-                }
-                // 2. SEGUNDA OPÇÃO: Verificar se há o array 'files'.
-                else if (data.files && Array.isArray(data.files)) {
-                    console.log(`📁 Encontrado array "files". Processando ${data.files.length} arquivos...`);
+                // Verifica se há arquivos no JSON
+                if (data.files && Array.isArray(data.files)) {
+                    console.log('📁 ' + data.files.length + ' arquivos encontrados no JSON');
                     
-                    data.files.forEach((arquivo, index) => {
-                        console.log(`📄 Processando arquivo ${index + 1}: ${arquivo.filename}`);
+                    data.files.forEach(function(arquivo, index) {
+                        console.log('📄 Processando arquivo ' + (index + 1) + ': ' + arquivo.filename);
                         
-                        // Prioriza os dados já processados dentro do arquivo
+                        // Se há dados já processados, usa eles
                         if (arquivo.processedData && arquivo.processedData.data) {
-                            console.log('  -> Usando "processedData.data" do arquivo.');
-                            arquivo.processedData.data.forEach(row => {
-                                const apontamento = converterRowParaApontamento(row);
+                            console.log('✅ Usando dados já processados');
+                            arquivo.processedData.data.forEach(function(row) {
+                                var apontamento = converterRowParaApontamento(row);
                                 if (apontamento) apontamentos.push(apontamento);
                             });
                         }
-                        // Senão, processa o conteúdo CSV bruto do arquivo
+                        // Senão, processa o conteúdo CSV
                         else if (arquivo.content) {
-                            console.log('  -> Usando "content" (CSV) do arquivo.');
-                            const csvApontamentos = processarCSV(arquivo.content);
-                            apontamentos.push(...csvApontamentos);
+                            console.log('🔄 Processando conteúdo CSV do arquivo');
+                            var csvApontamentos = processarCSV(arquivo.content);
+                            apontamentos = apontamentos.concat(csvApontamentos);
                         }
                     });
-                } 
-                // 3. ÚLTIMA OPÇÃO: Tratar o JSON como um array simples de apontamentos.
-                else if (Array.isArray(data)) {
-                    console.log('📋 JSON é um array direto de apontamentos. Processando...');
-                    data.forEach(row => {
-                        const apontamento = converterRowParaApontamento(row);
-                        if (apontamento) apontamentos.push(apontamento);
-                    });
+                } else {
+                    // JSON direto com apontamentos
+                    console.log('📋 JSON direto com apontamentos');
+                    if (Array.isArray(data)) {
+                        data.forEach(function(row) {
+                            var apontamento = converterRowParaApontamento(row);
+                            if (apontamento) apontamentos.push(apontamento);
+                        });
+                    }
                 }
 
-                if (apontamentos.length === 0) {
-                     console.warn('⚠️ Nenhum apontamento válido foi extraído da estrutura JSON.');
-                }
-
-                console.log(`✅ Total de apontamentos extraídos do JSON: ${apontamentos.length}`);
+                console.log('✅ Total de apontamentos extraídos do JSON: ' + apontamentos.length);
                 return apontamentos;
 
             } catch (error) {
@@ -1607,10 +1918,10 @@
 
         function converterRowParaApontamento(row) {
             // Converte um objeto row para o formato esperado de apontamento
-            const apontamento = {};
+            var apontamento = {};
             
             // Mapeia campos possíveis
-            const mapeamentos = {
+            var mapeamentos = {
                 'Placa': ['Placa', 'placa', 'PLACA'],
                 'Vaga': ['Vaga', 'vaga', 'VAGA'],
                 'Categoria Demora': ['Categoria Demora', 'categoria', 'CATEGORIA', 'Categoria'],
@@ -1619,9 +1930,10 @@
                 'Tempo Indisponível (HH:MM)': ['Tempo Indisponível (HH:MM)', 'tempo', 'TEMPO', 'Tempo']
             };
 
-            Object.keys(mapeamentos).forEach(campoDestino => {
-                const possiveisChaves = mapeamentos[campoDestino];
-                for (const chave of possiveisChaves) {
+            Object.keys(mapeamentos).forEach(function(campoDestino) {
+                var possiveisChaves = mapeamentos[campoDestino];
+                for (var i = 0; i < possiveisChaves.length; i++) {
+                    var chave = possiveisChaves[i];
                     if (row[chave] !== undefined) {
                         apontamento[campoDestino] = row[chave];
                         break;
@@ -1642,20 +1954,20 @@
                 console.log('🔄 Iniciando parse do CSV...');
                 
                 // Remove caracteres de controle e normaliza quebras de linha
-                let cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                var cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                 
                 // Detecta o delimitador
-                const delimiter = cleanContent.includes('";') ? ';' : ',';
+                var delimiter = cleanContent.includes('";') ? ';' : ',';
                 console.log('🔍 Delimitador detectado:', delimiter);
                 
-                const result = Papa.parse(cleanContent, {
+                var result = Papa.parse(cleanContent, {
                     header: true,
                     skipEmptyLines: true,
                     delimiter: delimiter,
                     quoteChar: '"',
                     escapeChar: '"',
                     trimHeaders: true,
-                    transform: (value) => {
+                    transform: function(value) {
                         return value.replace(/^"|"$/g, '').trim();
                     }
                 });
@@ -1668,7 +1980,7 @@
                 }
                 
                 // Filtra apenas registros válidos
-                const validData = result.data.filter(linha => {
+                var validData = result.data.filter(function(linha) {
                     return linha.Placa && 
                            linha.Vaga && 
                            linha['Categoria Demora'] && 
@@ -1692,14 +2004,15 @@
         function processarDadosAutomatico() {
             if (!dadosCSV.length) return;
 
-            console.log(`🔄 Processamento automático: ${dadosCSV.length} registros`);
+            console.log('🔄 Processamento automático: ' + dadosCSV.length + ' registros');
             
             // Atualiza status
             updateAutoProcessStatus('processing', 'Processando dados...');
+            updateStatusBar('fetching', 'Processando apontamentos...');
             
-            setTimeout(() => {
+            setTimeout(function() {
                 try {
-                    dadosFiltrados = [...dadosCSV];
+                    dadosFiltrados = [].concat(dadosCSV);
                     
                     detectarRegimes(dadosFiltrados);
                     detectarApontamentosIrregularesInteligente(dadosFiltrados);
@@ -1713,12 +2026,13 @@
                     document.getElementById('filterControls').classList.remove('hidden');
                     document.getElementById('dashboardControls').classList.remove('hidden');
 
-                    ['statsSection','equipmentGrid'].forEach(id => {
-                        const el = document.getElementById(id);
+                    var sectionsToShow = ['statsSection','equipmentGrid'];
+                    sectionsToShow.forEach(function(id) {
+                        var el = document.getElementById(id);
                         if(el) el.classList.remove('hidden');
                     });
 
-                    const problemsEl = document.getElementById('problemsSection');
+                    var problemsEl = document.getElementById('problemsSection');
                     if(problemsEl) {
                         if(apontamentosIrregulares.length) {
                             problemsEl.classList.remove('hidden');
@@ -1728,62 +2042,104 @@
                     }
 
                     updateAutoProcessStatus('success', 'Dados processados automaticamente');
+                    updateStatusBar('success', 'Apontamentos processados');
+                    updateStatusBarStats();
                     console.log('✅ Processamento automático concluído');
 
                 } catch(err) {
                     console.error('❌ Erro no processamento automático:', err);
                     updateAutoProcessStatus('error', 'Erro no processamento');
+                    updateStatusBar('error', 'Erro no processamento');
                 }
             }, 500);
         }
 
         function updateAutoProcessStatus(status, message) {
-            const statusEl = document.getElementById('autoProcessStatus');
+            var statusEl = document.getElementById('autoProcessStatus');
             if (!statusEl) return;
 
-            statusEl.className = `auto-process-status ${status}`;
+            statusEl.className = 'auto-process-status ' + status;
             
-            const icons = {
+            var icons = {
                 'success': '✅',
                 'processing': '🔄',
                 'error': '❌'
             };
             
-            statusEl.textContent = `${icons[status] || '⚙️'} ${message}`;
+            statusEl.textContent = (icons[status] || '⚙️') + ' ' + message;
         }
 
         /*********************************
-         * ATUALIZAÇÃO DAS CONFIGURAÇÕES *
+         * FUNÇÕES DE CONTROLE MANUAL    *
          *********************************/
+        function manualFetchGitHub() {
+            console.log('🔄 Fetch manual do GitHub iniciado...');
+            fetchGitHubData();
+        }
+
+        function toggleAutoFetch() {
+            var btn = document.getElementById('toggleAutoFetchBtn');
+            var statusConfig = document.getElementById('autoFetchStatusConfig');
+            
+            if (autoFetchInterval) {
+                stopAutoFetch();
+                btn.textContent = '▶️ Iniciar Auto-Fetch';
+                btn.className = 'btn btn-success btn-sm';
+                statusConfig.innerHTML = '⏸️ Pausado';
+                statusConfig.style.color = 'var(--warning-color)';
+                updateStatusBar('warning', 'Auto-fetch pausado');
+                showNotification('Auto-fetch GitHub pausado', 'info');
+            } else {
+                startAutoFetch();
+                btn.textContent = '⏸️ Pausar Auto-Fetch';
+                btn.className = 'btn btn-warning btn-sm';
+                statusConfig.innerHTML = '✅ Ativo (30s)';
+                statusConfig.style.color = 'var(--success-color)';
+                showNotification('Auto-fetch GitHub reativado', 'success');
+            }
+        }
+
+        function forceProcessData() {
+            if (dadosCSV.length === 0) {
+                showNotification('Nenhum dado para reprocessar', 'warning');
+                return;
+            }
+            
+            console.log('⚙️ Reprocessamento forçado iniciado...');
+            updateStatusBar('fetching', 'Reprocessando dados...');
+            processarDadosAutomatico();
+            showNotification('Dados reprocessados com sucesso!', 'success');
+        }
+
         function atualizarConfiguracoes() {
             document.getElementById('totalArquivos').textContent = arquivosProcessados.length;
             document.getElementById('totalRegistros').textContent = dadosCSV.length;
             document.getElementById('ultimaAtualizacao').textContent = new Date().toLocaleString('pt-BR');
             
-            const ultimoArquivo = arquivosProcessados[arquivosProcessados.length - 1];
+            var ultimoArquivo = arquivosProcessados[arquivosProcessados.length - 1];
             document.getElementById('formatoArquivo').textContent = ultimoArquivo ? ultimoArquivo.tipo.toUpperCase() : 'N/A';
             
             // Atualiza histórico
-            const histContainer = document.getElementById('arquivosHistorico');
+            var histContainer = document.getElementById('arquivosHistorico');
             if (arquivosProcessados.length === 0) {
                 histContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum arquivo processado ainda.</div>';
                 return;
             }
             
-            histContainer.innerHTML = arquivosProcessados.map((arquivo, index) => `
-                <div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                        <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${arquivo.nome}</span>
-                        <span style="font-size: 0.75rem; color: var(--text-secondary);">${arquivo.tipo.toUpperCase()}</span>
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
-                        📅 ${new Date(arquivo.timestamp).toLocaleString('pt-BR')}
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                        📊 ${arquivo.totalRegistros} registros • ${arquivo.registrosUnicos} únicos
-                    </div>
-                </div>
-            `).reverse().join('');
+            histContainer.innerHTML = arquivosProcessados.map(function(arquivo, index) {
+                return '<div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">' +
+                    '<span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">' + arquivo.nome + '</span>' +
+                    '<span style="font-size: 0.75rem; color: var(--text-secondary);">' + arquivo.tipo.toUpperCase() + '</span>' +
+                    '</div>' +
+                    '<div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">' +
+                    '📅 ' + new Date(arquivo.timestamp).toLocaleString('pt-BR') +
+                    '</div>' +
+                    '<div style="font-size: 0.75rem; color: var(--text-secondary);">' +
+                    '📊 ' + arquivo.totalRegistros + ' registros • ' + arquivo.registrosUnicos + ' únicos' +
+                    '</div>' +
+                    '</div>';
+            }).reverse().join('');
         }
 
         /*********************************
@@ -1792,9 +2148,9 @@
         
         // Theme toggle
         function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            var body = document.body;
+            var currentTheme = body.getAttribute('data-theme');
+            var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
@@ -1802,15 +2158,15 @@
         // Status colors toggle
         function toggleStatusColors() {
             statusColorsEnabled = !statusColorsEnabled;
-            const toggle = document.getElementById('statusColorToggle');
+            var toggle = document.getElementById('statusColorToggle');
             toggle.classList.toggle('active', statusColorsEnabled);
             
             updateEquipmentCardsColors();
         }
 
         function updateEquipmentCardsColors() {
-            const cards = document.querySelectorAll('.equipment-card');
-            cards.forEach(card => {
+            var cards = document.querySelectorAll('.equipment-card');
+            cards.forEach(function(card) {
                 if (statusColorsEnabled) {
                     card.classList.add('status-colored');
                 } else {
@@ -1822,7 +2178,7 @@
         // Toggle time gaps
         function toggleTimeGaps() {
             showTimeGaps = !showTimeGaps;
-            const toggle = document.getElementById('gapsToggle');
+            var toggle = document.getElementById('gapsToggle');
             toggle.classList.toggle('active', showTimeGaps);
             
             if (!document.getElementById('timeline-tab').classList.contains('hidden')) {
@@ -1844,58 +2200,79 @@
         function updateTimelineZoom() {
             document.getElementById('zoomLevel').textContent = timelineZoom.toFixed(1) + 'x';
             
-            document.querySelectorAll('.timeline-content').forEach(content => {
-                content.style.transform = `scale(${timelineZoom})`;
+            document.querySelectorAll('.timeline-content').forEach(function(content) {
+                content.style.transform = 'scale(' + timelineZoom + ')';
             });
 
-            document.querySelectorAll('.timeline-equipment').forEach(equipment => {
-                const originalHeight = 600;
-                equipment.style.height = `${(originalHeight * timelineZoom) + 80}px`;
+            document.querySelectorAll('.timeline-equipment').forEach(function(equipment) {
+                var originalHeight = 600;
+                equipment.style.height = ((originalHeight * timelineZoom) + 80) + 'px';
             });
         }
 
         function getDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
+            var dx = touch1.clientX - touch2.clientX;
+            var dy = touch1.clientY - touch2.clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
 
         // Load saved theme and initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'light';
+        document.addEventListener('DOMContentLoaded', function() {
+            var savedTheme = localStorage.getItem('theme') || 'light';
             document.body.setAttribute('data-theme', savedTheme);
             setupEventListeners();
+            
+            // Inicializa sistema GitHub
+            initializeGitHubSystem();
         });
 
+        function initializeGitHubSystem() {
+            console.log('🚀 Inicializando sistema GitHub Auto-Fetch...');
+            
+            // Inicia o auto-fetch
+            if (GITHUB_CONFIG.AUTO_FETCH) {
+                startAutoFetch();
+            }
+            
+            // Status inicial
+            updateStatusBar('online', 'Sistema inicializado');
+            updateStatusBarStats();
+            
+            console.log('✅ Sistema GitHub configurado e ativo');
+        }
+
         function setupEventListeners() {
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInput = document.getElementById('fileInput');
+            var uploadArea = document.getElementById('uploadArea');
+            var fileInput = document.getElementById('fileInput');
 
             // Upload area events
-            uploadArea.addEventListener('dragover', e => {
+            uploadArea.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 uploadArea.classList.add('dragover');
             });
 
-            uploadArea.addEventListener('dragleave', e => {
+            uploadArea.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 uploadArea.classList.remove('dragover');
             });
 
-            uploadArea.addEventListener('drop', e => {
+            uploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 uploadArea.classList.remove('dragover');
                 if(e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
             });
 
-            uploadArea.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', () => {
+            uploadArea.addEventListener('click', function() { 
+                fileInput.click(); 
+            });
+            
+            fileInput.addEventListener('change', function() {
                 if(fileInput.files.length > 0) handleFile(fileInput.files[0]);
             });
 
             // Debug mode toggle
-            document.querySelector('.header h1').addEventListener('dblclick', () => {
-                const debugBtn = document.getElementById('debugBtn');
+            document.querySelector('.header h1').addEventListener('dblclick', function() {
+                var debugBtn = document.getElementById('debugBtn');
                 if (debugBtn.style.display === 'none') {
                     debugBtn.style.display = 'inline-flex';
                     console.log('🔧 Modo debug ativado');
@@ -1908,27 +2285,29 @@
             });
 
             // Filter events
-            ['dataInicial','dataFinal','tipoFilter'].forEach(id => {
-                const el = document.getElementById(id);
+            var filterIds = ['dataInicial','dataFinal','tipoFilter'];
+            filterIds.forEach(function(id) {
+                var el = document.getElementById(id);
                 if(el) el.addEventListener('change', aplicarFiltros);
             });
 
-            ['timelineSearch','timelineDate'].forEach(id => {
-                const el = document.getElementById(id);
+            var timelineIds = ['timelineSearch','timelineDate'];
+            timelineIds.forEach(function(id) {
+                var el = document.getElementById(id);
                 if(el) el.addEventListener('input', filtrarTimeline);
             });
 
             // Enhanced zoom controls for timeline
-            document.addEventListener('wheel', (e) => {
+            document.addEventListener('wheel', function(e) {
                 if (e.ctrlKey && !document.getElementById('timeline-tab').classList.contains('hidden')) {
                     e.preventDefault();
-                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    var delta = e.deltaY > 0 ? -0.1 : 0.1;
                     adjustZoom(delta);
                 }
             }, { passive: false });
 
             // Touch zoom for mobile
-            document.addEventListener('touchstart', (e) => {
+            document.addEventListener('touchstart', function(e) {
                 if (e.touches.length === 2 && !document.getElementById('timeline-tab').classList.contains('hidden')) {
                     isZooming = true;
                     initialDistance = getDistance(e.touches[0], e.touches[1]);
@@ -1937,11 +2316,11 @@
                 }
             }, { passive: false });
 
-            document.addEventListener('touchmove', (e) => {
+            document.addEventListener('touchmove', function(e) {
                 if (isZooming && e.touches.length === 2) {
-                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
-                    const scale = currentDistance / initialDistance;
-                    const newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+                    var currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    var scale = currentDistance / initialDistance;
+                    var newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
                     
                     timelineZoom = newZoom;
                     updateTimelineZoom();
@@ -1949,7 +2328,7 @@
                 }
             }, { passive: false });
 
-            document.addEventListener('touchend', (e) => {
+            document.addEventListener('touchend', function(e) {
                 if (isZooming) {
                     isZooming = false;
                     e.preventDefault();
@@ -1957,13 +2336,13 @@
             }, { passive: false });
 
             // Modal events
-            document.addEventListener('click', (e) => {
+            document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('modal')) {
                     closeModal();
                 }
             });
 
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     closeModal();
                 }
@@ -1971,11 +2350,15 @@
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.querySelectorAll('.tab-button').forEach(function(btn) { 
+                btn.classList.remove('active'); 
+            });
+            document.querySelectorAll('.tab-content').forEach(function(content) { 
+                content.classList.add('hidden'); 
+            });
 
-            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
-            const tab = document.getElementById(tabName + '-tab');
+            var button = document.querySelector('[onclick="switchTab(\'' + tabName + '\')"]');
+            var tab = document.getElementById(tabName + '-tab');
 
             button.classList.add('active');
             tab.classList.remove('hidden');
@@ -1990,9 +2373,9 @@
         }
 
         function handleFile(file) {
-            const fileName = file.name;
-            const isCSV = fileName.toLowerCase().endsWith('.csv');
-            const isJSON = fileName.toLowerCase().endsWith('.json');
+            var fileName = file.name;
+            var isCSV = fileName.toLowerCase().endsWith('.csv');
+            var isJSON = fileName.toLowerCase().endsWith('.json');
             
             if(!isCSV && !isJSON) {
                 showNotification('Selecione um arquivo CSV ou JSON válido.', 'error');
@@ -2001,16 +2384,16 @@
 
             document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Analisando arquivo...</span>';
 
-            const reader = new FileReader();
+            var reader = new FileReader();
             reader.onload = function(e) {
-                const content = e.target.result;
-                const tipoArquivo = isJSON ? 'json' : 'csv';
+                var content = e.target.result;
+                var tipoArquivo = isJSON ? 'json' : 'csv';
                 
-                console.log(`📁 Arquivo carregado: ${fileName} (${tipoArquivo})`);
+                console.log('📁 Arquivo carregado: ' + fileName + ' (' + tipoArquivo + ')');
                 
                 if (processarArquivoInteligente(content, fileName, tipoArquivo)) {
                     document.getElementById('uploadStatus').innerHTML = 
-                        `<span id="uploadMethod">${fileName}: ${dadosCSV.length} registros únicos</span>`;
+                        '<span id="uploadMethod">' + fileName + ': ' + dadosCSV.length + ' registros únicos</span>';
                 } else {
                     document.getElementById('uploadStatus').innerHTML = 
                         '<span id="uploadMethod">Erro no processamento</span>';
@@ -2028,14 +2411,14 @@
         function detectarRegimes(dados) {
             regimesDisponiveis = {};
             
-            dados.forEach(apt => {
-                const vaga = apt.Vaga;
+            dados.forEach(function(apt) {
+                var vaga = apt.Vaga;
                 if(!vaga) return;
 
-                let regime = 'ADM';
+                var regime = 'ADM';
                 
-                Object.keys(REGIMES_CONFIG).forEach(key => {
-                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                Object.keys(REGIMES_CONFIG).forEach(function(key) {
+                    REGIMES_CONFIG[key].identificadores.forEach(function(id) {
                         if(vaga.toUpperCase().includes(id)) {
                             regime = key;
                         }
@@ -2044,47 +2427,49 @@
 
                 if(!regimesDisponiveis[regime]) {
                     regimesDisponiveis[regime] = {
-                        ...REGIMES_CONFIG[regime],
+                        nome: REGIMES_CONFIG[regime].nome,
+                        turnos: REGIMES_CONFIG[regime].turnos,
+                        identificadores: REGIMES_CONFIG[regime].identificadores,
                         equipamentos: new Set(),
                         apontamentos: 0
                     };
                 }
 
-                const codigo = extrairCodigoVaga(vaga);
+                var codigo = extrairCodigoVaga(vaga);
                 if(codigo) {
                     regimesDisponiveis[regime].equipamentos.add(codigo);
                 }
                 regimesDisponiveis[regime].apontamentos++;
             });
 
-            Object.keys(regimesDisponiveis).forEach(regime => {
+            Object.keys(regimesDisponiveis).forEach(function(regime) {
                 regimesDisponiveis[regime].equipamentos = Array.from(regimesDisponiveis[regime].equipamentos);
             });
         }
 
         function detectarApontamentosIrregularesInteligente(dados) {
             apontamentosIrregulares = [];
-            const equipamentosContador = {};
+            var equipamentosContador = {};
 
-            dados.forEach(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
+            dados.forEach(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
                 if(codigo) {
                     equipamentosContador[codigo] = (equipamentosContador[codigo] || 0) + 1;
                 }
             });
 
-            dados.forEach((apt, idx) => {
-                const tempo = apt['Tempo Indisponível (HH:MM)'];
-                const categoria = apt['Categoria Demora'];
-                const minutos = tempoParaMinutos(tempo);
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                const intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
-                const idxOriginal = dadosCSV.indexOf(apt);
+            dados.forEach(function(apt, idx) {
+                var tempo = apt['Tempo Indisponível (HH:MM)'];
+                var categoria = apt['Categoria Demora'];
+                var minutos = tempoParaMinutos(tempo);
+                var codigo = extrairCodigoVaga(apt.Vaga);
+                var intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
+                var idxOriginal = dadosCSV.indexOf(apt);
 
                 if(minutos === 0) {
                     apontamentosIrregulares.push({
                         tipo: 'Apontamento Zerado',
-                        descricao: `${codigo || 'N/D'} - ${categoria} 00:00`,
+                        descricao: (codigo || 'N/D') + ' - ' + categoria + ' 00:00',
                         equipamento: codigo,
                         categoria: categoria,
                         tempo: tempo,
@@ -2098,7 +2483,7 @@
                 if(minutos > 0 && minutos <= 4) {
                     apontamentosIrregulares.push({
                         tipo: 'Apontamento Muito Curto',
-                        descricao: `${codigo || 'N/D'} - ${categoria} de ${tempo}`,
+                        descricao: (codigo || 'N/D') + ' - ' + categoria + ' de ' + tempo,
                         equipamento: codigo,
                         categoria: categoria,
                         tempo: tempo,
@@ -2112,7 +2497,7 @@
                 if(codigo && equipamentosContador[codigo] <= 3) {
                     apontamentosIrregulares.push({
                         tipo: 'Equipamento com Poucos Apontamentos',
-                        descricao: `${codigo} - Total de apenas ${equipamentosContador[codigo]} apontamento(s)`,
+                        descricao: codigo + ' - Total de apenas ' + equipamentosContador[codigo] + ' apontamento(s)',
                         equipamento: codigo,
                         categoria: categoria,
                         tempo: tempo,
@@ -2128,19 +2513,20 @@
         function extrairCodigoVaga(nomeVaga) {
             if(!nomeVaga) return null;
 
-            const nome = nomeVaga.toString().trim().toUpperCase();
+            var nome = nomeVaga.toString().trim().toUpperCase();
             
-            const patterns = [
+            var patterns = [
                 {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AP'},
                 {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AV'},
                 {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'HP'}
             ];
 
-            for(const pattern of patterns) {
-                const match = nome.match(pattern.regex);
+            for(var i = 0; i < patterns.length; i++) {
+                var pattern = patterns[i];
+                var match = nome.match(pattern.regex);
                 if(match) {
-                    const numero = match[1].padStart(2, '0');
-                    let codigo = `${pattern.prefix}-${numero}`;
+                    var numero = match[1].padStart(2, '0');
+                    var codigo = pattern.prefix + '-' + numero;
                     
                     if(match[2]) {
                         if(match[2] === '24 HS') codigo += ' - 24HS';
@@ -2166,23 +2552,30 @@
         function extrairIntervaloTempo(dataInicial, dataFinal) {
             if(!dataInicial || !dataFinal) return 'N/A';
             
-            const horaInicial = extrairHora(dataInicial);
-            const horaFinal = extrairHora(dataFinal);
+            var horaInicial = extrairHora(dataInicial);
+            var horaFinal = extrairHora(dataFinal);
             
-            return horaInicial && horaFinal ? `${horaInicial} às ${horaFinal}` : horaInicial || horaFinal || 'N/A';
+            return horaInicial && horaFinal ? horaInicial + ' às ' + horaFinal : horaInicial || horaFinal || 'N/A';
         }
 
         function parseDataHora(str) {
             if(!str) return null;
-            const pattern = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})(?::\d{2})?/);
+            var pattern = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})(?::\d{2})?/);
             return pattern ? new Date(pattern[3], pattern[2]-1, pattern[1], pattern[4], pattern[5], 0) : null;
         }
 
         function processarEquipamentosDoCSV(apontamentos) {
-            const equipamentos = {};
-            const codigosUnicos = new Set(apontamentos.map(apt => extrairCodigoVaga(apt.Vaga)).filter(Boolean));
+            var equipamentos = {};
+            var codigosUnicos = new Set();
+            
+            apontamentos.forEach(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
+                if (codigo) {
+                    codigosUnicos.add(codigo);
+                }
+            });
 
-            codigosUnicos.forEach(codigo => {
+            codigosUnicos.forEach(function(codigo) {
                 equipamentos[codigo] = {
                     codigo: codigo,
                     tipo: getTipoEquipamento(codigo),
@@ -2193,17 +2586,17 @@
                 };
             });
 
-            apontamentos.forEach((apt) => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
+            apontamentos.forEach(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
                 if(!codigo || !equipamentos[codigo]) return;
 
-                const equipamento = equipamentos[codigo];
-                const indexOriginal = dadosCSV.indexOf(apt);
+                var equipamento = equipamentos[codigo];
+                var indexOriginal = dadosCSV.indexOf(apt);
 
-                const dataHoraInicio = parseDataHora(apt['Data Inicial']);
-                const dataHoraFim = parseDataHora(apt['Data Final']);
+                var dataHoraInicio = parseDataHora(apt['Data Inicial']);
+                var dataHoraFim = parseDataHora(apt['Data Final']);
 
-                const objApontamento = {
+                var objApontamento = {
                     categoria: apt['Categoria Demora'],
                     dataInicialOriginal: apt['Data Inicial'],
                     dataFinalOriginal: apt['Data Final'],
@@ -2212,7 +2605,7 @@
                     tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'],
                     inicioHHMM: extrairHora(apt['Data Inicial']),
                     intervalo: extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']),
-                    irregular: apontamentosIrregulares.some(irr => irr.index === indexOriginal),
+                    irregular: apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; }),
                     placa: apt.Placa,
                     vaga: apt.Vaga,
                     originalData: apt
@@ -2227,7 +2620,7 @@
                 }
             });
 
-            Object.values(equipamentos).forEach(equipamento => {
+            Object.values(equipamentos).forEach(function(equipamento) {
                 equipamento.status = calcularStatusInteligente(equipamento);
             });
 
@@ -2235,8 +2628,9 @@
         }
 
         function calcularStatusInteligente(equipamento) {
-            const { totalApontamentos, apontamentos } = equipamento;
-            const irregulares = apontamentos.filter(apt => apt.irregular).length;
+            var totalApontamentos = equipamento.totalApontamentos;
+            var apontamentos = equipamento.apontamentos;
+            var irregulares = apontamentos.filter(function(apt) { return apt.irregular; }).length;
 
             if(totalApontamentos <= 3) return 'CRITICO';
             if(irregulares > totalApontamentos * 0.4) return 'CRITICO';
@@ -2247,31 +2641,35 @@
 
         function extrairHora(timestamp) {
             if(!timestamp) return null;
-            const match = timestamp.toString().match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
+            var match = timestamp.toString().match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
             if(match && match[1]) {
-                const [horas, minutos] = match[1].split(':');
-                return `${horas.padStart(2, '0')}:${minutos.padStart(2, '0')}`;
+                var parts = match[1].split(':');
+                var horas = parts[0];
+                var minutos = parts[1];
+                return horas.padStart(2, '0') + ':' + minutos.padStart(2, '0');
             }
             return null;
         }
 
-        const horaParaMinutos = hora => {
+        function horaParaMinutos(hora) {
             if(!hora || !hora.includes(':')) return 1441;
-            return hora.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
-        };
+            var parts = hora.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
 
-        const tempoParaMinutos = tempo => {
+        function tempoParaMinutos(tempo) {
             if(!tempo || !tempo.includes(':')) return 0;
-            return tempo.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
-        };
+            var parts = tempo.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
 
         function getCorCategoria(categoria) {
-            const key = categoria.toUpperCase();
+            var key = categoria.toUpperCase();
             return CATEGORIA_CORES[key] || '#7f8c8d';
         }
 
         function getCategoriaCSS(categoria) {
-            const cleanCategory = categoria.toLowerCase()
+            var cleanCategory = categoria.toLowerCase()
                 .replace(/\s+/g, '-')
                 .replace(/[()]/g, '')
                 .replace(/ç/g, 'c')
@@ -2293,7 +2691,7 @@
         }
 
         function exibirEstatisticas() {
-            const stats = {
+            var stats = {
                 total: Object.keys(equipamentosProcessados).length,
                 bom: 0,
                 atencao: 0,
@@ -2302,65 +2700,79 @@
                 irregulares: apontamentosIrregulares.length
             };
 
-            Object.values(equipamentosProcessados).forEach(eq => {
+            Object.values(equipamentosProcessados).forEach(function(eq) {
                 stats[eq.status.toLowerCase()]++;
             });
 
-            const container = document.getElementById('statsSection');
-            container.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-number">${stats.total}</div>
-                    <div class="stat-label">Equipamentos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number stat-bom">${stats.bom}</div>
-                    <div class="stat-label">Status Bom</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number stat-atencao">${stats.atencao}</div>
-                    <div class="stat-label">Status Atenção</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number stat-critico">${stats.critico}</div>
-                    <div class="stat-label">Status Crítico</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${stats.totalApontamentos}</div>
-                    <div class="stat-label">Apontamentos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number stat-critico">${stats.irregulares}</div>
-                    <div class="stat-label">Irregulares</div>
-                </div>
-            `;
+            var container = document.getElementById('statsSection');
+            container.innerHTML = '<div class="stat-card">' +
+                '<div class="stat-number">' + stats.total + '</div>' +
+                '<div class="stat-label">Equipamentos</div>' +
+                '</div>' +
+                '<div class="stat-card">' +
+                '<div class="stat-number stat-bom">' + stats.bom + '</div>' +
+                '<div class="stat-label">Status Bom</div>' +
+                '</div>' +
+                '<div class="stat-card">' +
+                '<div class="stat-number stat-atencao">' + stats.atencao + '</div>' +
+                '<div class="stat-label">Status Atenção</div>' +
+                '</div>' +
+                '<div class="stat-card">' +
+                '<div class="stat-number stat-critico">' + stats.critico + '</div>' +
+                '<div class="stat-label">Status Crítico</div>' +
+                '</div>' +
+                '<div class="stat-card">' +
+                '<div class="stat-number">' + stats.totalApontamentos + '</div>' +
+                '<div class="stat-label">Apontamentos</div>' +
+                '</div>' +
+                '<div class="stat-card">' +
+                '<div class="stat-number stat-critico">' + stats.irregulares + '</div>' +
+                '<div class="stat-label">Irregulares</div>' +
+                '</div>';
         }
 
         function exibirProblemas() {
-            const container = document.getElementById('problemsList');
+            var container = document.getElementById('problemsList');
             if(!apontamentosIrregulares.length) {
                 container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada nos dados atuais.</p>';
                 return;
             }
 
-            const displayCount = Math.min(3, apontamentosIrregulares.length);
-            const byType = apontamentosIrregulares.slice(0, displayCount).reduce((acc, problema) => {
-                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
-                return acc;
-            }, {});
+            var displayCount = Math.min(3, apontamentosIrregulares.length);
+            var byType = {};
+            
+            for (var i = 0; i < displayCount; i++) {
+                var problema = apontamentosIrregulares[i];
+                if (!byType[problema.tipo]) {
+                    byType[problema.tipo] = [];
+                }
+                byType[problema.tipo].push(problema);
+            }
 
-            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
-                <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(items[0].appointment).replace(/"/g, '&quot;')})">
-                    <div class="problem-type">${tipo} (${items.length})</div>
-                    <div class="problem-details">
-                        ${items.slice(0, 2).map(p => p.descricao).join('<br>')}
-                        ${items.length > 2 ? `<br>...(+${items.length - 2} outros)` : ''}
-                    </div>
-                </div>
-            `).join('');
+            var html = '';
+            Object.keys(byType).forEach(function(tipo) {
+                var items = byType[tipo];
+                html += '<div class="problem-item" onclick="showAppointmentDetails(' + JSON.stringify(items[0].appointment).replace(/"/g, '&quot;') + ')">' +
+                    '<div class="problem-type">' + tipo + ' (' + items.length + ')</div>' +
+                    '<div class="problem-details">';
+                
+                for (var j = 0; j < Math.min(2, items.length); j++) {
+                    html += items[j].descricao;
+                    if (j < Math.min(2, items.length) - 1) html += '<br>';
+                }
+                
+                if (items.length > 2) {
+                    html += '<br>...(+' + (items.length - 2) + ' outros)';
+                }
+                
+                html += '</div></div>';
+            });
 
-            const viewAllBtn = document.getElementById('viewAllProblemsBtn');
+            container.innerHTML = html;
+
+            var viewAllBtn = document.getElementById('viewAllProblemsBtn');
             if(apontamentosIrregulares.length > 3) {
-                viewAllBtn.textContent = `Ver Todos (${apontamentosIrregulares.length})`;
+                viewAllBtn.textContent = 'Ver Todos (' + apontamentosIrregulares.length + ')';
                 viewAllBtn.style.display = 'inline-flex';
             } else {
                 viewAllBtn.style.display = 'none';
@@ -2368,130 +2780,154 @@
         }
 
         function showAllProblems() {
-            const modal = document.getElementById('problemsModal');
-            const container = document.getElementById('allProblemsContainer');
+            var modal = document.getElementById('problemsModal');
+            var container = document.getElementById('allProblemsContainer');
             
-            const byType = apontamentosIrregulares.reduce((acc, problema) => {
-                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
-                return acc;
-            }, {});
+            var byType = {};
+            apontamentosIrregulares.forEach(function(problema) {
+                if (!byType[problema.tipo]) {
+                    byType[problema.tipo] = [];
+                }
+                byType[problema.tipo].push(problema);
+            });
 
-            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
-                <div style="margin-bottom: 1rem;">
-                    <h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">${tipo} (${items.length})</h4>
-                    ${items.map(problema => `
-                        <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(problema.appointment).replace(/"/g, '&quot;')})" style="margin-bottom: 0.5rem; cursor: pointer;">
-                            <div class="problem-details">${problema.descricao}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
+            var html = '';
+            Object.keys(byType).forEach(function(tipo) {
+                var items = byType[tipo];
+                html += '<div style="margin-bottom: 1rem;">' +
+                    '<h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">' + tipo + ' (' + items.length + ')</h4>';
+                    
+                items.forEach(function(problema) {
+                    html += '<div class="problem-item" onclick="showAppointmentDetails(' + JSON.stringify(problema.appointment).replace(/"/g, '&quot;') + ')" style="margin-bottom: 0.5rem; cursor: pointer;">' +
+                        '<div class="problem-details">' + problema.descricao + '</div>' +
+                        '</div>';
+                });
+                
+                html += '</div>';
+            });
 
+            container.innerHTML = html;
             modal.classList.add('show');
         }
 
         function exibirEquipamentos() {
-            const container = document.getElementById('equipmentGrid');
-            const equipamentos = Object.values(equipamentosProcessados).sort((a, b) => a.codigo.localeCompare(b.codigo));
+            var container = document.getElementById('equipmentGrid');
+            var equipamentos = Object.values(equipamentosProcessados).sort(function(a, b) { 
+                return a.codigo.localeCompare(b.codigo); 
+            });
 
             if(!equipamentos.length) {
                 container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento encontrado.</p>';
                 return;
             }
 
-            container.innerHTML = equipamentos.map(eq => `
-                <div class="equipment-card ${statusColorsEnabled ? 'status-colored' : ''} status-${eq.status.toLowerCase()}">
-                    <div class="equipment-header">
-                        <div>
-                            <div class="equipment-code-card">${eq.codigo}</div>
-                            <div class="equipment-type">
-                                ${eq.tipo === 'AP' ? 'Alta Pressão' : 
-                                  eq.tipo === 'AV' ? 'Auto Vácuo' : 
-                                  eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D'}
-                            </div>
-                        </div>
-                        <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
-                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
-                            <div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">${eq.totalApontamentos}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
-                        </div>
-                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
-                            <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${eq.primeiroRegistro || 'N/A'}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>
-                        </div>
-                    </div>
-                    ${eq.apontamentos.length ? `
-                        <div class="appointments-list">
-                            ${eq.apontamentos.map(apt => `
-                                <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                                        <span style="font-weight: 600; font-size: 0.8rem;">${apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria}</span>
-                                        <span style="font-size: 0.7rem; color: var(--text-secondary);">${apt.tempoIndisponivel}</span>
-                                    </div>
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${apt.intervalo}</div>
-                                    ${apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>'}
-                </div>
-            `).join('');
+            var html = '';
+            equipamentos.forEach(function(eq) {
+                var tipoTexto = eq.tipo === 'AP' ? 'Alta Pressão' : 
+                               eq.tipo === 'AV' ? 'Auto Vácuo' : 
+                               eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D';
+                
+                var appointmentsList = '';
+                if (eq.apontamentos.length) {
+                    appointmentsList = '<div class="appointments-list">';
+                    eq.apontamentos.forEach(function(apt) {
+                        var categoryText = apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria;
+                        appointmentsList += '<div class="appointment-item ' + (apt.irregular ? 'irregular' : '') + '" onclick="showAppointmentDetails(' + JSON.stringify(apt.originalData).replace(/"/g, '&quot;') + ')">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">' +
+                            '<span style="font-weight: 600; font-size: 0.8rem;">' + categoryText + '</span>' +
+                            '<span style="font-size: 0.7rem; color: var(--text-secondary);">' + apt.tempoIndisponivel + '</span>' +
+                            '</div>' +
+                            '<div style="font-size: 0.7rem; color: var(--text-secondary);">' + apt.intervalo + '</div>' +
+                            (apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : '') +
+                            '</div>';
+                    });
+                    appointmentsList += '</div>';
+                } else {
+                    appointmentsList = '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>';
+                }
+
+                html += '<div class="equipment-card ' + (statusColorsEnabled ? 'status-colored' : '') + ' status-' + eq.status.toLowerCase() + '">' +
+                    '<div class="equipment-header">' +
+                    '<div>' +
+                    '<div class="equipment-code-card">' + eq.codigo + '</div>' +
+                    '<div class="equipment-type">' + tipoTexto + '</div>' +
+                    '</div>' +
+                    '<div class="equipment-status status-' + eq.status.toLowerCase() + '">' + eq.status + '</div>' +
+                    '</div>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">' +
+                    '<div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">' +
+                    '<div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">' + eq.totalApontamentos + '</div>' +
+                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">' +
+                    '<div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">' + (eq.primeiroRegistro || 'N/A') + '</div>' +
+                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>' +
+                    '</div>' +
+                    '</div>' +
+                    appointmentsList +
+                    '</div>';
+            });
+
+            container.innerHTML = html;
         }
 
         function exibirRegimes() {
-            const container = document.getElementById('regimeContainer');
+            var container = document.getElementById('regimeContainer');
             
             if(!Object.keys(regimesDisponiveis).length) {
                 container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum regime detectado nos dados carregados.</div>';
                 return;
             }
 
-            container.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                    ${Object.entries(regimesDisponiveis).map(([key, regime]) => `
-                        <div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ${regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)'};">
-                            <h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">${regime.nome}</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">
-                                ${regime.turnos.map(turno => `${turno.inicio} - ${turno.fim}`).join(' | ')}
-                            </p>
-                            <button class="btn ${regimeAtivo === key ? 'btn-success' : 'btn-primary'} btn-sm" onclick="ativarRegime('${key}')" style="width: 100%; margin-bottom: 0.75rem;">
-                                ${regimeAtivo === key ? 'Ativo' : 'Ativar'}
-                            </button>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
-                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.equipamentos.length}</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>
-                                </div>
-                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
-                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.apontamentos}</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <div style="text-align: center;">
-                    <button class="btn btn-success" onclick="exportarPorRegime()" ${!regimeAtivo ? 'disabled' : ''} style="margin-right: 0.5rem;">
-                        Exportar Regime Ativo
-                    </button>
-                    <button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>
-                </div>
-            `;
+            var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">';
+            
+            Object.keys(regimesDisponiveis).forEach(function(key) {
+                var regime = regimesDisponiveis[key];
+                var turnosText = regime.turnos.map(function(turno) {
+                    return turno.inicio + ' - ' + turno.fim;
+                }).join(' | ');
+                
+                html += '<div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ' + (regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)') + ';">' +
+                    '<h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">' + regime.nome + '</h3>' +
+                    '<p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">' + turnosText + '</p>' +
+                    '<button class="btn ' + (regimeAtivo === key ? 'btn-success' : 'btn-primary') + ' btn-sm" onclick="ativarRegime(\'' + key + '\')" style="width: 100%; margin-bottom: 0.75rem;">' +
+                    (regimeAtivo === key ? 'Ativo' : 'Ativar') +
+                    '</button>' +
+                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">' +
+                    '<div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">' +
+                    '<div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">' + regime.equipamentos.length + '</div>' +
+                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>' +
+                    '</div>' +
+                    '<div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">' +
+                    '<div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">' + regime.apontamentos + '</div>' +
+                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+            
+            html += '</div>';
+            html += '<div style="text-align: center;">' +
+                '<button class="btn btn-success" onclick="exportarPorRegime()" ' + (!regimeAtivo ? 'disabled' : '') + ' style="margin-right: 0.5rem;">' +
+                'Exportar Regime Ativo' +
+                '</button>' +
+                '<button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>' +
+                '</div>';
+
+            container.innerHTML = html;
         }
 
         function ativarRegime(regime) {
             regimeAtivo = regime;
             exibirRegimes();
             aplicarFiltroRegime();
-            showNotification(`Regime ${regimesDisponiveis[regime].nome} ativado!`, 'success');
+            showNotification('Regime ' + regimesDisponiveis[regime].nome + ' ativado!', 'success');
         }
 
         function limparRegime() {
             regimeAtivo = null;
             exibirRegimes();
-            dadosFiltrados = [...dadosCSV];
+            dadosFiltrados = [].concat(dadosCSV);
             detectarApontamentosIrregularesInteligente(dadosFiltrados);
             equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
             exibirResultadosDashboard();
@@ -2501,9 +2937,9 @@
         function aplicarFiltroRegime() {
             if(!regimeAtivo) return;
 
-            const config = regimesDisponiveis[regimeAtivo];
-            dadosFiltrados = dadosCSV.filter(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
+            var config = regimesDisponiveis[regimeAtivo];
+            dadosFiltrados = dadosCSV.filter(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
                 return config.equipamentos.includes(codigo);
             });
 
@@ -2513,15 +2949,15 @@
         }
 
         function aplicarFiltros() {
-            const dataInicial = document.getElementById('dataInicial').value;
-            const dataFinal = document.getElementById('dataFinal').value;
-            const tipoFilter = document.getElementById('tipoFilter').value;
+            var dataInicial = document.getElementById('dataInicial').value;
+            var dataFinal = document.getElementById('dataFinal').value;
+            var tipoFilter = document.getElementById('tipoFilter').value;
 
-            dadosFiltrados = dadosCSV.filter(apt => {
-                const dataStr = apt['Data Inicial']?.split(' ')[0];
+            dadosFiltrados = dadosCSV.filter(function(apt) {
+                var dataStr = apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : null;
                 if(dataStr) {
-                    const [day, month, year] = dataStr.split('/');
-                    const dataObj = new Date(`${year}-${month}-${day}T00:00:00`);
+                    var dateParts = dataStr.split('/');
+                    var dataObj = new Date(dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0] + 'T00:00:00');
                     
                     if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00')) return false;
                     if(dataFinal && dataObj > new Date(dataFinal + 'T00:00:00')) return false;
@@ -2535,9 +2971,9 @@
             });
 
             if(regimeAtivo) {
-                const config = regimesDisponiveis[regimeAtivo];
-                dadosFiltrados = dadosFiltrados.filter(apt => {
-                    const codigo = extrairCodigoVaga(apt.Vaga);
+                var config = regimesDisponiveis[regimeAtivo];
+                dadosFiltrados = dadosFiltrados.filter(function(apt) {
+                    var codigo = extrairCodigoVaga(apt.Vaga);
                     return config.equipamentos.includes(codigo);
                 });
             }
@@ -2560,56 +2996,60 @@
         function setTimelineColumns(columns) {
             timelineColumns = columns;
             
-            document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.column-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
             event.target.classList.add('active');
             
-            const grid = document.getElementById('timelineGrid');
-            grid.className = `timeline-grid cols-${columns}`;
+            var grid = document.getElementById('timelineGrid');
+            grid.className = 'timeline-grid cols-' + columns;
             
             gerarTimelineVertical();
         }
 
         function gerarTimelineVertical() {
-            const container = document.getElementById('timelineGrid');
-            const equipamentos = Object.values(equipamentosProcessados);
+            var container = document.getElementById('timelineGrid');
+            var equipamentos = Object.values(equipamentosProcessados);
             
             if(!equipamentos.length) {
                 container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">Nenhum equipamento encontrado para exibir na timeline.</div>';
                 return;
             }
 
-            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+            equipamentos.sort(function(a, b) { return a.codigo.localeCompare(b.codigo); });
 
-            container.innerHTML = equipamentos.map(equipamento => {
-                const apontamentosOrdenados = [...equipamento.apontamentos].sort((a, b) => 
-                    (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0)
-                );
+            var html = '';
+            equipamentos.forEach(function(equipamento) {
+                var apontamentosOrdenados = [].concat(equipamento.apontamentos).sort(function(a, b) {
+                    return (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0);
+                });
 
-                return `
-                    <div class="timeline-equipment" data-equipment-code="${equipamento.codigo}" data-equipment-type="${equipamento.tipo}">
-                        <div class="timeline-equipment-header">
-                            <div class="equipment-code">${equipamento.codigo}</div>
-                            <div class="equipment-info">
-                                ${equipamento.tipo === 'AP' ? 'Alta Pressão' : 
-                                  equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'} | 
-                                ${equipamento.totalApontamentos} apontamentos | 
-                                ${equipamento.status}
-                            </div>
-                        </div>
-                        <div class="timeline-content">
-                            <div class="timeline-hours">
-                                ${Array.from({length: 24}, (_, i) => `
-                                    <div class="timeline-hour">${String(i).padStart(2, '0')}</div>
-                                `).join('')}
-                            </div>
-                            <div class="timeline-lane">
-                                ${gerarApontamentosTimelineInteligente(apontamentosOrdenados)}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                var tipoTexto = equipamento.tipo === 'AP' ? 'Alta Pressão' : 
+                               equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo';
 
+                html += '<div class="timeline-equipment" data-equipment-code="' + equipamento.codigo + '" data-equipment-type="' + equipamento.tipo + '">' +
+                    '<div class="timeline-equipment-header">' +
+                    '<div class="equipment-code">' + equipamento.codigo + '</div>' +
+                    '<div class="equipment-info">' +
+                    tipoTexto + ' | ' + equipamento.totalApontamentos + ' apontamentos | ' + equipamento.status +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="timeline-content">' +
+                    '<div class="timeline-hours">';
+                
+                for (var i = 0; i < 24; i++) {
+                    html += '<div class="timeline-hour">' + String(i).padStart(2, '0') + '</div>';
+                }
+                
+                html += '</div>' +
+                    '<div class="timeline-lane">' +
+                    gerarApontamentosTimelineInteligente(apontamentosOrdenados) +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+
+            container.innerHTML = html;
             updateTimelineZoom();
             filtrarTimeline();
         }
@@ -2617,12 +3057,12 @@
         function gerarApontamentosTimelineInteligente(apontamentos) {
             if(!apontamentos.length) return '';
 
-            let html = '';
+            var html = '';
             
             // Group by date and sort
-            const appointmentsByDate = {};
-            apontamentos.forEach(apt => {
-                const dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
+            var appointmentsByDate = {};
+            apontamentos.forEach(function(apt) {
+                var dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
                 if(!appointmentsByDate[dateStr]) {
                     appointmentsByDate[dateStr] = [];
                 }
@@ -2630,101 +3070,96 @@
             });
 
             // Process each date
-            Object.keys(appointmentsByDate).forEach(date => {
-                const dayAppointments = appointmentsByDate[date].sort((a, b) => 
-                    horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00')
-                );
+            Object.keys(appointmentsByDate).forEach(function(date) {
+                var dayAppointments = appointmentsByDate[date].sort(function(a, b) {
+                    return horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00');
+                });
                 
-                let lastEndTime = 0;
+                var lastEndTime = 0;
 
                 // Detect overlapping appointments
-                const processedAppointments = [];
-                dayAppointments.forEach((apt, index) => {
+                var processedAppointments = [];
+                dayAppointments.forEach(function(apt, index) {
                     if(!apt.inicioHHMM || !apt.tempoIndisponivel) return;
 
-                    const inicioMinutos = horaParaMinutos(apt.inicioHHMM);
-                    const duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
+                    var inicioMinutos = horaParaMinutos(apt.inicioHHMM);
+                    var duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
 
                     if(!duracaoMinutos) return;
 
                     // Check for overlaps with previous appointments
-                    let isOverlapping = false;
+                    var isOverlapping = false;
                     if(index > 0) {
-                        const prevApt = processedAppointments[processedAppointments.length - 1];
+                        var prevApt = processedAppointments[processedAppointments.length - 1];
                         if(prevApt && inicioMinutos < prevApt.endTime) {
                             isOverlapping = true;
                         }
                     }
 
                     processedAppointments.push({
-                        ...apt,
+                        categoria: apt.categoria,
                         startTime: inicioMinutos,
                         endTime: inicioMinutos + duracaoMinutos,
-                        isOverlapping: isOverlapping
+                        isOverlapping: isOverlapping,
+                        irregular: apt.irregular,
+                        originalData: apt.originalData,
+                        dataInicialOriginal: apt.dataInicialOriginal
                     });
                 });
 
-                // Generate gaps
-                processedAppointments.forEach((apt, index) => {
+                // Generate gaps and appointments
+                processedAppointments.forEach(function(apt, index) {
                     if(showTimeGaps) {
                         if(index === 0 && apt.startTime > 420) { // Start gap after 7AM
-                            const gapHeight = ((apt.startTime - 420) / 1440) * 600;
+                            var gapHeight = ((apt.startTime - 420) / 1440) * 600;
                             if(gapHeight > 25) {
-                                const gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
-                                html += `
-                                    <div class="time-gap" style="top: ${(420 / 1440) * 600}px; height: ${gapHeight.toFixed(2)}px;">
-                                        <div class="gap-label">${gapHours}h sem atividade</div>
-                                    </div>
-                                `;
+                                var gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
+                                html += '<div class="time-gap" style="top: ' + ((420 / 1440) * 600) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
+                                    '<div class="gap-label">' + gapHours + 'h sem atividade</div>' +
+                                    '</div>';
                             }
                         } else if(index > 0 && apt.startTime > lastEndTime + 30) {
-                            const gapStart = (lastEndTime / 1440) * 600;
-                            const gapDuration = apt.startTime - lastEndTime;
-                            const gapHeight = (gapDuration / 1440) * 600;
+                            var gapStart = (lastEndTime / 1440) * 600;
+                            var gapDuration = apt.startTime - lastEndTime;
+                            var gapHeight = (gapDuration / 1440) * 600;
                             
                             if(gapHeight > 20) {
-                                const gapHours = Math.round(gapDuration / 60 * 10) / 10;
-                                html += `
-                                    <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
-                                        <div class="gap-label">${gapHours}h</div>
-                                    </div>
-                                `;
+                                var gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                                html += '<div class="time-gap" style="top: ' + gapStart.toFixed(2) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
+                                    '<div class="gap-label">' + gapHours + 'h</div>' +
+                                    '</div>';
                             }
                         }
                     }
 
                     // Generate appointment block
-                    const top = (apt.startTime / 1440) * 600;
-                    const height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
-                    const cssClass = getCategoriaCSS(apt.categoria);
+                    var top = (apt.startTime / 1440) * 600;
+                    var height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
+                    var cssClass = getCategoriaCSS(apt.categoria);
 
-                    html += `
-                        <div class="timeline-appointment ${cssClass} ${apt.irregular ? 'irregular' : ''} ${apt.isOverlapping ? 'overlapping' : ''}" 
-                             style="top: ${top.toFixed(2)}px; height: ${height.toFixed(2)}px;" 
-                             onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})"
-                             data-category="${apt.categoria.toLowerCase()}"
-                             data-date="${apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : ''}"
-                             data-status="${apt.irregular ? 'irregular' : 'normal'}">
-                            <div class="appointment-text">${apt.categoria}</div>
-                        </div>
-                    `;
+                    html += '<div class="timeline-appointment ' + cssClass + (apt.irregular ? ' irregular' : '') + (apt.isOverlapping ? ' overlapping' : '') + '" ' +
+                         'style="top: ' + top.toFixed(2) + 'px; height: ' + height.toFixed(2) + 'px;" ' +
+                         'onclick="showAppointmentDetails(' + JSON.stringify(apt.originalData).replace(/"/g, '&quot;') + ')" ' +
+                         'data-category="' + apt.categoria.toLowerCase() + '" ' +
+                         'data-date="' + (apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '') + '" ' +
+                         'data-status="' + (apt.irregular ? 'irregular' : 'normal') + '">' +
+                        '<div class="appointment-text">' + apt.categoria + '</div>' +
+                        '</div>';
 
                     lastEndTime = Math.max(lastEndTime, apt.endTime);
                 });
 
                 // End of day gap
                 if(showTimeGaps && lastEndTime < 1320 && lastEndTime > 0) {
-                    const gapStart = (lastEndTime / 1440) * 600;
-                    const gapDuration = 1320 - lastEndTime;
-                    const gapHeight = (gapDuration / 1440) * 600;
+                    var gapStart = (lastEndTime / 1440) * 600;
+                    var gapDuration = 1320 - lastEndTime;
+                    var gapHeight = (gapDuration / 1440) * 600;
                     
                     if(gapHeight > 25) {
-                        const gapHours = Math.round(gapDuration / 60 * 10) / 10;
-                        html += `
-                            <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
-                                <div class="gap-label">${gapHours}h sem atividade</div>
-                            </div>
-                        `;
+                        var gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                        html += '<div class="time-gap" style="top: ' + gapStart.toFixed(2) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
+                            '<div class="gap-label">' + gapHours + 'h sem atividade</div>' +
+                            '</div>';
                     }
                 }
             });
@@ -2733,36 +3168,36 @@
         }
 
         function filtrarTimeline() {
-            const pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
-            const data = document.getElementById('timelineDate').value;
+            var pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
+            var data = document.getElementById('timelineDate').value;
 
-            document.querySelectorAll('.timeline-equipment').forEach(div => {
-                const codigo = div.dataset.equipmentCode;
-                let mostrar = true;
+            document.querySelectorAll('.timeline-equipment').forEach(function(div) {
+                var codigo = div.dataset.equipmentCode;
+                var mostrar = true;
 
                 if(pesquisa && !codigo.toLowerCase().includes(pesquisa)) mostrar = false;
 
                 if(mostrar && data) {
-                    let temBlocoVisivel = false;
-                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
-                        const [dia, mes, ano] = bloco.dataset.date.split('/');
-                        const blocoData = `${ano}-${mes}-${dia}`;
-                        const mostrarBloco = blocoData === data;
+                    var temBlocoVisivel = false;
+                    div.querySelectorAll('.timeline-appointment').forEach(function(bloco) {
+                        var dataPartes = bloco.dataset.date.split('/');
+                        var blocoData = dataPartes[2] + '-' + dataPartes[1] + '-' + dataPartes[0];
+                        var mostrarBloco = blocoData === data;
                         
                         bloco.style.display = mostrarBloco ? 'flex' : 'none';
                         if(mostrarBloco) temBlocoVisivel = true;
                     });
 
-                    div.querySelectorAll('.time-gap').forEach(gap => {
+                    div.querySelectorAll('.time-gap').forEach(function(gap) {
                         gap.style.display = data ? 'none' : 'flex';
                     });
                     
                     if(!temBlocoVisivel && data) mostrar = false;
                 } else {
-                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                    div.querySelectorAll('.timeline-appointment').forEach(function(bloco) {
                         bloco.style.display = 'flex';
                     });
-                    div.querySelectorAll('.time-gap').forEach(gap => {
+                    div.querySelectorAll('.time-gap').forEach(function(gap) {
                         gap.style.display = showTimeGaps ? 'flex' : 'none';
                     });
                 }
@@ -2775,66 +3210,67 @@
         function showAppointmentDetails(appointment) {
             closeModal();
             
-            setTimeout(() => {
-                const modal = document.getElementById('appointmentModal');
-                const container = document.getElementById('appointmentDetails');
+            setTimeout(function() {
+                var modal = document.getElementById('appointmentModal');
+                var container = document.getElementById('appointmentDetails');
                 
-                const codigo = extrairCodigoVaga(appointment.Vaga);
-                const isIrregular = apontamentosIrregulares.some(irr => irr.index === dadosCSV.indexOf(appointment));
+                var codigo = extrairCodigoVaga(appointment.Vaga);
+                var isIrregular = apontamentosIrregulares.some(function(irr) { 
+                    return irr.index === dadosCSV.indexOf(appointment); 
+                });
                 
-                container.innerHTML = `
-                    <div class="modal-detail">
-                        <span class="modal-label">Status:</span>
-                        <span class="modal-value" style="color: ${isIrregular ? 'var(--danger-color)' : 'var(--success-color)'};">
-                            ${isIrregular ? 'IRREGULAR' : 'NORMAL'}
-                        </span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Equipamento:</span>
-                        <span class="modal-value">${codigo || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Categoria:</span>
-                        <span class="modal-value">${appointment['Categoria Demora'] || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Data Inicial:</span>
-                        <span class="modal-value">${appointment['Data Inicial'] || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Data Final:</span>
-                        <span class="modal-value">${appointment['Data Final'] || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Tempo Indisponível:</span>
-                        <span class="modal-value" style="color: ${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)'};">
-                            ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'}
-                        </span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Placa:</span>
-                        <span class="modal-value">${appointment.Placa || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Vaga Completa:</span>
-                        <span class="modal-value">${appointment.Vaga || 'N/D'}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Intervalo:</span>
-                        <span class="modal-value">${extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final'])}</span>
-                    </div>
-                    <div class="modal-detail">
-                        <span class="modal-label">Duração (minutos):</span>
-                        <span class="modal-value">${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)'])} min</span>
-                    </div>
-                `;
+                container.innerHTML = 
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Status:</span>' +
+                    '<span class="modal-value" style="color: ' + (isIrregular ? 'var(--danger-color)' : 'var(--success-color)') + ';">' +
+                    (isIrregular ? 'IRREGULAR' : 'NORMAL') +
+                    '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Equipamento:</span>' +
+                    '<span class="modal-value">' + (codigo || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Categoria:</span>' +
+                    '<span class="modal-value">' + (appointment['Categoria Demora'] || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Data Inicial:</span>' +
+                    '<span class="modal-value">' + (appointment['Data Inicial'] || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Data Final:</span>' +
+                    '<span class="modal-value">' + (appointment['Data Final'] || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Tempo Indisponível:</span>' +
+                    '<span class="modal-value" style="color: ' + (tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)') + ';">' +
+                    (appointment['Tempo Indisponível (HH:MM)'] || 'N/D') +
+                    '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Placa:</span>' +
+                    '<span class="modal-value">' + (appointment.Placa || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Vaga Completa:</span>' +
+                    '<span class="modal-value">' + (appointment.Vaga || 'N/D') + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Intervalo:</span>' +
+                    '<span class="modal-value">' + extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final']) + '</span>' +
+                    '</div>' +
+                    '<div class="modal-detail">' +
+                    '<span class="modal-label">Duração (minutos):</span>' +
+                    '<span class="modal-value">' + tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) + ' min</span>' +
+                    '</div>';
 
                 modal.classList.add('show');
             }, 100);
         }
 
         function closeModal() {
-            document.querySelectorAll('.modal').forEach(modal => {
+            document.querySelectorAll('.modal').forEach(function(modal) {
                 modal.classList.remove('show');
             });
         }
@@ -2846,14 +3282,14 @@
                 return;
             }
 
-            const dados = dadosFiltrados.map(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                const indexOriginal = dadosCSV.indexOf(apt);
-                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+            var dados = dadosFiltrados.map(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
+                var indexOriginal = dadosCSV.indexOf(apt);
+                var isIrregular = apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; });
 
-                let regime = 'ADM';
-                Object.keys(REGIMES_CONFIG).forEach(key => {
-                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                var regime = 'ADM';
+                Object.keys(REGIMES_CONFIG).forEach(function(key) {
+                    REGIMES_CONFIG[key].identificadores.forEach(function(id) {
                         if(apt.Vaga && apt.Vaga.toUpperCase().includes(id)) {
                             regime = REGIMES_CONFIG[key].nome;
                         }
@@ -2864,7 +3300,7 @@
                     'Equipamento': codigo || '',
                     'Regime': regime,
                     'Supervisor': '',
-                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Data De Apontamento': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
                     'Motorista': '',
                     'Gravidade': isIrregular ? 'Irregular' : 'Normal',
                     'Apontamento': apt['Categoria Demora'] || '',
@@ -2876,7 +3312,7 @@
                 };
             });
 
-            const nome = `Relatorio_Automatizado_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            var nome = 'Relatorio_Automatizado_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
             
             if(formato === 'xlsx') {
                 exportarParaXLSX(dados, nome);
@@ -2884,7 +3320,7 @@
                 exportarParaCSV(dados, nome);
             }
 
-            showNotification(`Relatório automatizado exportado! ${dados.length} registros processados.`, 'success');
+            showNotification('Relatório automatizado exportado! ' + dados.length + ' registros processados.', 'success');
         }
 
         function exportarIrregularesApenas() {
@@ -2893,24 +3329,26 @@
                 return;
             }
 
-            const dados = apontamentosIrregulares.map(problema => ({
-                'Equipamento': problema.equipamento || '',
-                'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
-                'Supervisor': '',
-                'Data De Apontamento': problema.intervalo?.split(' ')[0] || '',
-                'Motorista': '',
-                'Gravidade': problema.gravidade || 'MÉDIA',
-                'Apontamento': problema.categoria || '',
-                'Problemas Identificados': problema.tipo || '',
-                'Hora': problema.intervalo || problema.tempo || '',
-                'Justificativa': '',
-                'Tratativa': '',
-                'Sugestão': ''
-            }));
+            var dados = apontamentosIrregulares.map(function(problema) {
+                return {
+                    'Equipamento': problema.equipamento || '',
+                    'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
+                    'Supervisor': '',
+                    'Data De Apontamento': problema.intervalo ? problema.intervalo.split(' ')[0] : '',
+                    'Motorista': '',
+                    'Gravidade': problema.gravidade || 'MÉDIA',
+                    'Apontamento': problema.categoria || '',
+                    'Problemas Identificados': problema.tipo || '',
+                    'Hora': problema.intervalo || problema.tempo || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
 
-            const nome = `Irregulares_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            var nome = 'Irregulares_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
             exportarParaXLSX(dados, nome);
-            showNotification(`Relatório de irregulares exportado! ${dados.length} registros.`, 'success');
+            showNotification('Relatório de irregulares exportado! ' + dados.length + ' registros.', 'success');
         }
 
         function exportarPorRegime() {
@@ -2919,22 +3357,22 @@
                 return;
             }
 
-            const config = regimesDisponiveis[regimeAtivo];
-            const dadosRegime = dadosFiltrados.filter(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
+            var config = regimesDisponiveis[regimeAtivo];
+            var dadosRegime = dadosFiltrados.filter(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
                 return config.equipamentos.includes(codigo);
             });
 
-            const dados = dadosRegime.map(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                const indexOriginal = dadosCSV.indexOf(apt);
-                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+            var dados = dadosRegime.map(function(apt) {
+                var codigo = extrairCodigoVaga(apt.Vaga);
+                var indexOriginal = dadosCSV.indexOf(apt);
+                var isIrregular = apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; });
 
                 return {
                     'Equipamento': codigo || '',
                     'Regime': config.nome,
                     'Supervisor': '',
-                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Data De Apontamento': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
                     'Motorista': '',
                     'Gravidade': isIrregular ? 'Irregular' : 'Normal',
                     'Apontamento': apt['Categoria Demora'] || '',
@@ -2946,46 +3384,50 @@
                 };
             });
 
-            const nome = `Regime_${config.nome.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            var nome = 'Regime_' + config.nome.replace(/\s+/g, '_') + '_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
             exportarParaXLSX(dados, nome);
-            showNotification(`Relatório do regime ${config.nome} exportado! ${dados.length} registros.`, 'success');
+            showNotification('Relatório do regime ' + config.nome + ' exportado! ' + dados.length + ' registros.', 'success');
         }
 
         function exportarParaXLSX(dados, nome) {
-            const ws = XLSX.utils.json_to_sheet(dados);
+            var ws = XLSX.utils.json_to_sheet(dados);
             
             ws['!cols'] = [
                 {width: 20}, {width: 15}, {width: 25}, {width: 20}, {width: 25}, {width: 12},
                 {width: 20}, {width: 25}, {width: 20}, {width: 30}, {width: 30}, {width: 30}
             ];
 
-            const wb = XLSX.utils.book_new();
+            var wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
-            XLSX.writeFile(wb, `${nome}.xlsx`);
+            XLSX.writeFile(wb, nome + '.xlsx');
         }
 
         function exportarParaCSV(dados, nome) {
-            const csv = Papa.unparse(dados, {delimiter: ';', header: true});
-            const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
-            const link = document.createElement('a');
+            var csv = Papa.unparse(dados, {delimiter: ';', header: true});
+            var blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
+            var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `${nome}.csv`;
+            link.download = nome + '.csv';
             link.click();
             URL.revokeObjectURL(link.href);
         }
 
         // Notification System
         function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+            var notification = document.createElement('div');
+            notification.className = 'notification ' + type;
             notification.textContent = message;
             document.body.appendChild(notification);
 
-            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(function() { 
+                notification.classList.add('show'); 
+            }, 100);
 
-            setTimeout(() => {
+            setTimeout(function() {
                 notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
+                setTimeout(function() { 
+                    notification.remove(); 
+                }, 300);
             }, 4000);
         }
 
@@ -3000,6 +3442,9 @@
             console.log('⚠️ apontamentosIrregulares.length:', apontamentosIrregulares.length);
             console.log('📁 arquivosProcessados.length:', arquivosProcessados.length);
             console.log('🗂️ dadosUnicos.size:', dadosUnicos.size);
+            console.log('🔗 githubConnected:', githubConnected);
+            console.log('⏰ autoFetchInterval:', !!autoFetchInterval);
+            console.log('🕐 lastFetchTime:', lastFetchTime);
             
             if (dadosCSV.length > 0) {
                 console.log('📄 Amostra dadosCSV[0]:', dadosCSV[0]);
@@ -3011,21 +3456,24 @@
             }
             
             // Mostra/esconde botão debug
-            const debugBtn = document.getElementById('debugBtn');
+            var debugBtn = document.getElementById('debugBtn');
             if (debugBtn.style.display === 'none') {
                 debugBtn.style.display = 'inline-flex';
             } else {
                 debugBtn.style.display = 'none';
             }
             
-            alert(`Debug Info:
-📊 CSV Records: ${dadosCSV.length}
-🏭 Equipment: ${Object.keys(equipamentosProcessados).length}
-⚠️ Irregulares: ${apontamentosIrregulares.length}
-📁 Arquivos: ${arquivosProcessados.length}
-🗂️ Únicos: ${dadosUnicos.size}
-
-Verifique o console para mais detalhes.`);
+            var debugInfo = 'Debug Info:\n' +
+                '📊 CSV Records: ' + dadosCSV.length + '\n' +
+                '🏭 Equipment: ' + Object.keys(equipamentosProcessados).length + '\n' +
+                '⚠️ Irregulares: ' + apontamentosIrregulares.length + '\n' +
+                '📁 Arquivos: ' + arquivosProcessados.length + '\n' +
+                '🗂️ Únicos: ' + dadosUnicos.size + '\n' +
+                '🔗 GitHub: ' + (githubConnected ? 'Conectado' : 'Desconectado') + '\n' +
+                '⏰ Auto-Fetch: ' + (autoFetchInterval ? 'Ativo' : 'Inativo') + '\n\n' +
+                'Verifique o console para mais detalhes.';
+            
+            alert(debugInfo);
         }
 
         // Inicialização
