@@ -1547,37 +1547,53 @@
                 
                 const apontamentos = [];
 
-                // Verifica se há arquivos no JSON
-                if (data.files && Array.isArray(data.files)) {
-                    console.log(`📁 ${data.files.length} arquivos encontrados no JSON`);
+                // 1. PRIORIDADE: Verificar se existe um array 'processedData' na raiz.
+                // Esta é a fonte de dados mais provável e consolidada.
+                if (data.processedData && Array.isArray(data.processedData)) {
+                    console.log('✅ Encontrado array "processedData" na raiz. Processando...');
+                    data.processedData.forEach(item => {
+                        // O item pode ser o próprio objeto de dados ou estar aninhado
+                        const rows = item.data && Array.isArray(item.data) ? item.data : [item];
+                        rows.forEach(row => {
+                            const apontamento = converterRowParaApontamento(row);
+                            if (apontamento) apontamentos.push(apontamento);
+                        });
+                    });
+                }
+                // 2. SEGUNDA OPÇÃO: Verificar se há o array 'files'.
+                else if (data.files && Array.isArray(data.files)) {
+                    console.log(`📁 Encontrado array "files". Processando ${data.files.length} arquivos...`);
                     
                     data.files.forEach((arquivo, index) => {
                         console.log(`📄 Processando arquivo ${index + 1}: ${arquivo.filename}`);
                         
-                        // Se há dados já processados, usa eles
+                        // Prioriza os dados já processados dentro do arquivo
                         if (arquivo.processedData && arquivo.processedData.data) {
-                            console.log('✅ Usando dados já processados');
+                            console.log('  -> Usando "processedData.data" do arquivo.');
                             arquivo.processedData.data.forEach(row => {
                                 const apontamento = converterRowParaApontamento(row);
                                 if (apontamento) apontamentos.push(apontamento);
                             });
                         }
-                        // Senão, processa o conteúdo CSV
+                        // Senão, processa o conteúdo CSV bruto do arquivo
                         else if (arquivo.content) {
-                            console.log('🔄 Processando conteúdo CSV do arquivo');
+                            console.log('  -> Usando "content" (CSV) do arquivo.');
                             const csvApontamentos = processarCSV(arquivo.content);
                             apontamentos.push(...csvApontamentos);
                         }
                     });
-                } else {
-                    // JSON direto com apontamentos
-                    console.log('📋 JSON direto com apontamentos');
-                    if (Array.isArray(data)) {
-                        data.forEach(row => {
-                            const apontamento = converterRowParaApontamento(row);
-                            if (apontamento) apontamentos.push(apontamento);
-                        });
-                    }
+                } 
+                // 3. ÚLTIMA OPÇÃO: Tratar o JSON como um array simples de apontamentos.
+                else if (Array.isArray(data)) {
+                    console.log('📋 JSON é um array direto de apontamentos. Processando...');
+                    data.forEach(row => {
+                        const apontamento = converterRowParaApontamento(row);
+                        if (apontamento) apontamentos.push(apontamento);
+                    });
+                }
+
+                if (apontamentos.length === 0) {
+                     console.warn('⚠️ Nenhum apontamento válido foi extraído da estrutura JSON.');
                 }
 
                 console.log(`✅ Total de apontamentos extraídos do JSON: ${apontamentos.length}`);
