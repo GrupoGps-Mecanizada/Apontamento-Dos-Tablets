@@ -1194,40 +1194,32 @@
     </style>
 </head>
 <body data-theme="light">
-    <!-- Status Bar Minimalista -->
-    <div id="statusBar" style="
+    <!-- Indicador Minimalista -->
+    <div id="tampermonkeyIndicator" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        color: white;
-        padding: 0.5rem 2rem;
-        font-size: 0.75rem;
+        border-radius: 50%;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 60;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
         transition: all 0.3s ease;
-    ">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <span style="display: flex; align-items: center; gap: 0.25rem;">
-                <span id="statusIcon">🟢</span>
-                <span id="statusText">Sistema Online</span>
-            </span>
-            <span style="opacity: 0.8; font-size: 0.7rem;" id="lastUpdateText">
-                Última atualização: <span id="lastUpdateTime">Verificando...</span>
-            </span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.7rem; opacity: 0.9;">
-            <span>📊 <span id="totalRegistrosStatus">0</span> registros</span>
-            <span>🚛 <span id="equipamentosStatus">0</span> equipamentos</span>
-            <span id="autoSyncStatus">🔄 Auto-sync ativo</span>
-        </div>
+    " title="Status Tampermonkey: Conectado">
+        <span id="tampermonkeyIcon">🔗</span>
     </div>
 
     <!-- Header -->
     <div class="header">
         <div class="header-content">
-            <h1>🚛 Controle De Apontamentos - GrupoGPS</h1>
+            <h1>Controle De Apontamentos - GrupoGPS</h1>
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
             </div>
@@ -1286,14 +1278,6 @@
 
             <!-- Dashboard Tab -->
             <div class="tab-content" id="dashboard-tab">
-                <div class="dashboard-controls hidden" id="dashboardControls">
-                    <h3 style="color: var(--text-primary); margin: 0;">Configurações de Visualização</h3>
-                    <div class="status-toggle">
-                        <span style="font-size: 0.9rem; color: var(--text-secondary);">Colorir por Status:</span>
-                        <div class="toggle-switch" id="statusColorToggle" onclick="toggleStatusColors()"></div>
-                    </div>
-                </div>
-
                 <div class="stats-grid hidden" id="statsSection">
                     <!-- Stats will be populated here -->
                 </div>
@@ -1365,7 +1349,7 @@
                 </div>
             </div>
 
-            <!-- Configurações Tab (anteriormente GitHub Data) -->
+            <!-- Configurações Tab -->
             <div class="tab-content hidden" id="configuracoes-tab">
                 <div style="background: var(--surface); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
                     <h3 style="color: var(--text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -1404,16 +1388,14 @@
                                 <span style="font-weight: 600; color: var(--text-secondary);">Análise de Irregularidades:</span>
                                 <span style="color: var(--success-color); font-weight: 600;">✅ Ativo</span>
                                 
-                                <span style="font-weight: 600; color: var(--text-secondary);">Auto-Fetch GitHub:</span>
-                                <span style="color: var(--success-color); font-weight: 600;" id="autoFetchStatusConfig">✅ Ativo (30s)</span>
+                                <span style="font-weight: 600; color: var(--text-secondary);">Conexão Tampermonkey:</span>
+                                <span style="color: var(--success-color); font-weight: 600;" id="tampermonkeyStatusConfig">✅ Conectado</span>
                                 
                                 <span style="font-weight: 600; color: var(--text-secondary);">Formatos Suportados:</span>
                                 <span style="color: var(--text-primary);">CSV, JSON</span>
                             </div>
                             
                             <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                <button class="btn btn-primary btn-sm" onclick="manualFetchGitHub()">🔄 Fetch Manual</button>
-                                <button class="btn btn-warning btn-sm" onclick="toggleAutoFetch()" id="toggleAutoFetchBtn">⏸️ Pausar Auto-Fetch</button>
                                 <button class="btn btn-success btn-sm" onclick="forceProcessData()">⚙️ Reprocessar Dados</button>
                             </div>
                         </div>
@@ -1433,7 +1415,7 @@
     </div>
 
     <div class="footer">
-        Desenvolvido por Warlison Abreu - Sistema Inteligente de Apontamentos v3.0
+        Desenvolvido por Warlison Abreu - GrupoGPS
     </div>
 
     <!-- Modal for appointment details -->
@@ -1464,130 +1446,83 @@
 
     <script>
         /*********************************
-         * CONFIGURAÇÕES GITHUB FETCH   *
+         * VARIÁVEIS GLOBAIS             *
          *********************************/
-        var GITHUB_CONFIG = {
-            OWNER: 'GrupoGps-Mecanizada',
-            REPO: 'Apontamento-Dos-Tablets', 
-            FILE_PATH: 'data/latest-export-data.json',
-            AUTO_FETCH: true,
-            FETCH_INTERVAL: 30000 // 30 segundos
-        };
-
-        var autoFetchInterval = null;
-        var lastFetchTime = null;
-        var githubConnected = false;
 
         /*********************************
-         * SISTEMA GITHUB AUTO-FETCH     *
+         * PROCESSAMENTO DADOS TAMPERMONKEY *
          *********************************/
-        function fetchGitHubData() {
-            return new Promise(function(resolve, reject) {
-                try {
-                    updateStatusBar('fetching', 'Verificando atualizações...');
-                    
-                    fetch(
-                        'https://api.github.com/repos/' + GITHUB_CONFIG.OWNER + '/' + GITHUB_CONFIG.REPO + '/contents/' + GITHUB_CONFIG.FILE_PATH,
-                        {
-                            headers: {
-                                'Accept': 'application/vnd.github.v3+json'
-                            }
-                        }
-                    )
-                    .then(function(response) {
-                        if (!response.ok) {
-                            if (response.status === 404) {
-                                throw new Error('Arquivo de dados não encontrado');
-                            }
-                            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(function(fileData) {
-                        var content = atob(fileData.content);
-                        var data = JSON.parse(content);
-                        
-                        console.log('📦 Dados GitHub recebidos:', data);
-                        
-                        if (data && data.files && data.files.length > 0) {
-                            var dadosAnteriores = dadosCSV.length;
-                            processarDadosGitHub(data);
-                            
-                            var novosRegistros = dadosCSV.length - dadosAnteriores;
-                            lastFetchTime = new Date();
-                            githubConnected = true;
-                            
-                            if (novosRegistros > 0) {
-                                updateStatusBar('success', novosRegistros + ' novos registros processados');
-                                showNotification('✅ ' + novosRegistros + ' novos apontamentos sincronizados do GitHub!', 'success');
-                            } else {
-                                updateStatusBar('success', 'Sistema atualizado');
-                            }
-                            
-                            updateStatusBarStats();
-                            resolve(true);
-                        } else {
-                            updateStatusBar('warning', 'Nenhum dado encontrado');
-                            resolve(false);
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('❌ Erro no fetch GitHub:', error);
-                        githubConnected = false;
-                        updateStatusBar('error', 'Erro na conexão: ' + error.message);
-                        reject(error);
-                    });
-                    
-                } catch (error) {
-                    console.error('❌ Erro no fetch GitHub:', error);
-                    githubConnected = false;
-                    updateStatusBar('error', 'Erro na conexão: ' + error.message);
-                    reject(error);
-                }
-            });
-        }
-
-        function processarDadosGitHub(data) {
-            console.log('📁 Processando ' + data.files.length + ' arquivos do GitHub...');
+        function processarDadosTampermonkey(data) {
+            console.log('🔄 Processando dados do Tampermonkey...');
+            
+            // LIMPA DADOS ANTIGOS PRIMEIRO (evita duplicação)
+            dadosCSV = [];
+            dadosUnicos.clear();
+            arquivosProcessados = [];
             
             var novosApontamentosProcessados = [];
             
-            data.files.forEach(function(file) {
-                console.log('🔍 Processando arquivo:', file.filename);
+            if (data && data.files && Array.isArray(data.files)) {
+                console.log('📁 Processando ' + data.files.length + ' arquivos do Tampermonkey...');
                 
-                if (file.processedData && file.processedData.data) {
-                    // Dados já processados do GaussFleet
-                    console.log('📊 Usando dados já processados');
-                    file.processedData.data.forEach(function(row) {
-                        var apontamento = converterRowParaApontamento(row);
-                        if (apontamento) {
-                            novosApontamentosProcessados.push(apontamento);
+                data.files.forEach(function(file) {
+                    console.log('🔍 Processando arquivo:', file.filename);
+                    
+                    // CORREÇÃO CRÍTICA: Verifica se há dados já processados
+                    if (file.processedData && file.processedData.data && Array.isArray(file.processedData.data)) {
+                        console.log('📊 Usando dados já processados do arquivo');
+                        file.processedData.data.forEach(function(row) {
+                            var apontamento = converterRowParaApontamento(row);
+                            if (apontamento && validarApontamento(apontamento)) {
+                                novosApontamentosProcessados.push(apontamento);
+                            }
+                        });
+                    } 
+                    // Se não há dados processados, tenta processar o conteúdo raw
+                    else if (file.content) {
+                        console.log('🔄 Processando conteúdo raw do arquivo');
+                        
+                        // Detecta se é CSV ou JSON
+                        var conteudo = file.content.trim();
+                        if (conteudo.startsWith('{') || conteudo.startsWith('[')) {
+                            // É JSON
+                            try {
+                                var jsonData = JSON.parse(conteudo);
+                                var jsonApontamentos = processarDadosJSON(jsonData);
+                                novosApontamentosProcessados = novosApontamentosProcessados.concat(jsonApontamentos);
+                            } catch (e) {
+                                console.error('❌ Erro ao processar JSON:', e);
+                            }
+                        } else {
+                            // É CSV
+                            var csvApontamentos = processarCSV(conteudo);
+                            novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
                         }
+                    }
+                    
+                    // Registra arquivo processado
+                    arquivosProcessados.push({
+                        nome: file.filename || 'Arquivo Tampermonkey',
+                        tipo: file.type || 'json',
+                        timestamp: file.capturedAt || new Date().toISOString(),
+                        totalRegistros: file.processedData ? file.processedData.data.length : 0,
+                        registrosUnicos: 0 // Será atualizado depois
                     });
-                } else if (file.content) {
-                    // Processa conteúdo CSV
-                    console.log('🔄 Processando conteúdo CSV');
-                    var csvApontamentos = processarCSV(file.content);
-                    novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
-                }
-            });
+                });
+            }
 
             if (novosApontamentosProcessados.length > 0) {
-                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos do GitHub');
+                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos');
                 
-                // Adiciona ao array principal
-                dadosCSV = dadosCSV.concat(novosApontamentosProcessados);
+                // Adiciona novos dados
+                dadosCSV = novosApontamentosProcessados;
                 
                 // Remove duplicatas
                 limparDuplicatas();
                 
-                // Registra o arquivo processado
-                arquivosProcessados.push({
-                    nome: 'GitHub Sync - ' + data.files.length + ' arquivos',
-                    tipo: 'json',
-                    timestamp: new Date().toISOString(),
-                    totalRegistros: novosApontamentosProcessados.length,
-                    registrosUnicos: dadosCSV.length
+                // Atualiza contadores nos arquivos processados
+                arquivosProcessados.forEach(function(arquivo) {
+                    arquivo.registrosUnicos = dadosCSV.length;
                 });
 
                 // Processamento automático
@@ -1595,102 +1530,143 @@
                 
                 // Atualiza configurações
                 atualizarConfiguracoes();
+                
+                // Atualiza indicador Tampermonkey
+                updateTampermonkeyStatus('connected', novosApontamentosProcessados.length + ' registros processados');
+                
+                return true;
+            } else {
+                console.log('⚠️ Nenhum apontamento válido encontrado');
+                updateTampermonkeyStatus('warning', 'Nenhum dado válido');
+                return false;
             }
-        }
-
-        function startAutoFetch() {
-            if (autoFetchInterval) {
-                clearInterval(autoFetchInterval);
-            }
-            
-            // Primeira execução imediata
-            setTimeout(fetchGitHubData, 2000);
-            
-            // Execuções periódicas
-            autoFetchInterval = setInterval(fetchGitHubData, GITHUB_CONFIG.FETCH_INTERVAL);
-            
-            console.log('🔄 Auto-fetch GitHub iniciado (30s)');
-        }
-
-        function stopAutoFetch() {
-            if (autoFetchInterval) {
-                clearInterval(autoFetchInterval);
-                autoFetchInterval = null;
-            }
-            console.log('⏹️ Auto-fetch GitHub parado');
         }
 
         /*********************************
-         * FUNÇÕES STATUS BAR            *
+         * PROCESSAMENTO JSON CORRIGIDO   *
          *********************************/
-        function updateStatusBar(status, message) {
-            var statusBar = document.getElementById('statusBar');
-            var statusIcon = document.getElementById('statusIcon');
-            var statusText = document.getElementById('statusText');
-            var lastUpdateTime = document.getElementById('lastUpdateTime');
-            var autoSyncStatus = document.getElementById('autoSyncStatus');
-            
-            if (!statusBar) return;
+        function processarDadosJSON(jsonData) {
+            try {
+                var apontamentos = [];
+                
+                // Se é um array direto de apontamentos
+                if (Array.isArray(jsonData)) {
+                    jsonData.forEach(function(item) {
+                        var apontamento = converterRowParaApontamento(item);
+                        if (apontamento && validarApontamento(apontamento)) {
+                            apontamentos.push(apontamento);
+                        }
+                    });
+                }
+                // Se é um objeto com propriedades
+                else if (typeof jsonData === 'object') {
+                    // Verifica se tem uma propriedade 'data' ou similar
+                    var dataArray = jsonData.data || jsonData.records || jsonData.items || jsonData.apontamentos;
+                    
+                    if (Array.isArray(dataArray)) {
+                        dataArray.forEach(function(item) {
+                            var apontamento = converterRowParaApontamento(item);
+                            if (apontamento && validarApontamento(apontamento)) {
+                                apontamentos.push(apontamento);
+                            }
+                        });
+                    }
+                    // Se o próprio objeto é um apontamento
+                    else {
+                        var apontamento = converterRowParaApontamento(jsonData);
+                        if (apontamento && validarApontamento(apontamento)) {
+                            apontamentos.push(apontamento);
+                        }
+                    }
+                }
+                
+                console.log('✅ JSON processado: ' + apontamentos.length + ' apontamentos válidos');
+                return apontamentos;
+                
+            } catch (error) {
+                console.error('❌ Erro ao processar JSON:', error);
+                return [];
+            }
+        }
 
-            // Cores e ícones baseados no status
-            var statusConfig = {
-                'online': { 
+        /*********************************
+         * VALIDAÇÃO DE APONTAMENTOS     *
+         *********************************/
+        function validarApontamento(apontamento) {
+            // Verifica se tem os campos essenciais
+            return apontamento && 
+                   apontamento.Placa && 
+                   apontamento.Vaga && 
+                   apontamento['Categoria Demora'] && 
+                   apontamento['Data Inicial'] && 
+                   apontamento['Data Final'] && 
+                   apontamento['Tempo Indisponível (HH:MM)'];
+        }
+
+        /*********************************
+         * INDICADOR TAMPERMONKEY        *
+         *********************************/
+        function updateTampermonkeyStatus(status, message) {
+            var indicator = document.getElementById('tampermonkeyIndicator');
+            var icon = document.getElementById('tampermonkeyIcon');
+            
+            if (!indicator || !icon) return;
+            
+            var configs = {
+                'connected': {
                     bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                    icon: '🟢',
-                    text: 'Sistema Online'
+                    icon: '🔗',
+                    title: 'Tampermonkey: Conectado - ' + (message || 'Online')
                 },
-                'fetching': { 
-                    bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-                    icon: '🔄',
-                    text: 'Verificando...'
+                'disconnected': {
+                    bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                    icon: '❌',
+                    title: 'Tampermonkey: Desconectado'
                 },
-                'success': { 
-                    bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                    icon: '✅',
-                    text: message || 'Atualizado'
-                },
-                'warning': { 
+                'warning': {
                     bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
                     icon: '⚠️',
-                    text: message || 'Atenção'
+                    title: 'Tampermonkey: ' + (message || 'Atenção')
                 },
-                'error': { 
-                    bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                    icon: '🔴',
-                    text: message || 'Offline'
+                'processing': {
+                    bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                    icon: '🔄',
+                    title: 'Tampermonkey: Processando...'
                 }
             };
-
-            var config = statusConfig[status] || statusConfig.online;
             
-            statusBar.style.background = config.bg;
-            statusIcon.textContent = config.icon;
-            statusText.textContent = config.text;
+            var config = configs[status] || configs.connected;
             
-            // Atualiza tempo
-            if (lastFetchTime) {
-                lastUpdateTime.textContent = lastFetchTime.toLocaleTimeString('pt-BR');
-            }
-            
-            // Status do auto-sync
-            if (autoFetchInterval) {
-                autoSyncStatus.textContent = '🔄 Auto-sync ativo';
-                autoSyncStatus.style.opacity = '1';
-            } else {
-                autoSyncStatus.textContent = '⏸️ Auto-sync parado';
-                autoSyncStatus.style.opacity = '0.7';
-            }
+            indicator.style.background = config.bg;
+            indicator.title = config.title;
+            icon.textContent = config.icon;
         }
 
-        function updateStatusBarStats() {
-            var totalRegistros = document.getElementById('totalRegistrosStatus');
-            var equipamentos = document.getElementById('equipamentosStatus');
+        /*********************************
+         * COMUNICAÇÃO COM TAMPERMONKEY   *
+         *********************************/
+        function setupTampermonkeyListener() {
+            // Escuta por dados do Tampermonkey
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'TAMPERMONKEY_DATA') {
+                    console.log('📨 Dados recebidos do Tampermonkey');
+                    updateTampermonkeyStatus('processing', 'Recebendo dados...');
+                    
+                    setTimeout(function() {
+                        processarDadosTampermonkey(event.data.payload);
+                    }, 500);
+                }
+            });
             
-            if (totalRegistros) totalRegistros.textContent = dadosCSV.length;
-            if (equipamentos) equipamentos.textContent = Object.keys(equipamentosProcessados).length;
+            // Notifica que está pronto para receber dados
+            window.postMessage({
+                type: 'SISTEMA_READY',
+                timestamp: new Date().toISOString()
+            }, '*');
+            
+            console.log('🔔 Listener Tampermonkey configurado');
+            updateTampermonkeyStatus('connected', 'Aguardando dados');
         }
-
-        var dadosCSV = [];
         var equipamentosProcessados = {};
         var apontamentosIrregulares = [];
         var dadosFiltrados = [];
@@ -1861,61 +1837,6 @@
             }
         }
 
-        function processarJSON(jsonData) {
-            try {
-                var data;
-                if (typeof jsonData === 'string') {
-                    data = JSON.parse(jsonData);
-                } else {
-                    data = jsonData;
-                }
-
-                console.log('📊 Estrutura JSON detectada:', data);
-                
-                var apontamentos = [];
-
-                // Verifica se há arquivos no JSON
-                if (data.files && Array.isArray(data.files)) {
-                    console.log('📁 ' + data.files.length + ' arquivos encontrados no JSON');
-                    
-                    data.files.forEach(function(arquivo, index) {
-                        console.log('📄 Processando arquivo ' + (index + 1) + ': ' + arquivo.filename);
-                        
-                        // Se há dados já processados, usa eles
-                        if (arquivo.processedData && arquivo.processedData.data) {
-                            console.log('✅ Usando dados já processados');
-                            arquivo.processedData.data.forEach(function(row) {
-                                var apontamento = converterRowParaApontamento(row);
-                                if (apontamento) apontamentos.push(apontamento);
-                            });
-                        }
-                        // Senão, processa o conteúdo CSV
-                        else if (arquivo.content) {
-                            console.log('🔄 Processando conteúdo CSV do arquivo');
-                            var csvApontamentos = processarCSV(arquivo.content);
-                            apontamentos = apontamentos.concat(csvApontamentos);
-                        }
-                    });
-                } else {
-                    // JSON direto com apontamentos
-                    console.log('📋 JSON direto com apontamentos');
-                    if (Array.isArray(data)) {
-                        data.forEach(function(row) {
-                            var apontamento = converterRowParaApontamento(row);
-                            if (apontamento) apontamentos.push(apontamento);
-                        });
-                    }
-                }
-
-                console.log('✅ Total de apontamentos extraídos do JSON: ' + apontamentos.length);
-                return apontamentos;
-
-            } catch (error) {
-                console.error('❌ Erro ao processar JSON:', error);
-                return [];
-            }
-        }
-
         function converterRowParaApontamento(row) {
             // Converte um objeto row para o formato esperado de apontamento
             var apontamento = {};
@@ -2024,7 +1945,6 @@
                     // Show controls
                     document.getElementById('exportControls').classList.remove('hidden');
                     document.getElementById('filterControls').classList.remove('hidden');
-                    document.getElementById('dashboardControls').classList.remove('hidden');
 
                     var sectionsToShow = ['statsSection','equipmentGrid'];
                     sectionsToShow.forEach(function(id) {
@@ -2072,33 +1992,6 @@
         /*********************************
          * FUNÇÕES DE CONTROLE MANUAL    *
          *********************************/
-        function manualFetchGitHub() {
-            console.log('🔄 Fetch manual do GitHub iniciado...');
-            fetchGitHubData();
-        }
-
-        function toggleAutoFetch() {
-            var btn = document.getElementById('toggleAutoFetchBtn');
-            var statusConfig = document.getElementById('autoFetchStatusConfig');
-            
-            if (autoFetchInterval) {
-                stopAutoFetch();
-                btn.textContent = '▶️ Iniciar Auto-Fetch';
-                btn.className = 'btn btn-success btn-sm';
-                statusConfig.innerHTML = '⏸️ Pausado';
-                statusConfig.style.color = 'var(--warning-color)';
-                updateStatusBar('warning', 'Auto-fetch pausado');
-                showNotification('Auto-fetch GitHub pausado', 'info');
-            } else {
-                startAutoFetch();
-                btn.textContent = '⏸️ Pausar Auto-Fetch';
-                btn.className = 'btn btn-warning btn-sm';
-                statusConfig.innerHTML = '✅ Ativo (30s)';
-                statusConfig.style.color = 'var(--success-color)';
-                showNotification('Auto-fetch GitHub reativado', 'success');
-            }
-        }
-
         function forceProcessData() {
             if (dadosCSV.length === 0) {
                 showNotification('Nenhum dado para reprocessar', 'warning');
@@ -2106,7 +1999,7 @@
             }
             
             console.log('⚙️ Reprocessamento forçado iniciado...');
-            updateStatusBar('fetching', 'Reprocessando dados...');
+            updateTampermonkeyStatus('processing', 'Reprocessando dados...');
             processarDadosAutomatico();
             showNotification('Dados reprocessados com sucesso!', 'success');
         }
@@ -2118,6 +2011,13 @@
             
             var ultimoArquivo = arquivosProcessados[arquivosProcessados.length - 1];
             document.getElementById('formatoArquivo').textContent = ultimoArquivo ? ultimoArquivo.tipo.toUpperCase() : 'N/A';
+            
+            // Atualiza status Tampermonkey
+            var tampermonkeyStatus = document.getElementById('tampermonkeyStatusConfig');
+            if (tampermonkeyStatus) {
+                tampermonkeyStatus.textContent = '✅ Conectado';
+                tampermonkeyStatus.style.color = 'var(--success-color)';
+            }
             
             // Atualiza histórico
             var histContainer = document.getElementById('arquivosHistorico');
@@ -2222,23 +2122,20 @@
             document.body.setAttribute('data-theme', savedTheme);
             setupEventListeners();
             
-            // Inicializa sistema GitHub
-            initializeGitHubSystem();
+            // Inicializa sistema Tampermonkey
+            initializeTampermonkeySystem();
         });
 
-        function initializeGitHubSystem() {
-            console.log('🚀 Inicializando sistema GitHub Auto-Fetch...');
+        function initializeTampermonkeySystem() {
+            console.log('🚀 Inicializando sistema Tampermonkey...');
             
-            // Inicia o auto-fetch
-            if (GITHUB_CONFIG.AUTO_FETCH) {
-                startAutoFetch();
-            }
+            // Configura listener para comunicação com Tampermonkey
+            setupTampermonkeyListener();
             
             // Status inicial
-            updateStatusBar('online', 'Sistema inicializado');
-            updateStatusBarStats();
+            updateTampermonkeyStatus('connected', 'Sistema inicializado');
             
-            console.log('✅ Sistema GitHub configurado e ativo');
+            console.log('✅ Sistema Tampermonkey configurado e ativo');
         }
 
         function setupEventListeners() {
