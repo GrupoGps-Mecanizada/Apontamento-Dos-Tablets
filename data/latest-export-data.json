@@ -1144,6 +1144,1151 @@
         "totalRecords": 140,
         "processedAt": "2025-06-24T21:33:14.355Z"
       }
+    },
+    {
+      "id": 1750800973196.2583,
+      "filename": "export_1750800973196.txt",
+      "content": "\"Placa\";\"Vaga\";\"Categoria Demora\";\"Data Inicial\";\"Data Final\";\"Tempo Indisponível (HH:MM)\"\r\n\"FMD2200\";\"--\";\"Documentação\";\"23/06/2025 11:44:44\";\"24/06/2025 05:48:01\";\"18:03\"\r\n\"FMD2200\";\"--\";\"Abastecimento\";\"24/06/2025 05:48:12\";\"24/06/2025 06:07:27\";\"00:19\"\r\n\"FMD2200\";\"--\";\"Documentação\";\"24/06/2025 06:25:20\";\"24/06/2025 06:43:02\";\"00:18\"\r\n\"FMD2200\";\"--\";\"Preparação\";\"24/06/2025 06:43:11\";\"24/06/2025 07:51:46\";\"01:09\"\r\n\"DSY6F81\";\"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS\";\"Documentação\";\"24/06/2025 01:31:49\";\"24/06/2025 01:40:51\";\"00:09\"\r\n\"DSY6F81\";\"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS\";\"Pausas Diversas (água, banheiro)\";\"24/06/2025 06:00:15\";\"24/06/2025 06:07:03\";\"00:07\"\r\n\"DSY6F81\";\"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS\";\"Pequenas manutenções\";\"24/06/2025 07:49:15\";\"24/06/2025 08:02:22\";\"00:13\"\r\n\"DSY6F81\";\"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS\";\"Abastecimento\";\"24/06/2025 08:10:37\";\"24/06/2025 08:48:41\";\"00:38\"\r\n\"DSY6F81\";\"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS\";\"Refeição Motorista\";\"24/06/2025 14:13:07\";\"24/06/2025 14:57:24\";\"00:44\"\r\n\"DSY6474\";\"CAMINHÃO ALTA PRESSÃO - GPS - 02\";\"Abastecimento\";\"24/06/2025 08:22:53\";\"24/06/2025 08:28:21\";\"00:05\"\r\n\"DSY6474\";\"CAMINHÃO ALTA PRESSÃO - GPS - 02\";\"Documentação\";\"24/06/2025 08:28:39\";\"24/06/2025 09:05:16\";\"00:37\"\r\n\"DSY6474\";\"CAMINHÃO ALTA PRESSÃO - GPS - 02\";\"Bloqueio\";\"24/06/2025 09:05:30\";\"24/06/2025 09:39:44\";\"00:34\"\r\n\"DSY6474\";\"CAMINHÃO ALTA PRESSÃO - GPS - 02\";\"Refeição Motorista\";\"24/06/2025 12:35:40\";\"24/06/2025 13:36:41\";\"01:01\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Bloqueio\";\"24/06/2025 08:05:14\";\"24/06/2025 08:05:18\";\"00:00\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Abastecimento\";\"24/06/2025 08:05:25\";\"24/06/2025 08:27:35\";\"00:22\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Documentação\";\"24/06/2025 08:29:08\";\"24/06/2025 10:23:24\";\"01:54\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Bloqueio\";\"24/06/2025 10:31:34\";\"24/06/2025 11:17:19\";\"00:46\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Refeição Motorista\";\"24/06/2025 11:24:10\";\"24/06/2025 12:24:10\";\"01:00\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Bloqueio\";\"24/06/2025 12:58:38\";\"24/06/2025 14:51:21\";\"01:53\"\r\n\"EZS8764\";\"CAMINHÃO ALTA PRESSÃO - GPS - 03\";\"Abastecimento\";\"24/06/2025 15:30:32\";\"24/06/2025 15:58:25\";\"00:28\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Preparação\";\"24/06/2025 08:03:14\";\"24/06/2025 08:13:08\";\"00:10\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Abastecimento\";\"24/06/2025 08:13:17\";\"24/06/2025 09:03:58\";\"00:51\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Documentação\";\"24/06/2025 09:16:09\";\"24/06/2025 09:34:19\";\"00:18\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Bloqueio\";\"24/06/2025 09:39:26\";\"24/06/2025 09:39:30\";\"00:00\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Documentação\";\"24/06/2025 09:39:44\";\"24/06/2025 09:53:32\";\"00:14\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Preparação\";\"24/06/2025 09:53:42\";\"24/06/2025 10:10:56\";\"00:17\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Abastecimento\";\"24/06/2025 10:57:09\";\"24/06/2025 11:23:07\";\"00:26\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Pausas Diversas (água, banheiro)\";\"24/06/2025 12:18:37\";\"24/06/2025 12:20:28\";\"00:02\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Refeição Motorista\";\"24/06/2025 12:48:10\";\"24/06/2025 13:48:12\";\"01:00\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Abastecimento\";\"24/06/2025 13:48:19\";\"24/06/2025 14:04:22\";\"00:16\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Preparação\";\"24/06/2025 14:04:33\";\"24/06/2025 14:11:48\";\"00:07\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Bloqueio\";\"24/06/2025 15:18:34\";\"24/06/2025 15:18:38\";\"00:00\"\r\n\"EZS8765\";\"CAMINHÃO ALTA PRESSÃO - GPS - 04\";\"Abastecimento\";\"24/06/2025 15:18:45\";\"24/06/2025 15:50:01\";\"00:31\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Abastecimento\";\"24/06/2025 08:07:05\";\"24/06/2025 08:42:58\";\"00:36\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Documentação\";\"24/06/2025 08:54:59\";\"24/06/2025 09:52:59\";\"00:58\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Bloqueio\";\"24/06/2025 09:53:09\";\"24/06/2025 10:47:04\";\"00:54\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Preparação\";\"24/06/2025 10:47:15\";\"24/06/2025 11:02:26\";\"00:15\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Refeição Motorista\";\"24/06/2025 13:19:21\";\"24/06/2025 14:26:40\";\"01:07\"\r\n\"DSY6475\";\"CAMINHÃO ALTA PRESSÃO - GPS - 05\";\"Abastecimento\";\"24/06/2025 15:33:00\";\"24/06/2025 15:35:10\";\"00:02\"\r\n\"DSY6472\";\"CAMINHÃO ALTA PRESSÃO - GPS - 06\";\"Abastecimento\";\"24/06/2025 06:57:57\";\"24/06/2025 07:20:39\";\"00:23\"\r\n\"DSY6472\";\"CAMINHÃO ALTA PRESSÃO - GPS - 06\";\"Documentação\";\"24/06/2025 07:21:06\";\"24/06/2025 08:20:18\";\"00:59\"\r\n\"DSY6472\";\"CAMINHÃO ALTA PRESSÃO - GPS - 06\";\"Preparação\";\"24/06/2025 08:24:58\";\"24/06/2025 09:29:40\";\"01:05\"\r\n\"DSY6472\";\"CAMINHÃO ALTA PRESSÃO - GPS - 06\";\"Abastecimento\";\"24/06/2025 11:32:45\";\"24/06/2025 12:15:48\";\"00:43\"\r\n\"DSY6472\";\"CAMINHÃO ALTA PRESSÃO - GPS - 06\";\"Refeição Motorista\";\"24/06/2025 13:17:39\";\"24/06/2025 14:26:40\";\"01:09\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Abastecimento\";\"24/06/2025 08:05:40\";\"24/06/2025 08:55:54\";\"00:50\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Aguardando Área\";\"24/06/2025 09:06:59\";\"24/06/2025 11:56:59\";\"02:50\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Aguardando Área\";\"24/06/2025 11:58:21\";\"24/06/2025 12:18:26\";\"00:20\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Refeição Motorista\";\"24/06/2025 12:18:41\";\"24/06/2025 13:18:54\";\"01:00\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Bloqueio\";\"24/06/2025 13:19:02\";\"24/06/2025 13:19:09\";\"00:00\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Aguardando Área\";\"24/06/2025 13:19:17\";\"24/06/2025 14:05:53\";\"00:47\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Aguardando Área\";\"24/06/2025 15:23:00\";\"24/06/2025 15:48:55\";\"00:26\"\r\n\"EAM3256\";\"CAMINHÃO ALTA PRESSÃO - GPS - 07\";\"Aguardando Área\";\"24/06/2025 16:07:26\";\"24/06/2025 16:25:11\";\"00:18\"\r\n\"PUB2F80\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Abastecimento\";\"24/06/2025 03:16:59\";\"24/06/2025 03:28:29\";\"00:12\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Abastecimento\";\"24/06/2025 11:25:19\";\"24/06/2025 11:46:22\";\"00:21\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Aguardando Área\";\"24/06/2025 11:47:28\";\"24/06/2025 12:07:55\";\"00:20\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Refeição Motorista\";\"24/06/2025 12:16:13\";\"24/06/2025 13:16:16\";\"01:00\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Aguardando Área\";\"24/06/2025 13:16:27\";\"24/06/2025 13:16:31\";\"00:00\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Documentação\";\"24/06/2025 13:16:40\";\"24/06/2025 13:43:54\";\"00:27\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Aguardando Área\";\"24/06/2025 13:44:15\";\"24/06/2025 13:52:31\";\"00:08\"\r\n\"EGC2985\";\"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS\";\"Documentação\";\"24/06/2025 14:06:02\";\"24/06/2025 14:16:57\";\"00:11\"\r\n\"EGC2978\";\"CAMINHÃO ALTA PRESSÃO - GPS - 09\";\"Documentação\";\"24/06/2025 08:26:27\";\"24/06/2025 08:42:17\";\"00:16\"\r\n\"EGC2978\";\"CAMINHÃO ALTA PRESSÃO - GPS - 09\";\"Documentação\";\"24/06/2025 10:01:01\";\"24/06/2025 10:56:07\";\"00:55\"\r\n\"EGC2978\";\"CAMINHÃO ALTA PRESSÃO - GPS - 09\";\"Refeição Motorista\";\"24/06/2025 12:27:40\";\"24/06/2025 13:27:43\";\"01:00\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Abastecimento\";\"24/06/2025 08:00:33\";\"24/06/2025 08:18:29\";\"00:18\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Abastecimento\";\"24/06/2025 08:19:34\";\"24/06/2025 08:46:10\";\"00:27\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Preparação\";\"24/06/2025 08:46:24\";\"24/06/2025 08:46:30\";\"00:00\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Aguardando Área\";\"24/06/2025 08:46:41\";\"24/06/2025 09:18:06\";\"00:31\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Documentação\";\"24/06/2025 09:18:30\";\"24/06/2025 09:51:08\";\"00:33\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Preparação\";\"24/06/2025 09:51:23\";\"24/06/2025 09:57:56\";\"00:07\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Abastecimento\";\"24/06/2025 11:18:45\";\"24/06/2025 12:01:15\";\"00:42\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Preparação\";\"24/06/2025 12:01:30\";\"24/06/2025 12:06:17\";\"00:05\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Abastecimento\";\"24/06/2025 13:20:56\";\"24/06/2025 13:29:58\";\"00:09\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Refeição Motorista\";\"24/06/2025 13:30:08\";\"24/06/2025 14:32:44\";\"01:03\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Abastecimento\";\"24/06/2025 14:32:54\";\"24/06/2025 14:59:30\";\"00:27\"\r\n\"EOF5C06\";\"CAMINHÃO ALTA PRESSÃO - GPS - 10\";\"Preparação\";\"24/06/2025 14:59:41\";\"24/06/2025 15:08:13\";\"00:09\"\r\n\"EGC2989\";\"CAMINHÃO ALTA PRESSÃO - GPS - 11\";\"Documentação\";\"24/06/2025 08:44:09\";\"24/06/2025 08:56:54\";\"00:13\"\r\n\"EGC2989\";\"CAMINHÃO ALTA PRESSÃO - GPS - 11\";\"Refeição Motorista\";\"24/06/2025 11:48:50\";\"24/06/2025 12:49:11\";\"01:00\"\r\n\"EGC2989\";\"CAMINHÃO ALTA PRESSÃO - GPS - 11\";\"Abastecimento\";\"24/06/2025 12:49:26\";\"24/06/2025 12:58:20\";\"00:09\"\r\n\"PUB2F80\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Abastecimento\";\"24/06/2025 08:27:21\";\"24/06/2025 09:19:46\";\"00:52\"\r\n\"PUB2F80\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Documentação\";\"24/06/2025 09:20:03\";\"24/06/2025 10:04:59\";\"00:45\"\r\n\"PUB2F80\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Preparação\";\"24/06/2025 10:05:11\";\"24/06/2025 11:21:26\";\"01:16\"\r\n\"PUB2F80\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Troca de Equipamento\";\"24/06/2025 11:35:38\";\"24/06/2025 11:35:44\";\"00:00\"\r\n\"EGC2983\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Abastecimento\";\"24/06/2025 11:41:40\";\"24/06/2025 12:15:42\";\"00:34\"\r\n\"EGC2983\";\"CAMINHÃO ALTA PRESSÃO - GPS - 12\";\"Refeição Motorista\";\"24/06/2025 13:38:08\";\"24/06/2025 14:38:09\";\"01:00\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Documentação\";\"24/06/2025 09:00:32\";\"24/06/2025 09:10:49\";\"00:10\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Descarregamento\";\"24/06/2025 10:04:04\";\"24/06/2025 10:10:13\";\"00:06\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Descarregamento\";\"24/06/2025 10:46:14\";\"24/06/2025 10:54:01\";\"00:08\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Descarregamento\";\"24/06/2025 12:00:43\";\"24/06/2025 12:08:12\";\"00:07\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Descarregamento\";\"24/06/2025 12:58:39\";\"24/06/2025 13:05:14\";\"00:07\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Refeição Motorista\";\"24/06/2025 13:23:08\";\"24/06/2025 14:25:04\";\"01:02\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Documentação\";\"24/06/2025 15:13:51\";\"24/06/2025 15:35:27\";\"00:22\"\r\n\"ANF-2676\";\"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS\";\"Descarregamento\";\"24/06/2025 18:02:35\";\"24/06/2025 18:28:38\";\"00:26\"\r\n\"HJS1097\";\"CAMINHÃO AUTO VÁCUO - GPS - 03\";\"Documentação\";\"24/06/2025 08:17:48\";\"24/06/2025 10:23:27\";\"02:06\"\r\n\"HJS1097\";\"CAMINHÃO AUTO VÁCUO - GPS - 03\";\"Refeição Motorista\";\"24/06/2025 11:25:11\";\"24/06/2025 12:25:51\";\"01:01\"\r\n\"HJS1097\";\"CAMINHÃO AUTO VÁCUO - GPS - 03\";\"Bloqueio\";\"24/06/2025 13:23:30\";\"24/06/2025 13:39:39\";\"00:16\"\r\n\"HJS1097\";\"CAMINHÃO AUTO VÁCUO - GPS - 03\";\"Aguardando Área\";\"24/06/2025 14:56:31\";\"24/06/2025 15:38:00\";\"00:41\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando Área\";\"24/06/2025 08:06:39\";\"24/06/2025 08:37:55\";\"00:31\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Preparação\";\"24/06/2025 08:38:37\";\"24/06/2025 09:03:34\";\"00:25\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Documentação\";\"24/06/2025 09:03:45\";\"24/06/2025 09:10:07\";\"00:06\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando carreta bascular\";\"24/06/2025 09:10:37\";\"24/06/2025 09:25:38\";\"00:15\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando Área\";\"24/06/2025 09:28:30\";\"24/06/2025 09:41:31\";\"00:13\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Preparação\";\"24/06/2025 09:41:47\";\"24/06/2025 09:50:22\";\"00:09\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando carreta bascular\";\"24/06/2025 10:18:21\";\"24/06/2025 10:30:05\";\"00:12\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Descarregamento\";\"24/06/2025 10:30:15\";\"24/06/2025 11:22:27\";\"00:52\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando semáforo/cancela\";\"24/06/2025 11:22:44\";\"24/06/2025 11:29:45\";\"00:07\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Refeição Motorista\";\"24/06/2025 12:31:06\";\"24/06/2025 13:25:24\";\"00:54\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Descarregamento\";\"24/06/2025 14:04:19\";\"24/06/2025 15:35:01\";\"01:31\"\r\n\"CUB0763\";\"CAMINHÃO AUTO VÁCUO - GPS - 04\";\"Aguardando Área\";\"24/06/2025 15:39:58\";\"24/06/2025 15:47:22\";\"00:07\"\r\n\"DYB7210\";\"CAMINHÃO AUTO VÁCUO - GPS - 06\";\"Bloqueio\";\"24/06/2025 08:13:29\";\"24/06/2025 08:13:33\";\"00:00\"\r\n\"DYB7210\";\"CAMINHÃO AUTO VÁCUO - GPS - 06\";\"Documentação\";\"24/06/2025 08:14:02\";\"24/06/2025 08:50:05\";\"00:36\"\r\n\"DYB7210\";\"CAMINHÃO AUTO VÁCUO - GPS - 06\";\"Descarregamento\";\"24/06/2025 10:20:37\";\"24/06/2025 11:55:39\";\"01:35\"\r\n\"DYB7210\";\"CAMINHÃO AUTO VÁCUO - GPS - 06\";\"Descarregamento\";\"24/06/2025 13:20:40\";\"24/06/2025 13:20:44\";\"00:00\"\r\n\"DYB7210\";\"CAMINHÃO AUTO VÁCUO - GPS - 06\";\"Refeição Motorista\";\"24/06/2025 13:20:56\";\"24/06/2025 14:20:58\";\"01:00\"\r\n\"DSY6473\";\"CAMINHÃO AUTO VÁCUO - GPS - 07\";\"Documentação\";\"24/06/2025 08:25:33\";\"24/06/2025 09:02:21\";\"00:37\"\r\n\"DSY6473\";\"CAMINHÃO AUTO VÁCUO - GPS - 07\";\"Refeição Motorista\";\"24/06/2025 12:35:36\";\"24/06/2025 13:35:37\";\"01:00\"\r\n\"DSY6473\";\"CAMINHÃO AUTO VÁCUO - GPS - 07\";\"Bloqueio\";\"24/06/2025 14:56:51\";\"24/06/2025 14:56:56\";\"00:00\"\r\n\"DSY6473\";\"CAMINHÃO AUTO VÁCUO - GPS - 07\";\"Descarregamento\";\"24/06/2025 14:57:06\";\"24/06/2025 15:44:44\";\"00:48\"\r\n\"EGC2993\";\"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS\";\"Documentação\";\"24/06/2025 07:58:15\";\"24/06/2025 09:08:31\";\"01:10\"\r\n\"EGC2993\";\"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS\";\"Preparação\";\"24/06/2025 09:08:43\";\"24/06/2025 09:29:04\";\"00:20\"\r\n\"EGC2993\";\"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS\";\"Refeição Motorista\";\"24/06/2025 11:37:07\";\"24/06/2025 12:34:30\";\"00:57\"\r\n\"EGC2993\";\"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS\";\"Descarregamento\";\"24/06/2025 16:53:07\";\"24/06/2025 17:14:47\";\"00:22\"\r\n\"EAM3251\";\"CAMINHÃO AUTO VÁCUO - GPS - 09\";\"Aguardando Área\";\"24/06/2025 08:35:39\";\"24/06/2025 08:51:55\";\"00:16\"\r\n\"EAM3251\";\"CAMINHÃO AUTO VÁCUO - GPS - 09\";\"Descarregamento\";\"24/06/2025 09:31:09\";\"24/06/2025 09:53:04\";\"00:22\"\r\n\"EAM3251\";\"CAMINHÃO AUTO VÁCUO - GPS - 09\";\"Refeição Motorista\";\"24/06/2025 11:46:58\";\"24/06/2025 12:50:47\";\"01:04\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Aguardando Área\";\"24/06/2025 08:52:08\";\"24/06/2025 09:12:57\";\"00:21\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Documentação\";\"24/06/2025 09:13:12\";\"24/06/2025 09:29:48\";\"00:17\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Falta de Acessório\";\"24/06/2025 09:30:14\";\"24/06/2025 09:47:26\";\"00:17\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Preparação\";\"24/06/2025 09:49:27\";\"24/06/2025 10:00:21\";\"00:11\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Descarregamento\";\"24/06/2025 11:34:44\";\"24/06/2025 11:56:32\";\"00:22\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Refeição Motorista\";\"24/06/2025 13:04:02\";\"24/06/2025 14:05:33\";\"01:02\"\r\n\"EGC2979\";\"CAMINHÃO AUTO VÁCUO - GPS - 10\";\"Descarregamento\";\"24/06/2025 15:42:57\";\"24/06/2025 16:01:13\";\"00:18\"\r\n\"DSY6471\";\"CAMINHÃO HIPER VÁCUO - GPS - 01\";\"Preparação\";\"24/06/2025 09:23:33\";\"24/06/2025 09:23:41\";\"00:00\"\r\n\"DSY6471\";\"CAMINHÃO HIPER VÁCUO - GPS - 01\";\"Documentação\";\"24/06/2025 09:24:02\";\"24/06/2025 09:29:49\";\"00:06\"\r\n\"DSY6471\";\"CAMINHÃO HIPER VÁCUO - GPS - 01\";\"Aguardando Área\";\"24/06/2025 09:29:56\";\"24/06/2025 09:43:45\";\"00:14\"\r\n\"DSY6471\";\"CAMINHÃO HIPER VÁCUO - GPS - 01\";\"Preparação\";\"24/06/2025 09:44:04\";\"24/06/2025 10:11:31\";\"00:27\"\r\n\"DSY6471\";\"CAMINHÃO HIPER VÁCUO - GPS - 01\";\"Refeição Motorista\";\"24/06/2025 11:03:00\";\"24/06/2025 12:04:35\";\"01:02\"\r\n\"FMD2200\";\"CAMINHÃO HIPER VÁCUO - GPS - 02\";\"Aguardando Área\";\"24/06/2025 10:43:48\";\"24/06/2025 11:04:49\";\"00:21\"\r\n\"FMD2200\";\"CAMINHÃO HIPER VÁCUO - GPS - 02\";\"Preparação\";\"24/06/2025 11:05:04\";\"24/06/2025 11:52:11\";\"00:47\"\r\n\"FMD2200\";\"CAMINHÃO HIPER VÁCUO - GPS - 02\";\"Refeição Motorista\";\"24/06/2025 11:56:00\";\"24/06/2025 13:16:44\";\"01:21\"\r\n\"FMD2200\";\"CAMINHÃO HIPER VÁCUO - GPS - 02\";\"Aguardando Área\";\"24/06/2025 13:20:41\";\"24/06/2025 15:30:45\";\"02:10\"",
+      "size": 16604,
+      "type": "octet/stream",
+      "capturedAt": "2025-06-24T21:36:13.196Z",
+      "url": "https://usiminas.gaussfleet.com/dashboard#",
+      "site": "GaussFleet Timeline",
+      "processedData": {
+        "type": "gaussfleet_timeline",
+        "headers": [
+          "Placa",
+          "Vaga",
+          "Categoria Demora",
+          "Data Inicial",
+          "Data Final",
+          "Tempo Indisponível (HH:MM)\r"
+        ],
+        "data": [
+          {
+            "Placa": "FMD2200",
+            "Vaga": "--",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "23/06/2025 11:44:44",
+            "Data Final": "24/06/2025 05:48:01",
+            "Tempo Indisponível (HH:MM)": "18:03"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "--",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 05:48:12",
+            "Data Final": "24/06/2025 06:07:27",
+            "Tempo Indisponível (HH:MM)": "00:19"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "--",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 06:25:20",
+            "Data Final": "24/06/2025 06:43:02",
+            "Tempo Indisponível (HH:MM)": "00:18"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "--",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 06:43:11",
+            "Data Final": "24/06/2025 07:51:46",
+            "Tempo Indisponível (HH:MM)": "01:09"
+          },
+          {
+            "Placa": "DSY6F81",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 01:31:49",
+            "Data Final": "24/06/2025 01:40:51",
+            "Tempo Indisponível (HH:MM)": "00:09"
+          },
+          {
+            "Placa": "DSY6F81",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+            "Categoria Demora": "Pausas Diversas (água, banheiro)",
+            "Data Inicial": "24/06/2025 06:00:15",
+            "Data Final": "24/06/2025 06:07:03",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "DSY6F81",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+            "Categoria Demora": "Pequenas manutenções",
+            "Data Inicial": "24/06/2025 07:49:15",
+            "Data Final": "24/06/2025 08:02:22",
+            "Tempo Indisponível (HH:MM)": "00:13"
+          },
+          {
+            "Placa": "DSY6F81",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:10:37",
+            "Data Final": "24/06/2025 08:48:41",
+            "Tempo Indisponível (HH:MM)": "00:38"
+          },
+          {
+            "Placa": "DSY6F81",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 14:13:07",
+            "Data Final": "24/06/2025 14:57:24",
+            "Tempo Indisponível (HH:MM)": "00:44"
+          },
+          {
+            "Placa": "DSY6474",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:22:53",
+            "Data Final": "24/06/2025 08:28:21",
+            "Tempo Indisponível (HH:MM)": "00:05"
+          },
+          {
+            "Placa": "DSY6474",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:28:39",
+            "Data Final": "24/06/2025 09:05:16",
+            "Tempo Indisponível (HH:MM)": "00:37"
+          },
+          {
+            "Placa": "DSY6474",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 09:05:30",
+            "Data Final": "24/06/2025 09:39:44",
+            "Tempo Indisponível (HH:MM)": "00:34"
+          },
+          {
+            "Placa": "DSY6474",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:35:40",
+            "Data Final": "24/06/2025 13:36:41",
+            "Tempo Indisponível (HH:MM)": "01:01"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 08:05:14",
+            "Data Final": "24/06/2025 08:05:18",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:05:25",
+            "Data Final": "24/06/2025 08:27:35",
+            "Tempo Indisponível (HH:MM)": "00:22"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:29:08",
+            "Data Final": "24/06/2025 10:23:24",
+            "Tempo Indisponível (HH:MM)": "01:54"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 10:31:34",
+            "Data Final": "24/06/2025 11:17:19",
+            "Tempo Indisponível (HH:MM)": "00:46"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:24:10",
+            "Data Final": "24/06/2025 12:24:10",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 12:58:38",
+            "Data Final": "24/06/2025 14:51:21",
+            "Tempo Indisponível (HH:MM)": "01:53"
+          },
+          {
+            "Placa": "EZS8764",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 15:30:32",
+            "Data Final": "24/06/2025 15:58:25",
+            "Tempo Indisponível (HH:MM)": "00:28"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 08:03:14",
+            "Data Final": "24/06/2025 08:13:08",
+            "Tempo Indisponível (HH:MM)": "00:10"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:13:17",
+            "Data Final": "24/06/2025 09:03:58",
+            "Tempo Indisponível (HH:MM)": "00:51"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:16:09",
+            "Data Final": "24/06/2025 09:34:19",
+            "Tempo Indisponível (HH:MM)": "00:18"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 09:39:26",
+            "Data Final": "24/06/2025 09:39:30",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:39:44",
+            "Data Final": "24/06/2025 09:53:32",
+            "Tempo Indisponível (HH:MM)": "00:14"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:53:42",
+            "Data Final": "24/06/2025 10:10:56",
+            "Tempo Indisponível (HH:MM)": "00:17"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 10:57:09",
+            "Data Final": "24/06/2025 11:23:07",
+            "Tempo Indisponível (HH:MM)": "00:26"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Pausas Diversas (água, banheiro)",
+            "Data Inicial": "24/06/2025 12:18:37",
+            "Data Final": "24/06/2025 12:20:28",
+            "Tempo Indisponível (HH:MM)": "00:02"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:48:10",
+            "Data Final": "24/06/2025 13:48:12",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 13:48:19",
+            "Data Final": "24/06/2025 14:04:22",
+            "Tempo Indisponível (HH:MM)": "00:16"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 14:04:33",
+            "Data Final": "24/06/2025 14:11:48",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 15:18:34",
+            "Data Final": "24/06/2025 15:18:38",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EZS8765",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 15:18:45",
+            "Data Final": "24/06/2025 15:50:01",
+            "Tempo Indisponível (HH:MM)": "00:31"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:07:05",
+            "Data Final": "24/06/2025 08:42:58",
+            "Tempo Indisponível (HH:MM)": "00:36"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:54:59",
+            "Data Final": "24/06/2025 09:52:59",
+            "Tempo Indisponível (HH:MM)": "00:58"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 09:53:09",
+            "Data Final": "24/06/2025 10:47:04",
+            "Tempo Indisponível (HH:MM)": "00:54"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 10:47:15",
+            "Data Final": "24/06/2025 11:02:26",
+            "Tempo Indisponível (HH:MM)": "00:15"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:19:21",
+            "Data Final": "24/06/2025 14:26:40",
+            "Tempo Indisponível (HH:MM)": "01:07"
+          },
+          {
+            "Placa": "DSY6475",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 15:33:00",
+            "Data Final": "24/06/2025 15:35:10",
+            "Tempo Indisponível (HH:MM)": "00:02"
+          },
+          {
+            "Placa": "DSY6472",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 06:57:57",
+            "Data Final": "24/06/2025 07:20:39",
+            "Tempo Indisponível (HH:MM)": "00:23"
+          },
+          {
+            "Placa": "DSY6472",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 07:21:06",
+            "Data Final": "24/06/2025 08:20:18",
+            "Tempo Indisponível (HH:MM)": "00:59"
+          },
+          {
+            "Placa": "DSY6472",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 08:24:58",
+            "Data Final": "24/06/2025 09:29:40",
+            "Tempo Indisponível (HH:MM)": "01:05"
+          },
+          {
+            "Placa": "DSY6472",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 11:32:45",
+            "Data Final": "24/06/2025 12:15:48",
+            "Tempo Indisponível (HH:MM)": "00:43"
+          },
+          {
+            "Placa": "DSY6472",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:17:39",
+            "Data Final": "24/06/2025 14:26:40",
+            "Tempo Indisponível (HH:MM)": "01:09"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:05:40",
+            "Data Final": "24/06/2025 08:55:54",
+            "Tempo Indisponível (HH:MM)": "00:50"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 09:06:59",
+            "Data Final": "24/06/2025 11:56:59",
+            "Tempo Indisponível (HH:MM)": "02:50"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 11:58:21",
+            "Data Final": "24/06/2025 12:18:26",
+            "Tempo Indisponível (HH:MM)": "00:20"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:18:41",
+            "Data Final": "24/06/2025 13:18:54",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 13:19:02",
+            "Data Final": "24/06/2025 13:19:09",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 13:19:17",
+            "Data Final": "24/06/2025 14:05:53",
+            "Tempo Indisponível (HH:MM)": "00:47"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 15:23:00",
+            "Data Final": "24/06/2025 15:48:55",
+            "Tempo Indisponível (HH:MM)": "00:26"
+          },
+          {
+            "Placa": "EAM3256",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 16:07:26",
+            "Data Final": "24/06/2025 16:25:11",
+            "Tempo Indisponível (HH:MM)": "00:18"
+          },
+          {
+            "Placa": "PUB2F80",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 03:16:59",
+            "Data Final": "24/06/2025 03:28:29",
+            "Tempo Indisponível (HH:MM)": "00:12"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 11:25:19",
+            "Data Final": "24/06/2025 11:46:22",
+            "Tempo Indisponível (HH:MM)": "00:21"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 11:47:28",
+            "Data Final": "24/06/2025 12:07:55",
+            "Tempo Indisponível (HH:MM)": "00:20"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:16:13",
+            "Data Final": "24/06/2025 13:16:16",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 13:16:27",
+            "Data Final": "24/06/2025 13:16:31",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 13:16:40",
+            "Data Final": "24/06/2025 13:43:54",
+            "Tempo Indisponível (HH:MM)": "00:27"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 13:44:15",
+            "Data Final": "24/06/2025 13:52:31",
+            "Tempo Indisponível (HH:MM)": "00:08"
+          },
+          {
+            "Placa": "EGC2985",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 14:06:02",
+            "Data Final": "24/06/2025 14:16:57",
+            "Tempo Indisponível (HH:MM)": "00:11"
+          },
+          {
+            "Placa": "EGC2978",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:26:27",
+            "Data Final": "24/06/2025 08:42:17",
+            "Tempo Indisponível (HH:MM)": "00:16"
+          },
+          {
+            "Placa": "EGC2978",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 10:01:01",
+            "Data Final": "24/06/2025 10:56:07",
+            "Tempo Indisponível (HH:MM)": "00:55"
+          },
+          {
+            "Placa": "EGC2978",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:27:40",
+            "Data Final": "24/06/2025 13:27:43",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:00:33",
+            "Data Final": "24/06/2025 08:18:29",
+            "Tempo Indisponível (HH:MM)": "00:18"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:19:34",
+            "Data Final": "24/06/2025 08:46:10",
+            "Tempo Indisponível (HH:MM)": "00:27"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 08:46:24",
+            "Data Final": "24/06/2025 08:46:30",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 08:46:41",
+            "Data Final": "24/06/2025 09:18:06",
+            "Tempo Indisponível (HH:MM)": "00:31"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:18:30",
+            "Data Final": "24/06/2025 09:51:08",
+            "Tempo Indisponível (HH:MM)": "00:33"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:51:23",
+            "Data Final": "24/06/2025 09:57:56",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 11:18:45",
+            "Data Final": "24/06/2025 12:01:15",
+            "Tempo Indisponível (HH:MM)": "00:42"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 12:01:30",
+            "Data Final": "24/06/2025 12:06:17",
+            "Tempo Indisponível (HH:MM)": "00:05"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 13:20:56",
+            "Data Final": "24/06/2025 13:29:58",
+            "Tempo Indisponível (HH:MM)": "00:09"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:30:08",
+            "Data Final": "24/06/2025 14:32:44",
+            "Tempo Indisponível (HH:MM)": "01:03"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 14:32:54",
+            "Data Final": "24/06/2025 14:59:30",
+            "Tempo Indisponível (HH:MM)": "00:27"
+          },
+          {
+            "Placa": "EOF5C06",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 14:59:41",
+            "Data Final": "24/06/2025 15:08:13",
+            "Tempo Indisponível (HH:MM)": "00:09"
+          },
+          {
+            "Placa": "EGC2989",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:44:09",
+            "Data Final": "24/06/2025 08:56:54",
+            "Tempo Indisponível (HH:MM)": "00:13"
+          },
+          {
+            "Placa": "EGC2989",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:48:50",
+            "Data Final": "24/06/2025 12:49:11",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "EGC2989",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 12:49:26",
+            "Data Final": "24/06/2025 12:58:20",
+            "Tempo Indisponível (HH:MM)": "00:09"
+          },
+          {
+            "Placa": "PUB2F80",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 08:27:21",
+            "Data Final": "24/06/2025 09:19:46",
+            "Tempo Indisponível (HH:MM)": "00:52"
+          },
+          {
+            "Placa": "PUB2F80",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:20:03",
+            "Data Final": "24/06/2025 10:04:59",
+            "Tempo Indisponível (HH:MM)": "00:45"
+          },
+          {
+            "Placa": "PUB2F80",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 10:05:11",
+            "Data Final": "24/06/2025 11:21:26",
+            "Tempo Indisponível (HH:MM)": "01:16"
+          },
+          {
+            "Placa": "PUB2F80",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Troca de Equipamento",
+            "Data Inicial": "24/06/2025 11:35:38",
+            "Data Final": "24/06/2025 11:35:44",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "EGC2983",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Abastecimento",
+            "Data Inicial": "24/06/2025 11:41:40",
+            "Data Final": "24/06/2025 12:15:42",
+            "Tempo Indisponível (HH:MM)": "00:34"
+          },
+          {
+            "Placa": "EGC2983",
+            "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:38:08",
+            "Data Final": "24/06/2025 14:38:09",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:00:32",
+            "Data Final": "24/06/2025 09:10:49",
+            "Tempo Indisponível (HH:MM)": "00:10"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 10:04:04",
+            "Data Final": "24/06/2025 10:10:13",
+            "Tempo Indisponível (HH:MM)": "00:06"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 10:46:14",
+            "Data Final": "24/06/2025 10:54:01",
+            "Tempo Indisponível (HH:MM)": "00:08"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 12:00:43",
+            "Data Final": "24/06/2025 12:08:12",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 12:58:39",
+            "Data Final": "24/06/2025 13:05:14",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:23:08",
+            "Data Final": "24/06/2025 14:25:04",
+            "Tempo Indisponível (HH:MM)": "01:02"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 15:13:51",
+            "Data Final": "24/06/2025 15:35:27",
+            "Tempo Indisponível (HH:MM)": "00:22"
+          },
+          {
+            "Placa": "ANF-2676",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 18:02:35",
+            "Data Final": "24/06/2025 18:28:38",
+            "Tempo Indisponível (HH:MM)": "00:26"
+          },
+          {
+            "Placa": "HJS1097",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:17:48",
+            "Data Final": "24/06/2025 10:23:27",
+            "Tempo Indisponível (HH:MM)": "02:06"
+          },
+          {
+            "Placa": "HJS1097",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:25:11",
+            "Data Final": "24/06/2025 12:25:51",
+            "Tempo Indisponível (HH:MM)": "01:01"
+          },
+          {
+            "Placa": "HJS1097",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 13:23:30",
+            "Data Final": "24/06/2025 13:39:39",
+            "Tempo Indisponível (HH:MM)": "00:16"
+          },
+          {
+            "Placa": "HJS1097",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 14:56:31",
+            "Data Final": "24/06/2025 15:38:00",
+            "Tempo Indisponível (HH:MM)": "00:41"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 08:06:39",
+            "Data Final": "24/06/2025 08:37:55",
+            "Tempo Indisponível (HH:MM)": "00:31"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 08:38:37",
+            "Data Final": "24/06/2025 09:03:34",
+            "Tempo Indisponível (HH:MM)": "00:25"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:03:45",
+            "Data Final": "24/06/2025 09:10:07",
+            "Tempo Indisponível (HH:MM)": "00:06"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando carreta bascular",
+            "Data Inicial": "24/06/2025 09:10:37",
+            "Data Final": "24/06/2025 09:25:38",
+            "Tempo Indisponível (HH:MM)": "00:15"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 09:28:30",
+            "Data Final": "24/06/2025 09:41:31",
+            "Tempo Indisponível (HH:MM)": "00:13"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:41:47",
+            "Data Final": "24/06/2025 09:50:22",
+            "Tempo Indisponível (HH:MM)": "00:09"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando carreta bascular",
+            "Data Inicial": "24/06/2025 10:18:21",
+            "Data Final": "24/06/2025 10:30:05",
+            "Tempo Indisponível (HH:MM)": "00:12"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 10:30:15",
+            "Data Final": "24/06/2025 11:22:27",
+            "Tempo Indisponível (HH:MM)": "00:52"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando semáforo/cancela",
+            "Data Inicial": "24/06/2025 11:22:44",
+            "Data Final": "24/06/2025 11:29:45",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:31:06",
+            "Data Final": "24/06/2025 13:25:24",
+            "Tempo Indisponível (HH:MM)": "00:54"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 14:04:19",
+            "Data Final": "24/06/2025 15:35:01",
+            "Tempo Indisponível (HH:MM)": "01:31"
+          },
+          {
+            "Placa": "CUB0763",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 15:39:58",
+            "Data Final": "24/06/2025 15:47:22",
+            "Tempo Indisponível (HH:MM)": "00:07"
+          },
+          {
+            "Placa": "DYB7210",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 08:13:29",
+            "Data Final": "24/06/2025 08:13:33",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "DYB7210",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:14:02",
+            "Data Final": "24/06/2025 08:50:05",
+            "Tempo Indisponível (HH:MM)": "00:36"
+          },
+          {
+            "Placa": "DYB7210",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 10:20:37",
+            "Data Final": "24/06/2025 11:55:39",
+            "Tempo Indisponível (HH:MM)": "01:35"
+          },
+          {
+            "Placa": "DYB7210",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 13:20:40",
+            "Data Final": "24/06/2025 13:20:44",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "DYB7210",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:20:56",
+            "Data Final": "24/06/2025 14:20:58",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "DSY6473",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 08:25:33",
+            "Data Final": "24/06/2025 09:02:21",
+            "Tempo Indisponível (HH:MM)": "00:37"
+          },
+          {
+            "Placa": "DSY6473",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 12:35:36",
+            "Data Final": "24/06/2025 13:35:37",
+            "Tempo Indisponível (HH:MM)": "01:00"
+          },
+          {
+            "Placa": "DSY6473",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+            "Categoria Demora": "Bloqueio",
+            "Data Inicial": "24/06/2025 14:56:51",
+            "Data Final": "24/06/2025 14:56:56",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "DSY6473",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 14:57:06",
+            "Data Final": "24/06/2025 15:44:44",
+            "Tempo Indisponível (HH:MM)": "00:48"
+          },
+          {
+            "Placa": "EGC2993",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 07:58:15",
+            "Data Final": "24/06/2025 09:08:31",
+            "Tempo Indisponível (HH:MM)": "01:10"
+          },
+          {
+            "Placa": "EGC2993",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:08:43",
+            "Data Final": "24/06/2025 09:29:04",
+            "Tempo Indisponível (HH:MM)": "00:20"
+          },
+          {
+            "Placa": "EGC2993",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:37:07",
+            "Data Final": "24/06/2025 12:34:30",
+            "Tempo Indisponível (HH:MM)": "00:57"
+          },
+          {
+            "Placa": "EGC2993",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 16:53:07",
+            "Data Final": "24/06/2025 17:14:47",
+            "Tempo Indisponível (HH:MM)": "00:22"
+          },
+          {
+            "Placa": "EAM3251",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 08:35:39",
+            "Data Final": "24/06/2025 08:51:55",
+            "Tempo Indisponível (HH:MM)": "00:16"
+          },
+          {
+            "Placa": "EAM3251",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 09:31:09",
+            "Data Final": "24/06/2025 09:53:04",
+            "Tempo Indisponível (HH:MM)": "00:22"
+          },
+          {
+            "Placa": "EAM3251",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:46:58",
+            "Data Final": "24/06/2025 12:50:47",
+            "Tempo Indisponível (HH:MM)": "01:04"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 08:52:08",
+            "Data Final": "24/06/2025 09:12:57",
+            "Tempo Indisponível (HH:MM)": "00:21"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:13:12",
+            "Data Final": "24/06/2025 09:29:48",
+            "Tempo Indisponível (HH:MM)": "00:17"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Falta de Acessório",
+            "Data Inicial": "24/06/2025 09:30:14",
+            "Data Final": "24/06/2025 09:47:26",
+            "Tempo Indisponível (HH:MM)": "00:17"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:49:27",
+            "Data Final": "24/06/2025 10:00:21",
+            "Tempo Indisponível (HH:MM)": "00:11"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 11:34:44",
+            "Data Final": "24/06/2025 11:56:32",
+            "Tempo Indisponível (HH:MM)": "00:22"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 13:04:02",
+            "Data Final": "24/06/2025 14:05:33",
+            "Tempo Indisponível (HH:MM)": "01:02"
+          },
+          {
+            "Placa": "EGC2979",
+            "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+            "Categoria Demora": "Descarregamento",
+            "Data Inicial": "24/06/2025 15:42:57",
+            "Data Final": "24/06/2025 16:01:13",
+            "Tempo Indisponível (HH:MM)": "00:18"
+          },
+          {
+            "Placa": "DSY6471",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:23:33",
+            "Data Final": "24/06/2025 09:23:41",
+            "Tempo Indisponível (HH:MM)": "00:00"
+          },
+          {
+            "Placa": "DSY6471",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+            "Categoria Demora": "Documentação",
+            "Data Inicial": "24/06/2025 09:24:02",
+            "Data Final": "24/06/2025 09:29:49",
+            "Tempo Indisponível (HH:MM)": "00:06"
+          },
+          {
+            "Placa": "DSY6471",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 09:29:56",
+            "Data Final": "24/06/2025 09:43:45",
+            "Tempo Indisponível (HH:MM)": "00:14"
+          },
+          {
+            "Placa": "DSY6471",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 09:44:04",
+            "Data Final": "24/06/2025 10:11:31",
+            "Tempo Indisponível (HH:MM)": "00:27"
+          },
+          {
+            "Placa": "DSY6471",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:03:00",
+            "Data Final": "24/06/2025 12:04:35",
+            "Tempo Indisponível (HH:MM)": "01:02"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 10:43:48",
+            "Data Final": "24/06/2025 11:04:49",
+            "Tempo Indisponível (HH:MM)": "00:21"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+            "Categoria Demora": "Preparação",
+            "Data Inicial": "24/06/2025 11:05:04",
+            "Data Final": "24/06/2025 11:52:11",
+            "Tempo Indisponível (HH:MM)": "00:47"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+            "Categoria Demora": "Refeição Motorista",
+            "Data Inicial": "24/06/2025 11:56:00",
+            "Data Final": "24/06/2025 13:16:44",
+            "Tempo Indisponível (HH:MM)": "01:21"
+          },
+          {
+            "Placa": "FMD2200",
+            "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+            "Categoria Demora": "Aguardando Área",
+            "Data Inicial": "24/06/2025 13:20:41",
+            "Data Final": "24/06/2025 15:30:45",
+            "Tempo Indisponível (HH:MM)": "02:10"
+          }
+        ],
+        "totalRecords": 140,
+        "processedAt": "2025-06-24T21:36:13.198Z"
+      }
     }
   ],
   "processedData": [
@@ -2281,13 +3426,1148 @@
       ],
       "totalRecords": 140,
       "processedAt": "2025-06-24T21:33:14.355Z"
+    },
+    {
+      "type": "gaussfleet_timeline",
+      "headers": [
+        "Placa",
+        "Vaga",
+        "Categoria Demora",
+        "Data Inicial",
+        "Data Final",
+        "Tempo Indisponível (HH:MM)\r"
+      ],
+      "data": [
+        {
+          "Placa": "FMD2200",
+          "Vaga": "--",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "23/06/2025 11:44:44",
+          "Data Final": "24/06/2025 05:48:01",
+          "Tempo Indisponível (HH:MM)": "18:03"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "--",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 05:48:12",
+          "Data Final": "24/06/2025 06:07:27",
+          "Tempo Indisponível (HH:MM)": "00:19"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "--",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 06:25:20",
+          "Data Final": "24/06/2025 06:43:02",
+          "Tempo Indisponível (HH:MM)": "00:18"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "--",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 06:43:11",
+          "Data Final": "24/06/2025 07:51:46",
+          "Tempo Indisponível (HH:MM)": "01:09"
+        },
+        {
+          "Placa": "DSY6F81",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 01:31:49",
+          "Data Final": "24/06/2025 01:40:51",
+          "Tempo Indisponível (HH:MM)": "00:09"
+        },
+        {
+          "Placa": "DSY6F81",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+          "Categoria Demora": "Pausas Diversas (água, banheiro)",
+          "Data Inicial": "24/06/2025 06:00:15",
+          "Data Final": "24/06/2025 06:07:03",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "DSY6F81",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+          "Categoria Demora": "Pequenas manutenções",
+          "Data Inicial": "24/06/2025 07:49:15",
+          "Data Final": "24/06/2025 08:02:22",
+          "Tempo Indisponível (HH:MM)": "00:13"
+        },
+        {
+          "Placa": "DSY6F81",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:10:37",
+          "Data Final": "24/06/2025 08:48:41",
+          "Tempo Indisponível (HH:MM)": "00:38"
+        },
+        {
+          "Placa": "DSY6F81",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 14:13:07",
+          "Data Final": "24/06/2025 14:57:24",
+          "Tempo Indisponível (HH:MM)": "00:44"
+        },
+        {
+          "Placa": "DSY6474",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:22:53",
+          "Data Final": "24/06/2025 08:28:21",
+          "Tempo Indisponível (HH:MM)": "00:05"
+        },
+        {
+          "Placa": "DSY6474",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:28:39",
+          "Data Final": "24/06/2025 09:05:16",
+          "Tempo Indisponível (HH:MM)": "00:37"
+        },
+        {
+          "Placa": "DSY6474",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 09:05:30",
+          "Data Final": "24/06/2025 09:39:44",
+          "Tempo Indisponível (HH:MM)": "00:34"
+        },
+        {
+          "Placa": "DSY6474",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 02",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:35:40",
+          "Data Final": "24/06/2025 13:36:41",
+          "Tempo Indisponível (HH:MM)": "01:01"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 08:05:14",
+          "Data Final": "24/06/2025 08:05:18",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:05:25",
+          "Data Final": "24/06/2025 08:27:35",
+          "Tempo Indisponível (HH:MM)": "00:22"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:29:08",
+          "Data Final": "24/06/2025 10:23:24",
+          "Tempo Indisponível (HH:MM)": "01:54"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 10:31:34",
+          "Data Final": "24/06/2025 11:17:19",
+          "Tempo Indisponível (HH:MM)": "00:46"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:24:10",
+          "Data Final": "24/06/2025 12:24:10",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 12:58:38",
+          "Data Final": "24/06/2025 14:51:21",
+          "Tempo Indisponível (HH:MM)": "01:53"
+        },
+        {
+          "Placa": "EZS8764",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 03",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 15:30:32",
+          "Data Final": "24/06/2025 15:58:25",
+          "Tempo Indisponível (HH:MM)": "00:28"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 08:03:14",
+          "Data Final": "24/06/2025 08:13:08",
+          "Tempo Indisponível (HH:MM)": "00:10"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:13:17",
+          "Data Final": "24/06/2025 09:03:58",
+          "Tempo Indisponível (HH:MM)": "00:51"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:16:09",
+          "Data Final": "24/06/2025 09:34:19",
+          "Tempo Indisponível (HH:MM)": "00:18"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 09:39:26",
+          "Data Final": "24/06/2025 09:39:30",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:39:44",
+          "Data Final": "24/06/2025 09:53:32",
+          "Tempo Indisponível (HH:MM)": "00:14"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:53:42",
+          "Data Final": "24/06/2025 10:10:56",
+          "Tempo Indisponível (HH:MM)": "00:17"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 10:57:09",
+          "Data Final": "24/06/2025 11:23:07",
+          "Tempo Indisponível (HH:MM)": "00:26"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Pausas Diversas (água, banheiro)",
+          "Data Inicial": "24/06/2025 12:18:37",
+          "Data Final": "24/06/2025 12:20:28",
+          "Tempo Indisponível (HH:MM)": "00:02"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:48:10",
+          "Data Final": "24/06/2025 13:48:12",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 13:48:19",
+          "Data Final": "24/06/2025 14:04:22",
+          "Tempo Indisponível (HH:MM)": "00:16"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 14:04:33",
+          "Data Final": "24/06/2025 14:11:48",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 15:18:34",
+          "Data Final": "24/06/2025 15:18:38",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EZS8765",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 04",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 15:18:45",
+          "Data Final": "24/06/2025 15:50:01",
+          "Tempo Indisponível (HH:MM)": "00:31"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:07:05",
+          "Data Final": "24/06/2025 08:42:58",
+          "Tempo Indisponível (HH:MM)": "00:36"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:54:59",
+          "Data Final": "24/06/2025 09:52:59",
+          "Tempo Indisponível (HH:MM)": "00:58"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 09:53:09",
+          "Data Final": "24/06/2025 10:47:04",
+          "Tempo Indisponível (HH:MM)": "00:54"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 10:47:15",
+          "Data Final": "24/06/2025 11:02:26",
+          "Tempo Indisponível (HH:MM)": "00:15"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:19:21",
+          "Data Final": "24/06/2025 14:26:40",
+          "Tempo Indisponível (HH:MM)": "01:07"
+        },
+        {
+          "Placa": "DSY6475",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 05",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 15:33:00",
+          "Data Final": "24/06/2025 15:35:10",
+          "Tempo Indisponível (HH:MM)": "00:02"
+        },
+        {
+          "Placa": "DSY6472",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 06:57:57",
+          "Data Final": "24/06/2025 07:20:39",
+          "Tempo Indisponível (HH:MM)": "00:23"
+        },
+        {
+          "Placa": "DSY6472",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 07:21:06",
+          "Data Final": "24/06/2025 08:20:18",
+          "Tempo Indisponível (HH:MM)": "00:59"
+        },
+        {
+          "Placa": "DSY6472",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 08:24:58",
+          "Data Final": "24/06/2025 09:29:40",
+          "Tempo Indisponível (HH:MM)": "01:05"
+        },
+        {
+          "Placa": "DSY6472",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 11:32:45",
+          "Data Final": "24/06/2025 12:15:48",
+          "Tempo Indisponível (HH:MM)": "00:43"
+        },
+        {
+          "Placa": "DSY6472",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 06",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:17:39",
+          "Data Final": "24/06/2025 14:26:40",
+          "Tempo Indisponível (HH:MM)": "01:09"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:05:40",
+          "Data Final": "24/06/2025 08:55:54",
+          "Tempo Indisponível (HH:MM)": "00:50"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 09:06:59",
+          "Data Final": "24/06/2025 11:56:59",
+          "Tempo Indisponível (HH:MM)": "02:50"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 11:58:21",
+          "Data Final": "24/06/2025 12:18:26",
+          "Tempo Indisponível (HH:MM)": "00:20"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:18:41",
+          "Data Final": "24/06/2025 13:18:54",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 13:19:02",
+          "Data Final": "24/06/2025 13:19:09",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 13:19:17",
+          "Data Final": "24/06/2025 14:05:53",
+          "Tempo Indisponível (HH:MM)": "00:47"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 15:23:00",
+          "Data Final": "24/06/2025 15:48:55",
+          "Tempo Indisponível (HH:MM)": "00:26"
+        },
+        {
+          "Placa": "EAM3256",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 07",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 16:07:26",
+          "Data Final": "24/06/2025 16:25:11",
+          "Tempo Indisponível (HH:MM)": "00:18"
+        },
+        {
+          "Placa": "PUB2F80",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 03:16:59",
+          "Data Final": "24/06/2025 03:28:29",
+          "Tempo Indisponível (HH:MM)": "00:12"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 11:25:19",
+          "Data Final": "24/06/2025 11:46:22",
+          "Tempo Indisponível (HH:MM)": "00:21"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 11:47:28",
+          "Data Final": "24/06/2025 12:07:55",
+          "Tempo Indisponível (HH:MM)": "00:20"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:16:13",
+          "Data Final": "24/06/2025 13:16:16",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 13:16:27",
+          "Data Final": "24/06/2025 13:16:31",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 13:16:40",
+          "Data Final": "24/06/2025 13:43:54",
+          "Tempo Indisponível (HH:MM)": "00:27"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 13:44:15",
+          "Data Final": "24/06/2025 13:52:31",
+          "Tempo Indisponível (HH:MM)": "00:08"
+        },
+        {
+          "Placa": "EGC2985",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 14:06:02",
+          "Data Final": "24/06/2025 14:16:57",
+          "Tempo Indisponível (HH:MM)": "00:11"
+        },
+        {
+          "Placa": "EGC2978",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:26:27",
+          "Data Final": "24/06/2025 08:42:17",
+          "Tempo Indisponível (HH:MM)": "00:16"
+        },
+        {
+          "Placa": "EGC2978",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 10:01:01",
+          "Data Final": "24/06/2025 10:56:07",
+          "Tempo Indisponível (HH:MM)": "00:55"
+        },
+        {
+          "Placa": "EGC2978",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 09",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:27:40",
+          "Data Final": "24/06/2025 13:27:43",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:00:33",
+          "Data Final": "24/06/2025 08:18:29",
+          "Tempo Indisponível (HH:MM)": "00:18"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:19:34",
+          "Data Final": "24/06/2025 08:46:10",
+          "Tempo Indisponível (HH:MM)": "00:27"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 08:46:24",
+          "Data Final": "24/06/2025 08:46:30",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 08:46:41",
+          "Data Final": "24/06/2025 09:18:06",
+          "Tempo Indisponível (HH:MM)": "00:31"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:18:30",
+          "Data Final": "24/06/2025 09:51:08",
+          "Tempo Indisponível (HH:MM)": "00:33"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:51:23",
+          "Data Final": "24/06/2025 09:57:56",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 11:18:45",
+          "Data Final": "24/06/2025 12:01:15",
+          "Tempo Indisponível (HH:MM)": "00:42"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 12:01:30",
+          "Data Final": "24/06/2025 12:06:17",
+          "Tempo Indisponível (HH:MM)": "00:05"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 13:20:56",
+          "Data Final": "24/06/2025 13:29:58",
+          "Tempo Indisponível (HH:MM)": "00:09"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:30:08",
+          "Data Final": "24/06/2025 14:32:44",
+          "Tempo Indisponível (HH:MM)": "01:03"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 14:32:54",
+          "Data Final": "24/06/2025 14:59:30",
+          "Tempo Indisponível (HH:MM)": "00:27"
+        },
+        {
+          "Placa": "EOF5C06",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 10",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 14:59:41",
+          "Data Final": "24/06/2025 15:08:13",
+          "Tempo Indisponível (HH:MM)": "00:09"
+        },
+        {
+          "Placa": "EGC2989",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:44:09",
+          "Data Final": "24/06/2025 08:56:54",
+          "Tempo Indisponível (HH:MM)": "00:13"
+        },
+        {
+          "Placa": "EGC2989",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:48:50",
+          "Data Final": "24/06/2025 12:49:11",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "EGC2989",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 11",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 12:49:26",
+          "Data Final": "24/06/2025 12:58:20",
+          "Tempo Indisponível (HH:MM)": "00:09"
+        },
+        {
+          "Placa": "PUB2F80",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 08:27:21",
+          "Data Final": "24/06/2025 09:19:46",
+          "Tempo Indisponível (HH:MM)": "00:52"
+        },
+        {
+          "Placa": "PUB2F80",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:20:03",
+          "Data Final": "24/06/2025 10:04:59",
+          "Tempo Indisponível (HH:MM)": "00:45"
+        },
+        {
+          "Placa": "PUB2F80",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 10:05:11",
+          "Data Final": "24/06/2025 11:21:26",
+          "Tempo Indisponível (HH:MM)": "01:16"
+        },
+        {
+          "Placa": "PUB2F80",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Troca de Equipamento",
+          "Data Inicial": "24/06/2025 11:35:38",
+          "Data Final": "24/06/2025 11:35:44",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "EGC2983",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Abastecimento",
+          "Data Inicial": "24/06/2025 11:41:40",
+          "Data Final": "24/06/2025 12:15:42",
+          "Tempo Indisponível (HH:MM)": "00:34"
+        },
+        {
+          "Placa": "EGC2983",
+          "Vaga": "CAMINHÃO ALTA PRESSÃO - GPS - 12",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:38:08",
+          "Data Final": "24/06/2025 14:38:09",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:00:32",
+          "Data Final": "24/06/2025 09:10:49",
+          "Tempo Indisponível (HH:MM)": "00:10"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 10:04:04",
+          "Data Final": "24/06/2025 10:10:13",
+          "Tempo Indisponível (HH:MM)": "00:06"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 10:46:14",
+          "Data Final": "24/06/2025 10:54:01",
+          "Tempo Indisponível (HH:MM)": "00:08"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 12:00:43",
+          "Data Final": "24/06/2025 12:08:12",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 12:58:39",
+          "Data Final": "24/06/2025 13:05:14",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:23:08",
+          "Data Final": "24/06/2025 14:25:04",
+          "Tempo Indisponível (HH:MM)": "01:02"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 15:13:51",
+          "Data Final": "24/06/2025 15:35:27",
+          "Tempo Indisponível (HH:MM)": "00:22"
+        },
+        {
+          "Placa": "ANF-2676",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 18:02:35",
+          "Data Final": "24/06/2025 18:28:38",
+          "Tempo Indisponível (HH:MM)": "00:26"
+        },
+        {
+          "Placa": "HJS1097",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:17:48",
+          "Data Final": "24/06/2025 10:23:27",
+          "Tempo Indisponível (HH:MM)": "02:06"
+        },
+        {
+          "Placa": "HJS1097",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:25:11",
+          "Data Final": "24/06/2025 12:25:51",
+          "Tempo Indisponível (HH:MM)": "01:01"
+        },
+        {
+          "Placa": "HJS1097",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 13:23:30",
+          "Data Final": "24/06/2025 13:39:39",
+          "Tempo Indisponível (HH:MM)": "00:16"
+        },
+        {
+          "Placa": "HJS1097",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 03",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 14:56:31",
+          "Data Final": "24/06/2025 15:38:00",
+          "Tempo Indisponível (HH:MM)": "00:41"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 08:06:39",
+          "Data Final": "24/06/2025 08:37:55",
+          "Tempo Indisponível (HH:MM)": "00:31"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 08:38:37",
+          "Data Final": "24/06/2025 09:03:34",
+          "Tempo Indisponível (HH:MM)": "00:25"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:03:45",
+          "Data Final": "24/06/2025 09:10:07",
+          "Tempo Indisponível (HH:MM)": "00:06"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando carreta bascular",
+          "Data Inicial": "24/06/2025 09:10:37",
+          "Data Final": "24/06/2025 09:25:38",
+          "Tempo Indisponível (HH:MM)": "00:15"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 09:28:30",
+          "Data Final": "24/06/2025 09:41:31",
+          "Tempo Indisponível (HH:MM)": "00:13"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:41:47",
+          "Data Final": "24/06/2025 09:50:22",
+          "Tempo Indisponível (HH:MM)": "00:09"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando carreta bascular",
+          "Data Inicial": "24/06/2025 10:18:21",
+          "Data Final": "24/06/2025 10:30:05",
+          "Tempo Indisponível (HH:MM)": "00:12"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 10:30:15",
+          "Data Final": "24/06/2025 11:22:27",
+          "Tempo Indisponível (HH:MM)": "00:52"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando semáforo/cancela",
+          "Data Inicial": "24/06/2025 11:22:44",
+          "Data Final": "24/06/2025 11:29:45",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:31:06",
+          "Data Final": "24/06/2025 13:25:24",
+          "Tempo Indisponível (HH:MM)": "00:54"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 14:04:19",
+          "Data Final": "24/06/2025 15:35:01",
+          "Tempo Indisponível (HH:MM)": "01:31"
+        },
+        {
+          "Placa": "CUB0763",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 04",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 15:39:58",
+          "Data Final": "24/06/2025 15:47:22",
+          "Tempo Indisponível (HH:MM)": "00:07"
+        },
+        {
+          "Placa": "DYB7210",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 08:13:29",
+          "Data Final": "24/06/2025 08:13:33",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "DYB7210",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:14:02",
+          "Data Final": "24/06/2025 08:50:05",
+          "Tempo Indisponível (HH:MM)": "00:36"
+        },
+        {
+          "Placa": "DYB7210",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 10:20:37",
+          "Data Final": "24/06/2025 11:55:39",
+          "Tempo Indisponível (HH:MM)": "01:35"
+        },
+        {
+          "Placa": "DYB7210",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 13:20:40",
+          "Data Final": "24/06/2025 13:20:44",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "DYB7210",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 06",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:20:56",
+          "Data Final": "24/06/2025 14:20:58",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "DSY6473",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 08:25:33",
+          "Data Final": "24/06/2025 09:02:21",
+          "Tempo Indisponível (HH:MM)": "00:37"
+        },
+        {
+          "Placa": "DSY6473",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 12:35:36",
+          "Data Final": "24/06/2025 13:35:37",
+          "Tempo Indisponível (HH:MM)": "01:00"
+        },
+        {
+          "Placa": "DSY6473",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+          "Categoria Demora": "Bloqueio",
+          "Data Inicial": "24/06/2025 14:56:51",
+          "Data Final": "24/06/2025 14:56:56",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "DSY6473",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 07",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 14:57:06",
+          "Data Final": "24/06/2025 15:44:44",
+          "Tempo Indisponível (HH:MM)": "00:48"
+        },
+        {
+          "Placa": "EGC2993",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 07:58:15",
+          "Data Final": "24/06/2025 09:08:31",
+          "Tempo Indisponível (HH:MM)": "01:10"
+        },
+        {
+          "Placa": "EGC2993",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:08:43",
+          "Data Final": "24/06/2025 09:29:04",
+          "Tempo Indisponível (HH:MM)": "00:20"
+        },
+        {
+          "Placa": "EGC2993",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:37:07",
+          "Data Final": "24/06/2025 12:34:30",
+          "Tempo Indisponível (HH:MM)": "00:57"
+        },
+        {
+          "Placa": "EGC2993",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 16:53:07",
+          "Data Final": "24/06/2025 17:14:47",
+          "Tempo Indisponível (HH:MM)": "00:22"
+        },
+        {
+          "Placa": "EAM3251",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 08:35:39",
+          "Data Final": "24/06/2025 08:51:55",
+          "Tempo Indisponível (HH:MM)": "00:16"
+        },
+        {
+          "Placa": "EAM3251",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 09:31:09",
+          "Data Final": "24/06/2025 09:53:04",
+          "Tempo Indisponível (HH:MM)": "00:22"
+        },
+        {
+          "Placa": "EAM3251",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 09",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:46:58",
+          "Data Final": "24/06/2025 12:50:47",
+          "Tempo Indisponível (HH:MM)": "01:04"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 08:52:08",
+          "Data Final": "24/06/2025 09:12:57",
+          "Tempo Indisponível (HH:MM)": "00:21"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:13:12",
+          "Data Final": "24/06/2025 09:29:48",
+          "Tempo Indisponível (HH:MM)": "00:17"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Falta de Acessório",
+          "Data Inicial": "24/06/2025 09:30:14",
+          "Data Final": "24/06/2025 09:47:26",
+          "Tempo Indisponível (HH:MM)": "00:17"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:49:27",
+          "Data Final": "24/06/2025 10:00:21",
+          "Tempo Indisponível (HH:MM)": "00:11"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 11:34:44",
+          "Data Final": "24/06/2025 11:56:32",
+          "Tempo Indisponível (HH:MM)": "00:22"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 13:04:02",
+          "Data Final": "24/06/2025 14:05:33",
+          "Tempo Indisponível (HH:MM)": "01:02"
+        },
+        {
+          "Placa": "EGC2979",
+          "Vaga": "CAMINHÃO AUTO VÁCUO - GPS - 10",
+          "Categoria Demora": "Descarregamento",
+          "Data Inicial": "24/06/2025 15:42:57",
+          "Data Final": "24/06/2025 16:01:13",
+          "Tempo Indisponível (HH:MM)": "00:18"
+        },
+        {
+          "Placa": "DSY6471",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:23:33",
+          "Data Final": "24/06/2025 09:23:41",
+          "Tempo Indisponível (HH:MM)": "00:00"
+        },
+        {
+          "Placa": "DSY6471",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+          "Categoria Demora": "Documentação",
+          "Data Inicial": "24/06/2025 09:24:02",
+          "Data Final": "24/06/2025 09:29:49",
+          "Tempo Indisponível (HH:MM)": "00:06"
+        },
+        {
+          "Placa": "DSY6471",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 09:29:56",
+          "Data Final": "24/06/2025 09:43:45",
+          "Tempo Indisponível (HH:MM)": "00:14"
+        },
+        {
+          "Placa": "DSY6471",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 09:44:04",
+          "Data Final": "24/06/2025 10:11:31",
+          "Tempo Indisponível (HH:MM)": "00:27"
+        },
+        {
+          "Placa": "DSY6471",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 01",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:03:00",
+          "Data Final": "24/06/2025 12:04:35",
+          "Tempo Indisponível (HH:MM)": "01:02"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 10:43:48",
+          "Data Final": "24/06/2025 11:04:49",
+          "Tempo Indisponível (HH:MM)": "00:21"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+          "Categoria Demora": "Preparação",
+          "Data Inicial": "24/06/2025 11:05:04",
+          "Data Final": "24/06/2025 11:52:11",
+          "Tempo Indisponível (HH:MM)": "00:47"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+          "Categoria Demora": "Refeição Motorista",
+          "Data Inicial": "24/06/2025 11:56:00",
+          "Data Final": "24/06/2025 13:16:44",
+          "Tempo Indisponível (HH:MM)": "01:21"
+        },
+        {
+          "Placa": "FMD2200",
+          "Vaga": "CAMINHÃO HIPER VÁCUO - GPS - 02",
+          "Categoria Demora": "Aguardando Área",
+          "Data Inicial": "24/06/2025 13:20:41",
+          "Data Final": "24/06/2025 15:30:45",
+          "Tempo Indisponível (HH:MM)": "02:10"
+        }
+      ],
+      "totalRecords": 140,
+      "processedAt": "2025-06-24T21:36:13.198Z"
     }
   ],
   "metadata": {
-    "totalCaptured": 0,
-    "captureCount": 1,
-    "lastCapture": null,
-    "lastUpdate": "2025-06-24T21:33:16.360Z",
+    "totalCaptured": 1,
+    "captureCount": 2,
+    "lastCapture": "2025-06-24T21:33:17.330Z",
+    "lastUpdate": "2025-06-24T21:36:16.179Z",
     "source": "tampermonkey-grupogps-exporter-v3",
     "version": "3.0",
     "currentSite": "GaussFleet Timeline",
