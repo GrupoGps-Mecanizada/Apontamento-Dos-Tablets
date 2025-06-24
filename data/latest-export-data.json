@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "processedData": [],
+  "metadata": {
+    "totalCaptured": 0,
+    "captureCount": 0,
+    "lastCapture": null,
+    "lastUpdate": "2025-06-24T22:56:35.243Z",
+    "source": "tampermonkey-grupogps-exporter-v3",
+    "version": "3.0",
+    "currentSite": "GaussFleet Timeline",
+    "currentUrl": "https://usiminas.gaussfleet.com/dashboard#",
+    "preventedLocalDownloads": true
+  }
+}
