@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle De Apontamentos - GrupoGPS</title>
 
-    <!-- libs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1194,7 +1193,6 @@
     </style>
 </head>
 <body data-theme="light">
-    <!-- Indicador Minimalista -->
     <div id="tampermonkeyIndicator" style="
         position: fixed;
         top: 20px;
@@ -1216,7 +1214,6 @@
         <span id="tampermonkeyIcon">🔗</span>
     </div>
 
-    <!-- Header -->
     <div class="header">
         <div class="header-content">
             <h1>Controle De Apontamentos - GrupoGPS</h1>
@@ -1227,7 +1224,6 @@
     </div>
 
     <div class="container">
-        <!-- Compact Controls Bar -->
         <div class="controls-bar">
             <div class="control-group">
                 <div class="upload-compact" id="uploadArea">
@@ -1276,11 +1272,9 @@
                 <button class="tab-button" onclick="switchTab('configuracoes')">⚙️ Configurações</button>
             </div>
 
-            <!-- Dashboard Tab -->
             <div class="tab-content" id="dashboard-tab">
                 <div class="stats-grid hidden" id="statsSection">
-                    <!-- Stats will be populated here -->
-                </div>
+                    </div>
 
                 <div class="problems-container hidden" id="problemsSection">
                     <div class="problems-header">
@@ -1288,16 +1282,13 @@
                         <button class="btn btn-warning btn-sm" id="viewAllProblemsBtn" onclick="showAllProblems()">Ver Todos</button>
                     </div>
                     <div id="problemsList">
-                        <!-- Problems will be populated here -->
-                    </div>
+                        </div>
                 </div>
 
                 <div class="equipment-grid hidden" id="equipmentGrid">
-                    <!-- Equipment cards will be populated here -->
-                </div>
+                    </div>
             </div>
 
-            <!-- Regimes Tab -->
             <div class="tab-content hidden" id="regimes-tab">
                 <div id="regimeContainer">
                     <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
@@ -1306,7 +1297,6 @@
                 </div>
             </div>
 
-            <!-- Timeline Tab -->
             <div class="tab-content hidden" id="timeline-tab">
                 <div class="timeline-container">
                     <div class="timeline-controls">
@@ -1349,7 +1339,6 @@
                 </div>
             </div>
 
-            <!-- Configurações Tab -->
             <div class="tab-content hidden" id="configuracoes-tab">
                 <div style="background: var(--surface); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
                     <h3 style="color: var(--text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -1418,7 +1407,6 @@
         Desenvolvido por Warlison Abreu - GrupoGPS
     </div>
 
-    <!-- Modal for appointment details -->
     <div class="modal" id="appointmentModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1426,12 +1414,10 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div id="appointmentDetails">
-                <!-- Details will be populated here -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Modal for all problems -->
     <div class="modal" id="problemsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1439,8 +1425,7 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div id="allProblemsContainer">
-                <!-- All problems will be populated here -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -1448,225 +1433,7 @@
         /*********************************
          * VARIÁVEIS GLOBAIS             *
          *********************************/
-
-        /*********************************
-         * PROCESSAMENTO DADOS TAMPERMONKEY *
-         *********************************/
-        function processarDadosTampermonkey(data) {
-            console.log('🔄 Processando dados do Tampermonkey...');
-            
-            // LIMPA DADOS ANTIGOS PRIMEIRO (evita duplicação)
-            dadosCSV = [];
-            dadosUnicos.clear();
-            arquivosProcessados = [];
-            
-            var novosApontamentosProcessados = [];
-            
-            if (data && data.files && Array.isArray(data.files)) {
-                console.log('📁 Processando ' + data.files.length + ' arquivos do Tampermonkey...');
-                
-                data.files.forEach(function(file) {
-                    console.log('🔍 Processando arquivo:', file.filename);
-                    
-                    // CORREÇÃO CRÍTICA: Verifica se há dados já processados
-                    if (file.processedData && file.processedData.data && Array.isArray(file.processedData.data)) {
-                        console.log('📊 Usando dados já processados do arquivo');
-                        file.processedData.data.forEach(function(row) {
-                            var apontamento = converterRowParaApontamento(row);
-                            if (apontamento && validarApontamento(apontamento)) {
-                                novosApontamentosProcessados.push(apontamento);
-                            }
-                        });
-                    } 
-                    // Se não há dados processados, tenta processar o conteúdo raw
-                    else if (file.content) {
-                        console.log('🔄 Processando conteúdo raw do arquivo');
-                        
-                        // Detecta se é CSV ou JSON
-                        var conteudo = file.content.trim();
-                        if (conteudo.startsWith('{') || conteudo.startsWith('[')) {
-                            // É JSON
-                            try {
-                                var jsonData = JSON.parse(conteudo);
-                                var jsonApontamentos = processarDadosJSON(jsonData);
-                                novosApontamentosProcessados = novosApontamentosProcessados.concat(jsonApontamentos);
-                            } catch (e) {
-                                console.error('❌ Erro ao processar JSON:', e);
-                            }
-                        } else {
-                            // É CSV
-                            var csvApontamentos = processarCSV(conteudo);
-                            novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
-                        }
-                    }
-                    
-                    // Registra arquivo processado
-                    arquivosProcessados.push({
-                        nome: file.filename || 'Arquivo Tampermonkey',
-                        tipo: file.type || 'json',
-                        timestamp: file.capturedAt || new Date().toISOString(),
-                        totalRegistros: file.processedData ? file.processedData.data.length : 0,
-                        registrosUnicos: 0 // Será atualizado depois
-                    });
-                });
-            }
-
-            if (novosApontamentosProcessados.length > 0) {
-                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos');
-                
-                // Adiciona novos dados
-                dadosCSV = novosApontamentosProcessados;
-                
-                // Remove duplicatas
-                limparDuplicatas();
-                
-                // Atualiza contadores nos arquivos processados
-                arquivosProcessados.forEach(function(arquivo) {
-                    arquivo.registrosUnicos = dadosCSV.length;
-                });
-
-                // Processamento automático
-                processarDadosAutomatico();
-                
-                // Atualiza configurações
-                atualizarConfiguracoes();
-                
-                // Atualiza indicador Tampermonkey
-                updateTampermonkeyStatus('connected', novosApontamentosProcessados.length + ' registros processados');
-                
-                return true;
-            } else {
-                console.log('⚠️ Nenhum apontamento válido encontrado');
-                updateTampermonkeyStatus('warning', 'Nenhum dado válido');
-                return false;
-            }
-        }
-
-        /*********************************
-         * PROCESSAMENTO JSON CORRIGIDO   *
-         *********************************/
-        function processarDadosJSON(jsonData) {
-            try {
-                var apontamentos = [];
-                
-                // Se é um array direto de apontamentos
-                if (Array.isArray(jsonData)) {
-                    jsonData.forEach(function(item) {
-                        var apontamento = converterRowParaApontamento(item);
-                        if (apontamento && validarApontamento(apontamento)) {
-                            apontamentos.push(apontamento);
-                        }
-                    });
-                }
-                // Se é um objeto com propriedades
-                else if (typeof jsonData === 'object') {
-                    // Verifica se tem uma propriedade 'data' ou similar
-                    var dataArray = jsonData.data || jsonData.records || jsonData.items || jsonData.apontamentos;
-                    
-                    if (Array.isArray(dataArray)) {
-                        dataArray.forEach(function(item) {
-                            var apontamento = converterRowParaApontamento(item);
-                            if (apontamento && validarApontamento(apontamento)) {
-                                apontamentos.push(apontamento);
-                            }
-                        });
-                    }
-                    // Se o próprio objeto é um apontamento
-                    else {
-                        var apontamento = converterRowParaApontamento(jsonData);
-                        if (apontamento && validarApontamento(apontamento)) {
-                            apontamentos.push(apontamento);
-                        }
-                    }
-                }
-                
-                console.log('✅ JSON processado: ' + apontamentos.length + ' apontamentos válidos');
-                return apontamentos;
-                
-            } catch (error) {
-                console.error('❌ Erro ao processar JSON:', error);
-                return [];
-            }
-        }
-
-        /*********************************
-         * VALIDAÇÃO DE APONTAMENTOS     *
-         *********************************/
-        function validarApontamento(apontamento) {
-            // Verifica se tem os campos essenciais
-            return apontamento && 
-                   apontamento.Placa && 
-                   apontamento.Vaga && 
-                   apontamento['Categoria Demora'] && 
-                   apontamento['Data Inicial'] && 
-                   apontamento['Data Final'] && 
-                   apontamento['Tempo Indisponível (HH:MM)'];
-        }
-
-        /*********************************
-         * INDICADOR TAMPERMONKEY        *
-         *********************************/
-        function updateTampermonkeyStatus(status, message) {
-            var indicator = document.getElementById('tampermonkeyIndicator');
-            var icon = document.getElementById('tampermonkeyIcon');
-            
-            if (!indicator || !icon) return;
-            
-            var configs = {
-                'connected': {
-                    bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                    icon: '🔗',
-                    title: 'Tampermonkey: Conectado - ' + (message || 'Online')
-                },
-                'disconnected': {
-                    bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                    icon: '❌',
-                    title: 'Tampermonkey: Desconectado'
-                },
-                'warning': {
-                    bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-                    icon: '⚠️',
-                    title: 'Tampermonkey: ' + (message || 'Atenção')
-                },
-                'processing': {
-                    bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                    icon: '🔄',
-                    title: 'Tampermonkey: Processando...'
-                }
-            };
-            
-            var config = configs[status] || configs.connected;
-            
-            indicator.style.background = config.bg;
-            indicator.title = config.title;
-            icon.textContent = config.icon;
-        }
-
-        /*********************************
-         * COMUNICAÇÃO COM TAMPERMONKEY   *
-         *********************************/
-        function setupTampermonkeyListener() {
-            // Escuta por dados do Tampermonkey
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'TAMPERMONKEY_DATA') {
-                    console.log('📨 Dados recebidos do Tampermonkey');
-                    updateTampermonkeyStatus('processing', 'Recebendo dados...');
-                    
-                    setTimeout(function() {
-                        processarDadosTampermonkey(event.data.payload);
-                    }, 500);
-                }
-            });
-            
-            // Notifica que está pronto para receber dados
-            window.postMessage({
-                type: 'SISTEMA_READY',
-                timestamp: new Date().toISOString()
-            }, '*');
-            
-            console.log('🔔 Listener Tampermonkey configurado');
-            updateTampermonkeyStatus('connected', 'Aguardando dados');
-        }
+        var dadosCSV = []; // <-- CORREÇÃO PRINCIPAL: Variável inicializada
         var equipamentosProcessados = {};
         var apontamentosIrregulares = [];
         var dadosFiltrados = [];
@@ -1677,7 +1444,7 @@
         var statusColorsEnabled = false;
         var timelineZoom = 1;
         var arquivosProcessados = [];
-        var dadosUnicos = new Map(); // Para controle de duplicatas
+        var dadosUnicos = new Map();
 
         // Touch zoom variables for mobile
         var isZooming = false;
@@ -1738,10 +1505,185 @@
         };
 
         /*********************************
+         * PROCESSAMENTO DADOS TAMPERMONKEY *
+         *********************************/
+        function processarDadosTampermonkey(data) {
+            console.log('🔄 Processando dados do Tampermonkey...');
+            
+            dadosCSV = [];
+            dadosUnicos.clear();
+            arquivosProcessados = [];
+            
+            var novosApontamentosProcessados = [];
+            
+            if (data && data.files && Array.isArray(data.files)) {
+                console.log('📁 Processando ' + data.files.length + ' arquivos do Tampermonkey...');
+                
+                data.files.forEach(function(file) {
+                    console.log('🔍 Processando arquivo:', file.filename);
+                    
+                    if (file.processedData && file.processedData.data && Array.isArray(file.processedData.data)) {
+                        console.log('📊 Usando dados já processados do arquivo');
+                        file.processedData.data.forEach(function(row) {
+                            var apontamento = converterRowParaApontamento(row);
+                            if (apontamento && validarApontamento(apontamento)) {
+                                novosApontamentosProcessados.push(apontamento);
+                            }
+                        });
+                    } 
+                    else if (file.content) {
+                        console.log('🔄 Processando conteúdo raw do arquivo');
+                        var conteudo = file.content.trim();
+                        if (conteudo.startsWith('{') || conteudo.startsWith('[')) {
+                            try {
+                                var jsonData = JSON.parse(conteudo);
+                                var jsonApontamentos = processarDadosJSON(jsonData);
+                                novosApontamentosProcessados = novosApontamentosProcessados.concat(jsonApontamentos);
+                            } catch (e) {
+                                console.error('❌ Erro ao processar JSON:', e);
+                            }
+                        } else {
+                            var csvApontamentos = processarCSV(conteudo);
+                            novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
+                        }
+                    }
+                    
+                    arquivosProcessados.push({
+                        nome: file.filename || 'Arquivo Tampermonkey',
+                        tipo: file.type || 'json',
+                        timestamp: file.capturedAt || new Date().toISOString(),
+                        totalRegistros: (file.processedData && file.processedData.data) ? file.processedData.data.length : 0,
+                        registrosUnicos: 0
+                    });
+                });
+            }
+
+            if (novosApontamentosProcessados.length > 0) {
+                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos');
+                
+                dadosCSV = novosApontamentosProcessados;
+                limparDuplicatas();
+                
+                arquivosProcessados.forEach(function(arquivo) {
+                    arquivo.registrosUnicos = dadosCSV.length;
+                });
+
+                processarDadosAutomatico();
+                atualizarConfiguracoes();
+                updateTampermonkeyStatus('connected', dadosCSV.length + ' registros processados');
+                
+                return true;
+            } else {
+                console.log('⚠️ Nenhum apontamento válido encontrado');
+                updateTampermonkeyStatus('warning', 'Nenhum dado válido');
+                return false;
+            }
+        }
+
+        /*********************************
+         * PROCESSAMENTO JSON CORRIGIDO   *
+         *********************************/
+        function processarDadosJSON(jsonData) {
+            try {
+                var apontamentos = [];
+                
+                if (Array.isArray(jsonData)) {
+                    jsonData.forEach(function(item) {
+                        var apontamento = converterRowParaApontamento(item);
+                        if (apontamento && validarApontamento(apontamento)) {
+                            apontamentos.push(apontamento);
+                        }
+                    });
+                }
+                else if (typeof jsonData === 'object') {
+                    var dataArray = jsonData.data || jsonData.records || jsonData.items || jsonData.apontamentos;
+                    
+                    if (Array.isArray(dataArray)) {
+                        dataArray.forEach(function(item) {
+                            var apontamento = converterRowParaApontamento(item);
+                            if (apontamento && validarApontamento(apontamento)) {
+                                apontamentos.push(apontamento);
+                            }
+                        });
+                    }
+                    else {
+                        var apontamento = converterRowParaApontamento(jsonData);
+                        if (apontamento && validarApontamento(apontamento)) {
+                            apontamentos.push(apontamento);
+                        }
+                    }
+                }
+                
+                console.log('✅ JSON processado: ' + apontamentos.length + ' apontamentos válidos');
+                return apontamentos;
+                
+            } catch (error) {
+                console.error('❌ Erro ao processar JSON:', error);
+                return [];
+            }
+        }
+
+        /*********************************
+         * VALIDAÇÃO DE APONTAMENTOS     *
+         *********************************/
+        function validarApontamento(apontamento) {
+            return apontamento && 
+                   apontamento.Placa && 
+                   apontamento.Vaga && 
+                   apontamento['Categoria Demora'] && 
+                   apontamento['Data Inicial'] && 
+                   apontamento['Data Final'] && 
+                   apontamento['Tempo Indisponível (HH:MM)'];
+        }
+
+        /*********************************
+         * INDICADOR TAMPERMONKEY        *
+         *********************************/
+        function updateTampermonkeyStatus(status, message) {
+            var indicator = document.getElementById('tampermonkeyIndicator');
+            var icon = document.getElementById('tampermonkeyIcon');
+            
+            if (!indicator || !icon) return;
+            
+            var configs = {
+                'connected': { bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)', icon: '🔗', title: 'Tampermonkey: Conectado - ' + (message || 'Online') },
+                'disconnected': { bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', icon: '❌', title: 'Tampermonkey: Desconectado' },
+                'warning': { bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', icon: '⚠️', title: 'Tampermonkey: ' + (message || 'Atenção') },
+                'processing': { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', icon: '🔄', title: 'Tampermonkey: Processando...' }
+            };
+            
+            var config = configs[status] || configs.disconnected;
+            
+            indicator.style.background = config.bg;
+            indicator.title = config.title;
+            icon.textContent = config.icon;
+        }
+
+        /*********************************
+         * COMUNICAÇÃO COM TAMPERMONKEY   *
+         *********************************/
+        function setupTampermonkeyListener() {
+            window.addEventListener('message', function(event) {
+                if (event.source === window && event.data && event.data.type === 'TAMPERMONKEY_DATA') {
+                    console.log('📨 Dados recebidos do Tampermonkey');
+                    updateTampermonkeyStatus('processing', 'Recebendo dados...');
+                    
+                    setTimeout(function() {
+                        processarDadosTampermonkey(event.data.payload);
+                    }, 100);
+                }
+            });
+            
+            window.postMessage({ type: 'SISTEMA_READY', timestamp: new Date().toISOString() }, '*');
+            
+            console.log('🔔 Listener Tampermonkey configurado e aguardando dados.');
+            updateTampermonkeyStatus('connected', 'Aguardando dados');
+        }
+
+        /*********************************
          * SISTEMA INTELIGENTE DE DUPLICATAS *
          *********************************/
         function gerarHashApontamento(apontamento) {
-            // Gera um hash único baseado nos campos principais do apontamento
             var campos = [
                 apontamento.Placa || '',
                 apontamento.Vaga || '',
@@ -1755,12 +1697,11 @@
 
         function adicionarApontamentoUnico(apontamento) {
             var hash = gerarHashApontamento(apontamento);
-            
             if (!dadosUnicos.has(hash)) {
                 dadosUnicos.set(hash, apontamento);
-                return true; // Apontamento é único
+                return true;
             }
-            return false; // Apontamento duplicado
+            return false;
         }
 
         function limparDuplicatas() {
@@ -1788,8 +1729,8 @@
          * PROCESSAMENTO INTELIGENTE DE ARQUIVOS *
          *********************************/
         function processarArquivoInteligente(data, nomeArquivo, tipoArquivo) {
-            console.log('📋 Processando arquivo: ' + nomeArquivo + ' (' + tipoArquivo + ')');
-            updateStatusBar('fetching', 'Processando ' + nomeArquivo + '...');
+            console.log('📋 Processando arquivo local: ' + nomeArquivo + ' (' + tipoArquivo + ')');
+            updateTampermonkeyStatus('processing', 'Processando ' + nomeArquivo + '...');
             
             var novosApontamentos = [];
             
@@ -1801,16 +1742,10 @@
 
             if (novosApontamentos.length > 0) {
                 var totalAnterior = dadosCSV.length;
-                
-                // Adiciona novos apontamentos ao array principal
                 dadosCSV = dadosCSV.concat(novosApontamentos);
-                
-                // Remove duplicatas
                 limparDuplicatas();
-                
                 var novosUnicos = dadosCSV.length - totalAnterior;
                 
-                // Registra arquivo processado
                 arquivosProcessados.push({
                     nome: nomeArquivo,
                     tipo: tipoArquivo,
@@ -1819,102 +1754,69 @@
                     registrosUnicos: novosUnicos
                 });
 
-                // Atualiza configurações
                 atualizarConfiguracoes();
-                
-                // Processamento automático
                 processarDadosAutomatico();
                 
-                updateStatusBar('success', novosUnicos + ' novos registros adicionados');
-                updateStatusBarStats();
+                updateTampermonkeyStatus('success', novosUnicos + ' novos registros adicionados');
                 showNotification('✅ Arquivo processado! ' + novosUnicos + ' novos apontamentos únicos adicionados.', 'success');
                 
                 return true;
             } else {
-                updateStatusBar('warning', 'Nenhum dado válido encontrado');
+                updateTampermonkeyStatus('warning', 'Nenhum dado válido encontrado');
                 showNotification('❌ Nenhum dado válido encontrado no arquivo.', 'error');
                 return false;
             }
         }
 
         function converterRowParaApontamento(row) {
-            // Converte um objeto row para o formato esperado de apontamento
             var apontamento = {};
-            
-            // Mapeia campos possíveis
             var mapeamentos = {
-                'Placa': ['Placa', 'placa', 'PLACA'],
-                'Vaga': ['Vaga', 'vaga', 'VAGA'],
-                'Categoria Demora': ['Categoria Demora', 'categoria', 'CATEGORIA', 'Categoria'],
-                'Data Inicial': ['Data Inicial', 'dataInicial', 'DATA_INICIAL', 'Data_Inicial'],
-                'Data Final': ['Data Final', 'dataFinal', 'DATA_FINAL', 'Data_Final'],
-                'Tempo Indisponível (HH:MM)': ['Tempo Indisponível (HH:MM)', 'tempo', 'TEMPO', 'Tempo']
+                'Placa': ['Placa'],
+                'Vaga': ['Vaga'],
+                'Categoria Demora': ['Categoria Demora'],
+                'Data Inicial': ['Data Inicial'],
+                'Data Final': ['Data Final'],
+                'Tempo Indisponível (HH:MM)': ['Tempo Indisponível (HH:MM)']
             };
 
             Object.keys(mapeamentos).forEach(function(campoDestino) {
-                var possiveisChaves = mapeamentos[campoDestino];
-                for (var i = 0; i < possiveisChaves.length; i++) {
-                    var chave = possiveisChaves[i];
-                    if (row[chave] !== undefined) {
-                        apontamento[campoDestino] = row[chave];
-                        break;
+                for (const chave of mapeamentos[campoDestino]) {
+                    // Remove caracteres de controle invisíveis, como \r
+                    const chaveLimpa = chave.replace(/\s+/g, ' ').trim();
+                    for(const rowKey in row){
+                        const rowKeyLimpa = rowKey.replace(/\s+/g, ' ').trim();
+                        if(rowKeyLimpa === chaveLimpa){
+                            apontamento[campoDestino] = row[rowKey];
+                            return;
+                        }
                     }
                 }
             });
 
-            // Verifica se tem os campos essenciais
-            if (apontamento.Placa && apontamento['Categoria Demora'] && apontamento['Data Inicial']) {
-                return apontamento;
-            }
-            
-            return null;
+            return apontamento;
         }
 
         function processarCSV(csvContent) {
             try {
                 console.log('🔄 Iniciando parse do CSV...');
-                
-                // Remove caracteres de controle e normaliza quebras de linha
                 var cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                
-                // Detecta o delimitador
                 var delimiter = cleanContent.includes('";') ? ';' : ',';
-                console.log('🔍 Delimitador detectado:', delimiter);
                 
                 var result = Papa.parse(cleanContent, {
                     header: true,
                     skipEmptyLines: true,
                     delimiter: delimiter,
-                    quoteChar: '"',
-                    escapeChar: '"',
-                    trimHeaders: true,
-                    transform: function(value) {
-                        return value.replace(/^"|"$/g, '').trim();
-                    }
+                    transformHeader: header => header.trim(),
                 });
-                
-                console.log('📊 Headers detectados:', result.meta.fields);
-                console.log('📈 Total de linhas parseadas:', result.data.length);
                 
                 if (result.errors.length > 0) {
-                    console.warn('⚠️ Erros no parse:', result.errors);
+                    console.warn('⚠️ Erros no parse do CSV:', result.errors);
                 }
                 
-                // Filtra apenas registros válidos
-                var validData = result.data.filter(function(linha) {
-                    return linha.Placa && 
-                           linha.Vaga && 
-                           linha['Categoria Demora'] && 
-                           linha['Data Inicial'] && 
-                           linha['Data Final'] && 
-                           linha['Tempo Indisponível (HH:MM)'];
-                });
-                
-                console.log('✅ Registros válidos filtrados:', validData.length);
-                return validData;
+                return result.data;
                 
             } catch (error) {
-                console.error('❌ Erro ao parsear CSV:', error);
+                console.error('❌ Erro fatal ao parsear CSV:', error);
                 return [];
             }
         }
@@ -1925,15 +1827,12 @@
         function processarDadosAutomatico() {
             if (!dadosCSV.length) return;
 
-            console.log('🔄 Processamento automático: ' + dadosCSV.length + ' registros');
-            
-            // Atualiza status
+            console.log('🔄 Processamento automático com ' + dadosCSV.length + ' registros');
             updateAutoProcessStatus('processing', 'Processando dados...');
-            updateStatusBar('fetching', 'Processando apontamentos...');
             
             setTimeout(function() {
                 try {
-                    dadosFiltrados = [].concat(dadosCSV);
+                    dadosFiltrados = [...dadosCSV];
                     
                     detectarRegimes(dadosFiltrados);
                     detectarApontamentosIrregularesInteligente(dadosFiltrados);
@@ -1942,51 +1841,29 @@
                     exibirResultadosDashboard();
                     exibirRegimes();
 
-                    // Show controls
                     document.getElementById('exportControls').classList.remove('hidden');
                     document.getElementById('filterControls').classList.remove('hidden');
-
-                    var sectionsToShow = ['statsSection','equipmentGrid'];
-                    sectionsToShow.forEach(function(id) {
-                        var el = document.getElementById(id);
-                        if(el) el.classList.remove('hidden');
-                    });
-
+                    ['statsSection', 'equipmentGrid'].forEach(id => document.getElementById(id).classList.remove('hidden'));
+                    
                     var problemsEl = document.getElementById('problemsSection');
-                    if(problemsEl) {
-                        if(apontamentosIrregulares.length) {
-                            problemsEl.classList.remove('hidden');
-                        } else {
-                            problemsEl.classList.add('hidden');
-                        }
-                    }
+                    problemsEl.classList.toggle('hidden', apontamentosIrregulares.length === 0);
 
-                    updateAutoProcessStatus('success', 'Dados processados automaticamente');
-                    updateStatusBar('success', 'Apontamentos processados');
-                    updateStatusBarStats();
+                    updateAutoProcessStatus('success', 'Dados processados');
                     console.log('✅ Processamento automático concluído');
 
                 } catch(err) {
                     console.error('❌ Erro no processamento automático:', err);
                     updateAutoProcessStatus('error', 'Erro no processamento');
-                    updateStatusBar('error', 'Erro no processamento');
                 }
-            }, 500);
+            }, 100);
         }
 
         function updateAutoProcessStatus(status, message) {
             var statusEl = document.getElementById('autoProcessStatus');
             if (!statusEl) return;
-
             statusEl.className = 'auto-process-status ' + status;
-            
-            var icons = {
-                'success': '✅',
-                'processing': '🔄',
-                'error': '❌'
-            };
-            
-            statusEl.textContent = (icons[status] || '⚙️') + ' ' + message;
+            var icons = { 'success': '✅', 'processing': '🔄', 'error': '❌' };
+            statusEl.innerHTML = `${icons[status] || '⚙️'} ${message}`;
         }
 
         /*********************************
@@ -1994,10 +1871,9 @@
          *********************************/
         function forceProcessData() {
             if (dadosCSV.length === 0) {
-                showNotification('Nenhum dado para reprocessar', 'warning');
+                showNotification('Nenhum dado carregado para reprocessar.', 'warning');
                 return;
             }
-            
             console.log('⚙️ Reprocessamento forçado iniciado...');
             updateTampermonkeyStatus('processing', 'Reprocessando dados...');
             processarDadosAutomatico();
@@ -2010,83 +1886,48 @@
             document.getElementById('ultimaAtualizacao').textContent = new Date().toLocaleString('pt-BR');
             
             var ultimoArquivo = arquivosProcessados[arquivosProcessados.length - 1];
-            document.getElementById('formatoArquivo').textContent = ultimoArquivo ? ultimoArquivo.tipo.toUpperCase() : 'N/A';
+            document.getElementById('formatoArquivo').textContent = ultimoArquivo ? (ultimoArquivo.tipo || 'N/A').toUpperCase() : 'N/A';
             
-            // Atualiza status Tampermonkey
-            var tampermonkeyStatus = document.getElementById('tampermonkeyStatusConfig');
-            if (tampermonkeyStatus) {
-                tampermonkeyStatus.textContent = '✅ Conectado';
-                tampermonkeyStatus.style.color = 'var(--success-color)';
-            }
-            
-            // Atualiza histórico
             var histContainer = document.getElementById('arquivosHistorico');
             if (arquivosProcessados.length === 0) {
                 histContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum arquivo processado ainda.</div>';
                 return;
             }
             
-            histContainer.innerHTML = arquivosProcessados.map(function(arquivo, index) {
-                return '<div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">' +
-                    '<span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">' + arquivo.nome + '</span>' +
-                    '<span style="font-size: 0.75rem; color: var(--text-secondary);">' + arquivo.tipo.toUpperCase() + '</span>' +
-                    '</div>' +
-                    '<div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">' +
-                    '📅 ' + new Date(arquivo.timestamp).toLocaleString('pt-BR') +
-                    '</div>' +
-                    '<div style="font-size: 0.75rem; color: var(--text-secondary);">' +
-                    '📊 ' + arquivo.totalRegistros + ' registros • ' + arquivo.registrosUnicos + ' únicos' +
-                    '</div>' +
-                    '</div>';
+            histContainer.innerHTML = arquivosProcessados.map(function(arquivo) {
+                return `<div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${arquivo.nome}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-secondary);">${(arquivo.tipo || '').toUpperCase()}</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+                        📅 ${new Date(arquivo.timestamp).toLocaleString('pt-BR')}
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                        📊 ${arquivo.totalRegistros} registros • ${arquivo.registrosUnicos} únicos
+                    </div>
+                </div>`;
             }).reverse().join('');
         }
 
         /*********************************
-         * FUNÇÕES ORIGINAIS ADAPTADAS   *
+         * FUNÇÕES DE UI E EVENTOS       *
          *********************************/
         
-        // Theme toggle
         function toggleTheme() {
-            var body = document.body;
-            var currentTheme = body.getAttribute('data-theme');
-            var newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            body.setAttribute('data-theme', newTheme);
+            var newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
 
-        // Status colors toggle
-        function toggleStatusColors() {
-            statusColorsEnabled = !statusColorsEnabled;
-            var toggle = document.getElementById('statusColorToggle');
-            toggle.classList.toggle('active', statusColorsEnabled);
-            
-            updateEquipmentCardsColors();
-        }
-
-        function updateEquipmentCardsColors() {
-            var cards = document.querySelectorAll('.equipment-card');
-            cards.forEach(function(card) {
-                if (statusColorsEnabled) {
-                    card.classList.add('status-colored');
-                } else {
-                    card.classList.remove('status-colored');
-                }
-            });
-        }
-
-        // Toggle time gaps
         function toggleTimeGaps() {
             showTimeGaps = !showTimeGaps;
-            var toggle = document.getElementById('gapsToggle');
-            toggle.classList.toggle('active', showTimeGaps);
-            
+            document.getElementById('gapsToggle').classList.toggle('active', showTimeGaps);
             if (!document.getElementById('timeline-tab').classList.contains('hidden')) {
                 gerarTimelineVertical();
             }
         }
 
-        // Enhanced zoom functionality
         function adjustZoom(delta) {
             timelineZoom = Math.max(0.5, Math.min(3, timelineZoom + delta));
             updateTimelineZoom();
@@ -2099,174 +1940,60 @@
 
         function updateTimelineZoom() {
             document.getElementById('zoomLevel').textContent = timelineZoom.toFixed(1) + 'x';
-            
-            document.querySelectorAll('.timeline-content').forEach(function(content) {
-                content.style.transform = 'scale(' + timelineZoom + ')';
-            });
-
-            document.querySelectorAll('.timeline-equipment').forEach(function(equipment) {
-                var originalHeight = 600;
-                equipment.style.height = ((originalHeight * timelineZoom) + 80) + 'px';
+            document.querySelectorAll('.timeline-content').forEach(content => content.style.transform = `scale(${timelineZoom})`);
+            document.querySelectorAll('.timeline-equipment').forEach(equipment => {
+                equipment.style.height = `${(600 * timelineZoom) + 80}px`;
             });
         }
 
-        function getDistance(touch1, touch2) {
-            var dx = touch1.clientX - touch2.clientX;
-            var dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // Load saved theme and initialize
         document.addEventListener('DOMContentLoaded', function() {
-            var savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
+            document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
             setupEventListeners();
-            
-            // Inicializa sistema Tampermonkey
             initializeTampermonkeySystem();
         });
 
         function initializeTampermonkeySystem() {
-            console.log('🚀 Inicializando sistema Tampermonkey...');
-            
-            // Configura listener para comunicação com Tampermonkey
+            console.log('🚀 Inicializando sistema de comunicação com Tampermonkey...');
             setupTampermonkeyListener();
-            
-            // Status inicial
-            updateTampermonkeyStatus('connected', 'Sistema inicializado');
-            
-            console.log('✅ Sistema Tampermonkey configurado e ativo');
         }
 
         function setupEventListeners() {
             var uploadArea = document.getElementById('uploadArea');
             var fileInput = document.getElementById('fileInput');
 
-            // Upload area events
-            uploadArea.addEventListener('dragover', function(e) {
+            uploadArea.addEventListener('dragover', e => { e.preventDefault(); e.currentTarget.classList.add('dragover'); });
+            uploadArea.addEventListener('dragleave', e => { e.preventDefault(); e.currentTarget.classList.remove('dragover'); });
+            uploadArea.addEventListener('drop', e => {
                 e.preventDefault();
-                uploadArea.classList.add('dragover');
+                e.currentTarget.classList.remove('dragover');
+                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
             });
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', () => { if(fileInput.files.length) handleFile(fileInput.files[0]); });
 
-            uploadArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                if(e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-            });
-
-            uploadArea.addEventListener('click', function() { 
-                fileInput.click(); 
-            });
-            
-            fileInput.addEventListener('change', function() {
-                if(fileInput.files.length > 0) handleFile(fileInput.files[0]);
-            });
-
-            // Debug mode toggle
-            document.querySelector('.header h1').addEventListener('dblclick', function() {
+            document.querySelector('.header h1').addEventListener('dblclick', () => {
                 var debugBtn = document.getElementById('debugBtn');
-                if (debugBtn.style.display === 'none') {
-                    debugBtn.style.display = 'inline-flex';
-                    console.log('🔧 Modo debug ativado');
-                    showNotification('Modo debug ativado!', 'info');
-                } else {
-                    debugBtn.style.display = 'none';
-                    console.log('🔧 Modo debug desativado');
-                    showNotification('Modo debug desativado!', 'info');
-                }
+                var isHidden = debugBtn.style.display === 'none';
+                debugBtn.style.display = isHidden ? 'inline-flex' : 'none';
+                showNotification(`Modo debug ${isHidden ? 'ativado' : 'desativado'}!`, 'info');
             });
 
-            // Filter events
-            var filterIds = ['dataInicial','dataFinal','tipoFilter'];
-            filterIds.forEach(function(id) {
-                var el = document.getElementById(id);
-                if(el) el.addEventListener('change', aplicarFiltros);
-            });
-
-            var timelineIds = ['timelineSearch','timelineDate'];
-            timelineIds.forEach(function(id) {
-                var el = document.getElementById(id);
-                if(el) el.addEventListener('input', filtrarTimeline);
-            });
-
-            // Enhanced zoom controls for timeline
-            document.addEventListener('wheel', function(e) {
-                if (e.ctrlKey && !document.getElementById('timeline-tab').classList.contains('hidden')) {
-                    e.preventDefault();
-                    var delta = e.deltaY > 0 ? -0.1 : 0.1;
-                    adjustZoom(delta);
-                }
-            }, { passive: false });
-
-            // Touch zoom for mobile
-            document.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 2 && !document.getElementById('timeline-tab').classList.contains('hidden')) {
-                    isZooming = true;
-                    initialDistance = getDistance(e.touches[0], e.touches[1]);
-                    initialZoom = timelineZoom;
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('touchmove', function(e) {
-                if (isZooming && e.touches.length === 2) {
-                    var currentDistance = getDistance(e.touches[0], e.touches[1]);
-                    var scale = currentDistance / initialDistance;
-                    var newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
-                    
-                    timelineZoom = newZoom;
-                    updateTimelineZoom();
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('touchend', function(e) {
-                if (isZooming) {
-                    isZooming = false;
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            // Modal events
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal')) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
-            });
+            ['dataInicial','dataFinal','tipoFilter'].forEach(id => document.getElementById(id).addEventListener('change', aplicarFiltros));
+            ['timelineSearch','timelineDate'].forEach(id => document.getElementById(id).addEventListener('input', filtrarTimeline));
+            
+            document.addEventListener('click', e => { if (e.target.classList.contains('modal')) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab-button').forEach(function(btn) { 
-                btn.classList.remove('active'); 
-            });
-            document.querySelectorAll('.tab-content').forEach(function(content) { 
-                content.classList.add('hidden'); 
-            });
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
 
-            var button = document.querySelector('[onclick="switchTab(\'' + tabName + '\')"]');
-            var tab = document.getElementById(tabName + '-tab');
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
 
-            button.classList.add('active');
-            tab.classList.remove('hidden');
-
-            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) {
-                gerarTimelineVertical();
-            }
-            
-            if(tabName === 'configuracoes') {
-                atualizarConfiguracoes();
-            }
+            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) gerarTimelineVertical();
+            if(tabName === 'configuracoes') atualizarConfiguracoes();
         }
 
         function handleFile(file) {
@@ -2279,162 +2006,86 @@
                 return;
             }
 
-            document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Analisando arquivo...</span>';
-
+            document.getElementById('uploadStatus').innerHTML = '<span>Analisando...</span>';
             var reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 var content = e.target.result;
                 var tipoArquivo = isJSON ? 'json' : 'csv';
                 
-                console.log('📁 Arquivo carregado: ' + fileName + ' (' + tipoArquivo + ')');
-                
                 if (processarArquivoInteligente(content, fileName, tipoArquivo)) {
-                    document.getElementById('uploadStatus').innerHTML = 
-                        '<span id="uploadMethod">' + fileName + ': ' + dadosCSV.length + ' registros únicos</span>';
+                    document.getElementById('uploadStatus').innerHTML = `<span>${fileName}: ${dadosCSV.length} registros</span>`;
                 } else {
-                    document.getElementById('uploadStatus').innerHTML = 
-                        '<span id="uploadMethod">Erro no processamento</span>';
+                    document.getElementById('uploadStatus').innerHTML = '<span>Erro</span>';
                 }
             };
-            
-            reader.onerror = function() {
-                showNotification('Erro ao ler o arquivo.', 'error');
-                document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Erro na leitura</span>';
-            };
-            
+            reader.onerror = () => showNotification('Erro ao ler o arquivo.', 'error');
             reader.readAsText(file);
         }
 
         function detectarRegimes(dados) {
             regimesDisponiveis = {};
-            
-            dados.forEach(function(apt) {
+            dados.forEach(apt => {
                 var vaga = apt.Vaga;
                 if(!vaga) return;
-
                 var regime = 'ADM';
-                
-                Object.keys(REGIMES_CONFIG).forEach(function(key) {
-                    REGIMES_CONFIG[key].identificadores.forEach(function(id) {
-                        if(vaga.toUpperCase().includes(id)) {
-                            regime = key;
-                        }
-                    });
+                Object.keys(REGIMES_CONFIG).forEach(key => {
+                    if (REGIMES_CONFIG[key].identificadores.some(id => vaga.toUpperCase().includes(id))) {
+                        regime = key;
+                    }
                 });
-
                 if(!regimesDisponiveis[regime]) {
                     regimesDisponiveis[regime] = {
                         nome: REGIMES_CONFIG[regime].nome,
                         turnos: REGIMES_CONFIG[regime].turnos,
-                        identificadores: REGIMES_CONFIG[regime].identificadores,
                         equipamentos: new Set(),
                         apontamentos: 0
                     };
                 }
-
                 var codigo = extrairCodigoVaga(vaga);
-                if(codigo) {
-                    regimesDisponiveis[regime].equipamentos.add(codigo);
-                }
+                if(codigo) regimesDisponiveis[regime].equipamentos.add(codigo);
                 regimesDisponiveis[regime].apontamentos++;
             });
-
-            Object.keys(regimesDisponiveis).forEach(function(regime) {
-                regimesDisponiveis[regime].equipamentos = Array.from(regimesDisponiveis[regime].equipamentos);
-            });
+            Object.values(regimesDisponiveis).forEach(r => r.equipamentos = Array.from(r.equipamentos));
         }
 
         function detectarApontamentosIrregularesInteligente(dados) {
             apontamentosIrregulares = [];
-            var equipamentosContador = {};
-
-            dados.forEach(function(apt) {
+            var equipamentosContador = dados.reduce((acc, apt) => {
                 var codigo = extrairCodigoVaga(apt.Vaga);
-                if(codigo) {
-                    equipamentosContador[codigo] = (equipamentosContador[codigo] || 0) + 1;
-                }
-            });
+                if(codigo) acc[codigo] = (acc[codigo] || 0) + 1;
+                return acc;
+            }, {});
 
-            dados.forEach(function(apt, idx) {
-                var tempo = apt['Tempo Indisponível (HH:MM)'];
-                var categoria = apt['Categoria Demora'];
-                var minutos = tempoParaMinutos(tempo);
+            dados.forEach(apt => {
+                var minutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
                 var codigo = extrairCodigoVaga(apt.Vaga);
-                var intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
-                var idxOriginal = dadosCSV.indexOf(apt);
 
                 if(minutos === 0) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Apontamento Zerado',
-                        descricao: (codigo || 'N/D') + ' - ' + categoria + ' 00:00',
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'BAIXA',
-                        index: idxOriginal,
-                        appointment: apt
-                    });
+                    apontamentosIrregulares.push({ tipo: 'Apontamento Zerado', appointment: apt, ...apt });
                 }
-
                 if(minutos > 0 && minutos <= 4) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Apontamento Muito Curto',
-                        descricao: (codigo || 'N/D') + ' - ' + categoria + ' de ' + tempo,
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'BAIXA',
-                        index: idxOriginal,
-                        appointment: apt
-                    });
+                    apontamentosIrregulares.push({ tipo: 'Apontamento Curto', appointment: apt, ...apt });
                 }
-
                 if(codigo && equipamentosContador[codigo] <= 3) {
-                    apontamentosIrregulares.push({
-                        tipo: 'Equipamento com Poucos Apontamentos',
-                        descricao: codigo + ' - Total de apenas ' + equipamentosContador[codigo] + ' apontamento(s)',
-                        equipamento: codigo,
-                        categoria: categoria,
-                        tempo: tempo,
-                        intervalo: intervalo,
-                        gravidade: 'ALTA',
-                        index: idxOriginal,
-                        appointment: apt
-                    });
+                    apontamentosIrregulares.push({ tipo: 'Poucos Apontamentos', appointment: apt, ...apt });
                 }
             });
+            // Remover duplicatas de irregularidades baseadas no appointment
+            apontamentosIrregulares = Array.from(new Map(apontamentosIrregulares.map(item => [item.appointment, item])).values());
         }
 
         function extrairCodigoVaga(nomeVaga) {
             if(!nomeVaga) return null;
-
             var nome = nomeVaga.toString().trim().toUpperCase();
-            
             var patterns = [
-                {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AP'},
-                {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AV'},
-                {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'HP'}
+                {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)/, prefix: 'AP'},
+                {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)/, prefix: 'AV'},
+                {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)/, prefix: 'HP'}
             ];
-
-            for(var i = 0; i < patterns.length; i++) {
-                var pattern = patterns[i];
+            for(const pattern of patterns) {
                 var match = nome.match(pattern.regex);
-                if(match) {
-                    var numero = match[1].padStart(2, '0');
-                    var codigo = pattern.prefix + '-' + numero;
-                    
-                    if(match[2]) {
-                        if(match[2] === '24 HS') codigo += ' - 24HS';
-                        else if(match[2] === '16 HS') codigo += ' - 16HS';
-                        else if(match[2] === 'ADM') codigo += ' - ADM';
-                    }
-                    
-                    return codigo;
-                }
+                if(match) return `${pattern.prefix}-${match[1].padStart(2, '0')}`;
             }
-
             return null;
         }
 
@@ -2448,137 +2099,74 @@
 
         function extrairIntervaloTempo(dataInicial, dataFinal) {
             if(!dataInicial || !dataFinal) return 'N/A';
-            
-            var horaInicial = extrairHora(dataInicial);
-            var horaFinal = extrairHora(dataFinal);
-            
-            return horaInicial && horaFinal ? horaInicial + ' às ' + horaFinal : horaInicial || horaFinal || 'N/A';
+            return `${extrairHora(dataInicial) || ''} às ${extrairHora(dataFinal) || ''}`;
         }
 
         function parseDataHora(str) {
             if(!str) return null;
-            var pattern = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})(?::\d{2})?/);
-            return pattern ? new Date(pattern[3], pattern[2]-1, pattern[1], pattern[4], pattern[5], 0) : null;
+            var match = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})/);
+            return match ? new Date(match[3], match[2]-1, match[1], match[4], match[5]) : null;
         }
 
         function processarEquipamentosDoCSV(apontamentos) {
             var equipamentos = {};
-            var codigosUnicos = new Set();
-            
-            apontamentos.forEach(function(apt) {
+            apontamentos.forEach(apt => {
                 var codigo = extrairCodigoVaga(apt.Vaga);
-                if (codigo) {
-                    codigosUnicos.add(codigo);
+                if(!codigo) return;
+                if(!equipamentos[codigo]) {
+                    equipamentos[codigo] = { codigo, tipo: getTipoEquipamento(codigo), totalApontamentos: 0, apontamentos: [], primeiroRegistro: null };
                 }
-            });
-
-            codigosUnicos.forEach(function(codigo) {
-                equipamentos[codigo] = {
-                    codigo: codigo,
-                    tipo: getTipoEquipamento(codigo),
-                    totalApontamentos: 0,
-                    apontamentos: [],
-                    primeiroRegistro: null,
-                    status: 'CRITICO'
-                };
-            });
-
-            apontamentos.forEach(function(apt) {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                if(!codigo || !equipamentos[codigo]) return;
-
                 var equipamento = equipamentos[codigo];
-                var indexOriginal = dadosCSV.indexOf(apt);
-
                 var dataHoraInicio = parseDataHora(apt['Data Inicial']);
-                var dataHoraFim = parseDataHora(apt['Data Final']);
+                var inicioHHMM = extrairHora(apt['Data Inicial']);
 
-                var objApontamento = {
+                equipamento.apontamentos.push({
                     categoria: apt['Categoria Demora'],
-                    dataInicialOriginal: apt['Data Inicial'],
-                    dataFinalOriginal: apt['Data Final'],
-                    dataHoraInicio: dataHoraInicio,
-                    dataHoraFim: dataHoraFim,
+                    dataHoraInicio,
                     tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'],
-                    inicioHHMM: extrairHora(apt['Data Inicial']),
+                    inicioHHMM,
                     intervalo: extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']),
-                    irregular: apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; }),
-                    placa: apt.Placa,
-                    vaga: apt.Vaga,
+                    irregular: apontamentosIrregulares.some(irr => irr.appointment === apt),
                     originalData: apt
-                };
-
-                equipamento.apontamentos.push(objApontamento);
+                });
                 equipamento.totalApontamentos++;
-
-                if(!equipamento.primeiroRegistro || 
-                   (objApontamento.inicioHHMM && horaParaMinutos(objApontamento.inicioHHMM) < horaParaMinutos(equipamento.primeiroRegistro))) {
-                    equipamento.primeiroRegistro = objApontamento.inicioHHMM;
+                if(!equipamento.primeiroRegistro || (inicioHHMM && horaParaMinutos(inicioHHMM) < horaParaMinutos(equipamento.primeiroRegistro))) {
+                    equipamento.primeiroRegistro = inicioHHMM;
                 }
             });
-
-            Object.values(equipamentos).forEach(function(equipamento) {
-                equipamento.status = calcularStatusInteligente(equipamento);
-            });
-
+            Object.values(equipamentos).forEach(eq => eq.status = calcularStatusInteligente(eq));
             return equipamentos;
         }
 
         function calcularStatusInteligente(equipamento) {
-            var totalApontamentos = equipamento.totalApontamentos;
-            var apontamentos = equipamento.apontamentos;
-            var irregulares = apontamentos.filter(function(apt) { return apt.irregular; }).length;
-
-            if(totalApontamentos <= 3) return 'CRITICO';
-            if(irregulares > totalApontamentos * 0.4) return 'CRITICO';
-            if(irregulares > totalApontamentos * 0.2 || totalApontamentos < 6) return 'ATENCAO';
-            
+            var total = equipamento.totalApontamentos;
+            var irregulares = equipamento.apontamentos.filter(apt => apt.irregular).length;
+            if(total <= 3 || irregulares / total > 0.4) return 'CRITICO';
+            if(irregulares / total > 0.2 || total < 6) return 'ATENCAO';
             return 'BOM';
         }
 
         function extrairHora(timestamp) {
             if(!timestamp) return null;
-            var match = timestamp.toString().match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
-            if(match && match[1]) {
-                var parts = match[1].split(':');
-                var horas = parts[0];
-                var minutos = parts[1];
-                return horas.padStart(2, '0') + ':' + minutos.padStart(2, '0');
-            }
-            return null;
+            var match = timestamp.toString().match(/(\d{2}:\d{2})/);
+            return match ? match[1] : null;
         }
 
         function horaParaMinutos(hora) {
             if(!hora || !hora.includes(':')) return 1441;
-            var parts = hora.split(':');
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            var [h, m] = hora.split(':').map(Number);
+            return h * 60 + m;
         }
 
         function tempoParaMinutos(tempo) {
             if(!tempo || !tempo.includes(':')) return 0;
-            var parts = tempo.split(':');
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        }
-
-        function getCorCategoria(categoria) {
-            var key = categoria.toUpperCase();
-            return CATEGORIA_CORES[key] || '#7f8c8d';
+            var [h, m] = tempo.split(':').map(Number);
+            return h * 60 + m;
         }
 
         function getCategoriaCSS(categoria) {
-            var cleanCategory = categoria.toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[()]/g, '')
-                .replace(/ç/g, 'c')
-                .replace(/ã/g, 'a')
-                .replace(/á/g, 'a')
-                .replace(/é/g, 'e')
-                .replace(/í/g, 'i')
-                .replace(/ó/g, 'o')
-                .replace(/ú/g, 'u')
-                .replace(/--+/g, '-');
-            
-            return 'categoria-' + cleanCategory;
+            var clean = (categoria || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+            return 'categoria-' + clean;
         }
 
         function exibirResultadosDashboard() {
@@ -2588,261 +2176,116 @@
         }
 
         function exibirEstatisticas() {
-            var stats = {
-                total: Object.keys(equipamentosProcessados).length,
-                bom: 0,
-                atencao: 0,
-                critico: 0,
-                totalApontamentos: dadosFiltrados.length,
-                irregulares: apontamentosIrregulares.length
-            };
-
-            Object.values(equipamentosProcessados).forEach(function(eq) {
-                stats[eq.status.toLowerCase()]++;
-            });
-
-            var container = document.getElementById('statsSection');
-            container.innerHTML = '<div class="stat-card">' +
-                '<div class="stat-number">' + stats.total + '</div>' +
-                '<div class="stat-label">Equipamentos</div>' +
-                '</div>' +
-                '<div class="stat-card">' +
-                '<div class="stat-number stat-bom">' + stats.bom + '</div>' +
-                '<div class="stat-label">Status Bom</div>' +
-                '</div>' +
-                '<div class="stat-card">' +
-                '<div class="stat-number stat-atencao">' + stats.atencao + '</div>' +
-                '<div class="stat-label">Status Atenção</div>' +
-                '</div>' +
-                '<div class="stat-card">' +
-                '<div class="stat-number stat-critico">' + stats.critico + '</div>' +
-                '<div class="stat-label">Status Crítico</div>' +
-                '</div>' +
-                '<div class="stat-card">' +
-                '<div class="stat-number">' + stats.totalApontamentos + '</div>' +
-                '<div class="stat-label">Apontamentos</div>' +
-                '</div>' +
-                '<div class="stat-card">' +
-                '<div class="stat-number stat-critico">' + stats.irregulares + '</div>' +
-                '<div class="stat-label">Irregulares</div>' +
-                '</div>';
+            var stats = { total: Object.keys(equipamentosProcessados).length, bom: 0, atencao: 0, critico: 0, totalApontamentos: dadosFiltrados.length, irregulares: apontamentosIrregulares.length };
+            Object.values(equipamentosProcessados).forEach(eq => stats[eq.status.toLowerCase()]++);
+            document.getElementById('statsSection').innerHTML = `
+                <div class="stat-card"><div class="stat-number">${stats.total}</div><div class="stat-label">Equipamentos</div></div>
+                <div class="stat-card"><div class="stat-number stat-bom">${stats.bom}</div><div class="stat-label">Status Bom</div></div>
+                <div class="stat-card"><div class="stat-number stat-atencao">${stats.atencao}</div><div class="stat-label">Status Atenção</div></div>
+                <div class="stat-card"><div class="stat-number stat-critico">${stats.critico}</div><div class="stat-label">Status Crítico</div></div>
+                <div class="stat-card"><div class="stat-number">${stats.totalApontamentos}</div><div class="stat-label">Apontamentos</div></div>
+                <div class="stat-card"><div class="stat-number stat-critico">${stats.irregulares}</div><div class="stat-label">Irregulares</div></div>`;
         }
 
         function exibirProblemas() {
             var container = document.getElementById('problemsList');
             if(!apontamentosIrregulares.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada nos dados atuais.</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada.</p>';
+                document.getElementById('problemsSection').classList.add('hidden');
                 return;
             }
-
-            var displayCount = Math.min(3, apontamentosIrregulares.length);
-            var byType = {};
             
-            for (var i = 0; i < displayCount; i++) {
-                var problema = apontamentosIrregulares[i];
-                if (!byType[problema.tipo]) {
-                    byType[problema.tipo] = [];
-                }
-                byType[problema.tipo].push(problema);
-            }
-
-            var html = '';
-            Object.keys(byType).forEach(function(tipo) {
-                var items = byType[tipo];
-                html += '<div class="problem-item" onclick="showAppointmentDetails(' + JSON.stringify(items[0].appointment).replace(/"/g, '&quot;') + ')">' +
-                    '<div class="problem-type">' + tipo + ' (' + items.length + ')</div>' +
-                    '<div class="problem-details">';
-                
-                for (var j = 0; j < Math.min(2, items.length); j++) {
-                    html += items[j].descricao;
-                    if (j < Math.min(2, items.length) - 1) html += '<br>';
-                }
-                
-                if (items.length > 2) {
-                    html += '<br>...(+' + (items.length - 2) + ' outros)';
-                }
-                
-                html += '</div></div>';
-            });
-
-            container.innerHTML = html;
-
+            var uniqueProblems = Array.from(new Map(apontamentosIrregulares.map(p => [p.tipo + (p.Equipamento || ''), p])).values());
+            
+            container.innerHTML = uniqueProblems.slice(0, 5).map(p => {
+                const desc = `${p.tipo} em ${p.Equipamento || extrairCodigoVaga(p.Vaga) || 'N/D'}`;
+                return `<div class="problem-item" onclick='showAppointmentDetails(${JSON.stringify(p.appointment).replace(/"/g, "&quot;")})'>
+                    <div class="problem-type">${p.tipo}</div>
+                    <div class="problem-details">${desc}</div>
+                </div>`
+            }).join('');
+            
             var viewAllBtn = document.getElementById('viewAllProblemsBtn');
-            if(apontamentosIrregulares.length > 3) {
-                viewAllBtn.textContent = 'Ver Todos (' + apontamentosIrregulares.length + ')';
-                viewAllBtn.style.display = 'inline-flex';
-            } else {
-                viewAllBtn.style.display = 'none';
-            }
+            viewAllBtn.textContent = `Ver Todos (${apontamentosIrregulares.length})`;
+            viewAllBtn.style.display = 'inline-flex';
+            document.getElementById('problemsSection').classList.remove('hidden');
         }
 
         function showAllProblems() {
             var modal = document.getElementById('problemsModal');
             var container = document.getElementById('allProblemsContainer');
-            
             var byType = {};
-            apontamentosIrregulares.forEach(function(problema) {
-                if (!byType[problema.tipo]) {
-                    byType[problema.tipo] = [];
-                }
-                byType[problema.tipo].push(problema);
+            apontamentosIrregulares.forEach(p => {
+                if(!byType[p.tipo]) byType[p.tipo] = [];
+                byType[p.tipo].push(p);
             });
-
-            var html = '';
-            Object.keys(byType).forEach(function(tipo) {
-                var items = byType[tipo];
-                html += '<div style="margin-bottom: 1rem;">' +
-                    '<h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">' + tipo + ' (' + items.length + ')</h4>';
-                    
-                items.forEach(function(problema) {
-                    html += '<div class="problem-item" onclick="showAppointmentDetails(' + JSON.stringify(problema.appointment).replace(/"/g, '&quot;') + ')" style="margin-bottom: 0.5rem; cursor: pointer;">' +
-                        '<div class="problem-details">' + problema.descricao + '</div>' +
-                        '</div>';
-                });
-                
-                html += '</div>';
-            });
-
+            var html = Object.keys(byType).map(tipo => `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="color: #92400e; margin-bottom: 0.5rem;">${tipo} (${byType[tipo].length})</h4>
+                    ${byType[tipo].map(p => {
+                        const desc = `${p.tipo} em ${p.Equipamento || extrairCodigoVaga(p.Vaga) || 'N/D'}`;
+                        return `<div class="problem-item" onclick='showAppointmentDetails(${JSON.stringify(p.appointment).replace(/"/g, "&quot;")})'><div class="problem-details">${desc}</div></div>`
+                    }).join('')}
+                </div>`).join('');
             container.innerHTML = html;
             modal.classList.add('show');
         }
 
         function exibirEquipamentos() {
             var container = document.getElementById('equipmentGrid');
-            var equipamentos = Object.values(equipamentosProcessados).sort(function(a, b) { 
-                return a.codigo.localeCompare(b.codigo); 
-            });
-
+            var equipamentos = Object.values(equipamentosProcessados).sort((a,b) => a.codigo.localeCompare(b.codigo));
             if(!equipamentos.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento encontrado.</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento para exibir.</p>';
                 return;
             }
-
-            var html = '';
-            equipamentos.forEach(function(eq) {
-                var tipoTexto = eq.tipo === 'AP' ? 'Alta Pressão' : 
-                               eq.tipo === 'AV' ? 'Auto Vácuo' : 
-                               eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D';
+            container.innerHTML = equipamentos.map(eq => {
+                var tipoTexto = {AP: 'Alta Pressão', AV: 'Auto Vácuo', HP: 'Hiper Vácuo'}[eq.tipo] || 'N/D';
+                var appointmentsList = eq.apontamentos.length ? `<div class="appointments-list">${eq.apontamentos.map(apt => `
+                    <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick='showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, "&quot;")})'>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                            <span style="font-weight: 600;">${apt.categoria.substring(0,25)}</span>
+                            <span>${apt.tempoIndisponivel}</span>
+                        </div>
+                    </div>`).join('')}</div>` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>';
                 
-                var appointmentsList = '';
-                if (eq.apontamentos.length) {
-                    appointmentsList = '<div class="appointments-list">';
-                    eq.apontamentos.forEach(function(apt) {
-                        var categoryText = apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria;
-                        appointmentsList += '<div class="appointment-item ' + (apt.irregular ? 'irregular' : '') + '" onclick="showAppointmentDetails(' + JSON.stringify(apt.originalData).replace(/"/g, '&quot;') + ')">' +
-                            '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">' +
-                            '<span style="font-weight: 600; font-size: 0.8rem;">' + categoryText + '</span>' +
-                            '<span style="font-size: 0.7rem; color: var(--text-secondary);">' + apt.tempoIndisponivel + '</span>' +
-                            '</div>' +
-                            '<div style="font-size: 0.7rem; color: var(--text-secondary);">' + apt.intervalo + '</div>' +
-                            (apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : '') +
-                            '</div>';
-                    });
-                    appointmentsList += '</div>';
-                } else {
-                    appointmentsList = '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>';
-                }
-
-                html += '<div class="equipment-card ' + (statusColorsEnabled ? 'status-colored' : '') + ' status-' + eq.status.toLowerCase() + '">' +
-                    '<div class="equipment-header">' +
-                    '<div>' +
-                    '<div class="equipment-code-card">' + eq.codigo + '</div>' +
-                    '<div class="equipment-type">' + tipoTexto + '</div>' +
-                    '</div>' +
-                    '<div class="equipment-status status-' + eq.status.toLowerCase() + '">' + eq.status + '</div>' +
-                    '</div>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">' +
-                    '<div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">' +
-                    '<div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">' + eq.totalApontamentos + '</div>' +
-                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>' +
-                    '</div>' +
-                    '<div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">' +
-                    '<div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">' + (eq.primeiroRegistro || 'N/A') + '</div>' +
-                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>' +
-                    '</div>' +
-                    '</div>' +
-                    appointmentsList +
-                    '</div>';
-            });
-
-            container.innerHTML = html;
+                return `<div class="equipment-card status-${eq.status.toLowerCase()}">
+                    <div class="equipment-header">
+                        <div><div class="equipment-code-card">${eq.codigo}</div><div class="equipment-type">${tipoTexto}</div></div>
+                        <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
+                    </div>
+                    ${appointmentsList}
+                </div>`;
+            }).join('');
         }
 
         function exibirRegimes() {
             var container = document.getElementById('regimeContainer');
-            
             if(!Object.keys(regimesDisponiveis).length) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum regime detectado nos dados carregados.</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem;">Nenhum regime detectado.</div>';
                 return;
             }
-
-            var html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">';
-            
-            Object.keys(regimesDisponiveis).forEach(function(key) {
-                var regime = regimesDisponiveis[key];
-                var turnosText = regime.turnos.map(function(turno) {
-                    return turno.inicio + ' - ' + turno.fim;
-                }).join(' | ');
-                
-                html += '<div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ' + (regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)') + ';">' +
-                    '<h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">' + regime.nome + '</h3>' +
-                    '<p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">' + turnosText + '</p>' +
-                    '<button class="btn ' + (regimeAtivo === key ? 'btn-success' : 'btn-primary') + ' btn-sm" onclick="ativarRegime(\'' + key + '\')" style="width: 100%; margin-bottom: 0.75rem;">' +
-                    (regimeAtivo === key ? 'Ativo' : 'Ativar') +
-                    '</button>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">' +
-                    '<div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">' +
-                    '<div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">' + regime.equipamentos.length + '</div>' +
-                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>' +
-                    '</div>' +
-                    '<div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">' +
-                    '<div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">' + regime.apontamentos + '</div>' +
-                    '<div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-            });
-            
-            html += '</div>';
-            html += '<div style="text-align: center;">' +
-                '<button class="btn btn-success" onclick="exportarPorRegime()" ' + (!regimeAtivo ? 'disabled' : '') + ' style="margin-right: 0.5rem;">' +
-                'Exportar Regime Ativo' +
-                '</button>' +
-                '<button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>' +
-                '</div>';
-
-            container.innerHTML = html;
+            container.innerHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">${
+                Object.keys(regimesDisponiveis).map(key => {
+                    var regime = regimesDisponiveis[key];
+                    return `<div class="equipment-card">
+                        <h3>${regime.nome}</h3>
+                        <p>${regime.equipamentos.length} equipamentos, ${regime.apontamentos} apontamentos</p>
+                        <button class="btn btn-primary btn-sm" onclick="ativarRegime('${key}')">${regimeAtivo === key ? 'Ativo' : 'Ativar'}</button>
+                    </div>`;
+                }).join('')
+            }</div><div style="text-align:center; margin-top: 1rem;"><button class="btn btn-danger" onclick="limparRegime()">Limpar Filtro</button></div>`;
         }
 
         function ativarRegime(regime) {
             regimeAtivo = regime;
-            exibirRegimes();
-            aplicarFiltroRegime();
-            showNotification('Regime ' + regimesDisponiveis[regime].nome + ' ativado!', 'success');
+            aplicarFiltros();
+            showNotification(`Regime ${regimesDisponiveis[regime].nome} ativado!`, 'success');
         }
 
         function limparRegime() {
             regimeAtivo = null;
-            exibirRegimes();
-            dadosFiltrados = [].concat(dadosCSV);
-            detectarApontamentosIrregularesInteligente(dadosFiltrados);
-            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-            exibirResultadosDashboard();
-            showNotification('Filtro de regime removido.', 'success');
-        }
-
-        function aplicarFiltroRegime() {
-            if(!regimeAtivo) return;
-
-            var config = regimesDisponiveis[regimeAtivo];
-            dadosFiltrados = dadosCSV.filter(function(apt) {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                return config.equipamentos.includes(codigo);
-            });
-
-            detectarApontamentosIrregularesInteligente(dadosFiltrados);
-            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-            exibirResultadosDashboard();
+            aplicarFiltros();
+            showNotification('Filtro de regime removido.', 'info');
         }
 
         function aplicarFiltros() {
@@ -2850,532 +2293,177 @@
             var dataFinal = document.getElementById('dataFinal').value;
             var tipoFilter = document.getElementById('tipoFilter').value;
 
-            dadosFiltrados = dadosCSV.filter(function(apt) {
+            dadosFiltrados = dadosCSV.filter(apt => {
+                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
+                if(regimeAtivo && !regimesDisponiveis[regimeAtivo].equipamentos.has(extrairCodigoVaga(apt.Vaga))) return false;
+                
                 var dataStr = apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : null;
                 if(dataStr) {
-                    var dateParts = dataStr.split('/');
-                    var dataObj = new Date(dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0] + 'T00:00:00');
-                    
-                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00')) return false;
-                    if(dataFinal && dataObj > new Date(dataFinal + 'T00:00:00')) return false;
-                } else if(dataInicial || dataFinal) {
-                    return false;
+                    var [d, m, y] = dataStr.split('/');
+                    var dataObj = new Date(`${y}-${m}-${d}T00:00:00Z`);
+                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00Z')) return false;
+                    if(dataFinal && dataObj > new Date(dataFinal + 'T23:59:59Z')) return false;
                 }
-
-                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
-
                 return true;
             });
 
-            if(regimeAtivo) {
-                var config = regimesDisponiveis[regimeAtivo];
-                dadosFiltrados = dadosFiltrados.filter(function(apt) {
-                    var codigo = extrairCodigoVaga(apt.Vaga);
-                    return config.equipamentos.includes(codigo);
-                });
-            }
-
-            if(dadosFiltrados.length) {
-                detectarApontamentosIrregularesInteligente(dadosFiltrados);
-                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-                exibirResultadosDashboard();
-                gerarTimelineVertical();
-                showNotification('Filtros aplicados! ' + dadosFiltrados.length + ' apontamentos encontrados.', 'success');
-            } else {
-                equipamentosProcessados = {};
-                apontamentosIrregulares = [];
-                exibirResultadosDashboard();
-                showNotification('Nenhum apontamento encontrado com os filtros aplicados.', 'error');
-            }
+            processarDadosAutomaticoComFiltro();
+            showNotification(`Filtros aplicados! ${dadosFiltrados.length} resultados.`, 'success');
         }
 
-        // Enhanced Timeline Functions
+        function processarDadosAutomaticoComFiltro() {
+             detectarRegimes(dadosFiltrados);
+             detectarApontamentosIrregularesInteligente(dadosFiltrados);
+             equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+             exibirResultadosDashboard();
+             exibirRegimes();
+             if(!document.getElementById('timeline-tab').classList.contains('hidden')) gerarTimelineVertical();
+        }
+
         function setTimelineColumns(columns) {
             timelineColumns = columns;
-            
-            document.querySelectorAll('.column-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            var grid = document.getElementById('timelineGrid');
-            grid.className = 'timeline-grid cols-' + columns;
-            
-            gerarTimelineVertical();
+            document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
+            var activeBtn = Array.from(document.querySelectorAll('.column-btn')).find(b => b.textContent == columns);
+            if(activeBtn) activeBtn.classList.add('active');
+            document.getElementById('timelineGrid').className = `timeline-grid cols-${columns}`;
         }
 
         function gerarTimelineVertical() {
             var container = document.getElementById('timelineGrid');
-            var equipamentos = Object.values(equipamentosProcessados);
-            
+            var equipamentos = Object.values(equipamentosProcessados).sort((a,b) => a.codigo.localeCompare(b.codigo));
             if(!equipamentos.length) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">Nenhum equipamento encontrado para exibir na timeline.</div>';
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Nenhum equipamento para exibir.</div>';
                 return;
             }
-
-            equipamentos.sort(function(a, b) { return a.codigo.localeCompare(b.codigo); });
-
-            var html = '';
-            equipamentos.forEach(function(equipamento) {
-                var apontamentosOrdenados = [].concat(equipamento.apontamentos).sort(function(a, b) {
-                    return (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0);
-                });
-
-                var tipoTexto = equipamento.tipo === 'AP' ? 'Alta Pressão' : 
-                               equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo';
-
-                html += '<div class="timeline-equipment" data-equipment-code="' + equipamento.codigo + '" data-equipment-type="' + equipamento.tipo + '">' +
-                    '<div class="timeline-equipment-header">' +
-                    '<div class="equipment-code">' + equipamento.codigo + '</div>' +
-                    '<div class="equipment-info">' +
-                    tipoTexto + ' | ' + equipamento.totalApontamentos + ' apontamentos | ' + equipamento.status +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="timeline-content">' +
-                    '<div class="timeline-hours">';
-                
-                for (var i = 0; i < 24; i++) {
-                    html += '<div class="timeline-hour">' + String(i).padStart(2, '0') + '</div>';
-                }
-                
-                html += '</div>' +
-                    '<div class="timeline-lane">' +
-                    gerarApontamentosTimelineInteligente(apontamentosOrdenados) +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-            });
-
-            container.innerHTML = html;
+            container.innerHTML = equipamentos.map(eq => {
+                var timelineLaneHTML = gerarApontamentosTimelineInteligente(eq.apontamentos);
+                return `<div class="timeline-equipment" data-equipment-code="${eq.codigo}" data-equipment-type="${eq.tipo}">
+                    <div class="timeline-equipment-header"><div class="equipment-code">${eq.codigo}</div></div>
+                    <div class="timeline-content">
+                        <div class="timeline-hours">${Array.from({length: 24}, (_, i) => `<div class="timeline-hour">${String(i).padStart(2,'0')}</div>`).join('')}</div>
+                        <div class="timeline-lane">${timelineLaneHTML}</div>
+                    </div>
+                </div>`;
+            }).join('');
             updateTimelineZoom();
-            filtrarTimeline();
         }
 
         function gerarApontamentosTimelineInteligente(apontamentos) {
-            if(!apontamentos.length) return '';
-
-            var html = '';
-            
-            // Group by date and sort
-            var appointmentsByDate = {};
-            apontamentos.forEach(function(apt) {
-                var dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
-                if(!appointmentsByDate[dateStr]) {
-                    appointmentsByDate[dateStr] = [];
-                }
-                appointmentsByDate[dateStr].push(apt);
-            });
-
-            // Process each date
-            Object.keys(appointmentsByDate).forEach(function(date) {
-                var dayAppointments = appointmentsByDate[date].sort(function(a, b) {
-                    return horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00');
-                });
-                
-                var lastEndTime = 0;
-
-                // Detect overlapping appointments
-                var processedAppointments = [];
-                dayAppointments.forEach(function(apt, index) {
-                    if(!apt.inicioHHMM || !apt.tempoIndisponivel) return;
-
-                    var inicioMinutos = horaParaMinutos(apt.inicioHHMM);
-                    var duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
-
-                    if(!duracaoMinutos) return;
-
-                    // Check for overlaps with previous appointments
-                    var isOverlapping = false;
-                    if(index > 0) {
-                        var prevApt = processedAppointments[processedAppointments.length - 1];
-                        if(prevApt && inicioMinutos < prevApt.endTime) {
-                            isOverlapping = true;
-                        }
-                    }
-
-                    processedAppointments.push({
-                        categoria: apt.categoria,
-                        startTime: inicioMinutos,
-                        endTime: inicioMinutos + duracaoMinutos,
-                        isOverlapping: isOverlapping,
-                        irregular: apt.irregular,
-                        originalData: apt.originalData,
-                        dataInicialOriginal: apt.dataInicialOriginal
-                    });
-                });
-
-                // Generate gaps and appointments
-                processedAppointments.forEach(function(apt, index) {
-                    if(showTimeGaps) {
-                        if(index === 0 && apt.startTime > 420) { // Start gap after 7AM
-                            var gapHeight = ((apt.startTime - 420) / 1440) * 600;
-                            if(gapHeight > 25) {
-                                var gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
-                                html += '<div class="time-gap" style="top: ' + ((420 / 1440) * 600) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
-                                    '<div class="gap-label">' + gapHours + 'h sem atividade</div>' +
-                                    '</div>';
-                            }
-                        } else if(index > 0 && apt.startTime > lastEndTime + 30) {
-                            var gapStart = (lastEndTime / 1440) * 600;
-                            var gapDuration = apt.startTime - lastEndTime;
-                            var gapHeight = (gapDuration / 1440) * 600;
-                            
-                            if(gapHeight > 20) {
-                                var gapHours = Math.round(gapDuration / 60 * 10) / 10;
-                                html += '<div class="time-gap" style="top: ' + gapStart.toFixed(2) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
-                                    '<div class="gap-label">' + gapHours + 'h</div>' +
-                                    '</div>';
-                            }
-                        }
-                    }
-
-                    // Generate appointment block
-                    var top = (apt.startTime / 1440) * 600;
-                    var height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
-                    var cssClass = getCategoriaCSS(apt.categoria);
-
-                    html += '<div class="timeline-appointment ' + cssClass + (apt.irregular ? ' irregular' : '') + (apt.isOverlapping ? ' overlapping' : '') + '" ' +
-                         'style="top: ' + top.toFixed(2) + 'px; height: ' + height.toFixed(2) + 'px;" ' +
-                         'onclick="showAppointmentDetails(' + JSON.stringify(apt.originalData).replace(/"/g, '&quot;') + ')" ' +
-                         'data-category="' + apt.categoria.toLowerCase() + '" ' +
-                         'data-date="' + (apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '') + '" ' +
-                         'data-status="' + (apt.irregular ? 'irregular' : 'normal') + '">' +
-                        '<div class="appointment-text">' + apt.categoria + '</div>' +
-                        '</div>';
-
-                    lastEndTime = Math.max(lastEndTime, apt.endTime);
-                });
-
-                // End of day gap
-                if(showTimeGaps && lastEndTime < 1320 && lastEndTime > 0) {
-                    var gapStart = (lastEndTime / 1440) * 600;
-                    var gapDuration = 1320 - lastEndTime;
-                    var gapHeight = (gapDuration / 1440) * 600;
-                    
-                    if(gapHeight > 25) {
-                        var gapHours = Math.round(gapDuration / 60 * 10) / 10;
-                        html += '<div class="time-gap" style="top: ' + gapStart.toFixed(2) + 'px; height: ' + gapHeight.toFixed(2) + 'px;">' +
-                            '<div class="gap-label">' + gapHours + 'h sem atividade</div>' +
-                            '</div>';
-                    }
-                }
-            });
-
-            return html;
+            // Simplificado para garantir a renderização
+            return apontamentos.map(apt => {
+                var inicioMinutos = horaParaMinutos(apt.inicioHHMM);
+                var duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel) || 5;
+                var top = (inicioMinutos / 1440) * 600;
+                var height = (duracaoMinutos / 1440) * 600;
+                return `<div class="timeline-appointment ${getCategoriaCSS(apt.categoria)}" 
+                    style="top: ${top}px; height: ${Math.max(height, 15)}px;"
+                    onclick='showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, "&quot;")})'>
+                    ${apt.categoria}
+                </div>`;
+            }).join('');
         }
 
         function filtrarTimeline() {
-            var pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
-            var data = document.getElementById('timelineDate').value;
-
-            document.querySelectorAll('.timeline-equipment').forEach(function(div) {
-                var codigo = div.dataset.equipmentCode;
-                var mostrar = true;
-
-                if(pesquisa && !codigo.toLowerCase().includes(pesquisa)) mostrar = false;
-
-                if(mostrar && data) {
-                    var temBlocoVisivel = false;
-                    div.querySelectorAll('.timeline-appointment').forEach(function(bloco) {
-                        var dataPartes = bloco.dataset.date.split('/');
-                        var blocoData = dataPartes[2] + '-' + dataPartes[1] + '-' + dataPartes[0];
-                        var mostrarBloco = blocoData === data;
-                        
-                        bloco.style.display = mostrarBloco ? 'flex' : 'none';
-                        if(mostrarBloco) temBlocoVisivel = true;
-                    });
-
-                    div.querySelectorAll('.time-gap').forEach(function(gap) {
-                        gap.style.display = data ? 'none' : 'flex';
-                    });
-                    
-                    if(!temBlocoVisivel && data) mostrar = false;
-                } else {
-                    div.querySelectorAll('.timeline-appointment').forEach(function(bloco) {
-                        bloco.style.display = 'flex';
-                    });
-                    div.querySelectorAll('.time-gap').forEach(function(gap) {
-                        gap.style.display = showTimeGaps ? 'flex' : 'none';
-                    });
-                }
-
-                div.style.display = mostrar ? 'block' : 'none';
+            var pesquisa = document.getElementById('timelineSearch').value.toLowerCase();
+            document.querySelectorAll('.timeline-equipment').forEach(div => {
+                div.style.display = div.dataset.equipmentCode.toLowerCase().includes(pesquisa) ? 'block' : 'none';
             });
         }
 
-        // Modal Functions
         function showAppointmentDetails(appointment) {
             closeModal();
-            
-            setTimeout(function() {
+            setTimeout(() => {
                 var modal = document.getElementById('appointmentModal');
                 var container = document.getElementById('appointmentDetails');
-                
                 var codigo = extrairCodigoVaga(appointment.Vaga);
-                var isIrregular = apontamentosIrregulares.some(function(irr) { 
-                    return irr.index === dadosCSV.indexOf(appointment); 
-                });
-                
-                container.innerHTML = 
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Status:</span>' +
-                    '<span class="modal-value" style="color: ' + (isIrregular ? 'var(--danger-color)' : 'var(--success-color)') + ';">' +
-                    (isIrregular ? 'IRREGULAR' : 'NORMAL') +
-                    '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Equipamento:</span>' +
-                    '<span class="modal-value">' + (codigo || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Categoria:</span>' +
-                    '<span class="modal-value">' + (appointment['Categoria Demora'] || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Data Inicial:</span>' +
-                    '<span class="modal-value">' + (appointment['Data Inicial'] || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Data Final:</span>' +
-                    '<span class="modal-value">' + (appointment['Data Final'] || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Tempo Indisponível:</span>' +
-                    '<span class="modal-value" style="color: ' + (tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)') + ';">' +
-                    (appointment['Tempo Indisponível (HH:MM)'] || 'N/D') +
-                    '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Placa:</span>' +
-                    '<span class="modal-value">' + (appointment.Placa || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Vaga Completa:</span>' +
-                    '<span class="modal-value">' + (appointment.Vaga || 'N/D') + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Intervalo:</span>' +
-                    '<span class="modal-value">' + extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final']) + '</span>' +
-                    '</div>' +
-                    '<div class="modal-detail">' +
-                    '<span class="modal-label">Duração (minutos):</span>' +
-                    '<span class="modal-value">' + tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) + ' min</span>' +
-                    '</div>';
-
+                var isIrregular = apontamentosIrregulares.some(irr => irr.appointment === appointment);
+                container.innerHTML = [
+                    {label: 'Status', value: isIrregular ? 'IRREGULAR' : 'NORMAL', color: isIrregular ? 'var(--danger-color)' : 'var(--success-color)'},
+                    {label: 'Equipamento', value: codigo || 'N/D'},
+                    {label: 'Categoria', value: appointment['Categoria Demora']},
+                    {label: 'Data Inicial', value: appointment['Data Inicial']},
+                    {label: 'Data Final', value: appointment['Data Final']},
+                    {label: 'Duração', value: appointment['Tempo Indisponível (HH:MM)']},
+                    {label: 'Placa', value: appointment.Placa},
+                    {label: 'Vaga', value: appointment.Vaga, small: true},
+                ].map(d => `<div class="modal-detail">
+                    <span class="modal-label">${d.label}:</span>
+                    <span class="modal-value" style="${d.color ? 'color:'+d.color : ''}; ${d.small ? 'font-size:0.8rem' : ''}">${d.value || 'N/A'}</span>
+                </div>`).join('');
                 modal.classList.add('show');
             }, 100);
         }
 
         function closeModal() {
-            document.querySelectorAll('.modal').forEach(function(modal) {
-                modal.classList.remove('show');
-            });
+            document.querySelectorAll('.modal.show').forEach(modal => modal.classList.remove('show'));
         }
 
-        // Export Functions
         function exportarRelatorioAutomatizado(formato) {
-            if(!dadosFiltrados.length) {
-                showNotification('Nenhum apontamento para exportar.', 'error');
-                return;
-            }
-
-            var dados = dadosFiltrados.map(function(apt) {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                var indexOriginal = dadosCSV.indexOf(apt);
-                var isIrregular = apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; });
-
-                var regime = 'ADM';
-                Object.keys(REGIMES_CONFIG).forEach(function(key) {
-                    REGIMES_CONFIG[key].identificadores.forEach(function(id) {
-                        if(apt.Vaga && apt.Vaga.toUpperCase().includes(id)) {
-                            regime = REGIMES_CONFIG[key].nome;
-                        }
-                    });
-                });
-
-                return {
-                    'Equipamento': codigo || '',
-                    'Regime': regime,
-                    'Supervisor': '',
-                    'Data De Apontamento': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
-                    'Motorista': '',
-                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
-                    'Apontamento': apt['Categoria Demora'] || '',
-                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
-                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
-                    'Justificativa': '',
-                    'Tratativa': '',
-                    'Sugestão': ''
-                };
-            });
-
-            var nome = 'Relatorio_Automatizado_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-            
-            if(formato === 'xlsx') {
-                exportarParaXLSX(dados, nome);
-            } else {
-                exportarParaCSV(dados, nome);
-            }
-
-            showNotification('Relatório automatizado exportado! ' + dados.length + ' registros processados.', 'success');
+            if(!dadosFiltrados.length) { return showNotification('Nenhum dado para exportar.', 'error'); }
+            var dados = dadosFiltrados.map(apt => ({
+                'Equipamento': extrairCodigoVaga(apt.Vaga) || '',
+                'Data': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
+                'Categoria': apt['Categoria Demora'] || '',
+                'Intervalo': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+            }));
+            var nome = `Relatorio_Apontamentos_${new Date().toISOString().split('T')[0]}`;
+            if(formato === 'xlsx') exportarParaXLSX(dados, nome); else exportarParaCSV(dados, nome);
         }
-
+        
         function exportarIrregularesApenas() {
-            if(!apontamentosIrregulares.length) {
-                showNotification('Nenhum apontamento irregular para exportar.', 'error');
-                return;
-            }
-
-            var dados = apontamentosIrregulares.map(function(problema) {
-                return {
-                    'Equipamento': problema.equipamento || '',
-                    'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
-                    'Supervisor': '',
-                    'Data De Apontamento': problema.intervalo ? problema.intervalo.split(' ')[0] : '',
-                    'Motorista': '',
-                    'Gravidade': problema.gravidade || 'MÉDIA',
-                    'Apontamento': problema.categoria || '',
-                    'Problemas Identificados': problema.tipo || '',
-                    'Hora': problema.intervalo || problema.tempo || '',
-                    'Justificativa': '',
-                    'Tratativa': '',
-                    'Sugestão': ''
-                };
-            });
-
-            var nome = 'Irregulares_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-            exportarParaXLSX(dados, nome);
-            showNotification('Relatório de irregulares exportado! ' + dados.length + ' registros.', 'success');
-        }
-
-        function exportarPorRegime() {
-            if(!regimeAtivo) {
-                showNotification('Nenhum regime ativo para exportar.', 'error');
-                return;
-            }
-
-            var config = regimesDisponiveis[regimeAtivo];
-            var dadosRegime = dadosFiltrados.filter(function(apt) {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                return config.equipamentos.includes(codigo);
-            });
-
-            var dados = dadosRegime.map(function(apt) {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                var indexOriginal = dadosCSV.indexOf(apt);
-                var isIrregular = apontamentosIrregulares.some(function(irr) { return irr.index === indexOriginal; });
-
-                return {
-                    'Equipamento': codigo || '',
-                    'Regime': config.nome,
-                    'Supervisor': '',
-                    'Data De Apontamento': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
-                    'Motorista': '',
-                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
-                    'Apontamento': apt['Categoria Demora'] || '',
-                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
-                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
-                    'Justificativa': '',
-                    'Tratativa': '',
-                    'Sugestão': ''
-                };
-            });
-
-            var nome = 'Regime_' + config.nome.replace(/\s+/g, '_') + '_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '_');
-            exportarParaXLSX(dados, nome);
-            showNotification('Relatório do regime ' + config.nome + ' exportado! ' + dados.length + ' registros.', 'success');
+            if(!apontamentosIrregulares.length) { return showNotification('Nenhuma irregularidade para exportar.', 'error'); }
+            var dados = apontamentosIrregulares.map(p => ({
+                'Equipamento': extrairCodigoVaga(p.Vaga) || '',
+                'Tipo Problema': p.tipo || '',
+                'Categoria': p['Categoria Demora'] || '',
+                'Intervalo': extrairIntervaloTempo(p['Data Inicial'], p['Data Final']) || '',
+            }));
+            exportarParaXLSX(dados, `Relatorio_Irregulares_${new Date().toISOString().split('T')[0]}`);
         }
 
         function exportarParaXLSX(dados, nome) {
             var ws = XLSX.utils.json_to_sheet(dados);
-            
-            ws['!cols'] = [
-                {width: 20}, {width: 15}, {width: 25}, {width: 20}, {width: 25}, {width: 12},
-                {width: 20}, {width: 25}, {width: 20}, {width: 30}, {width: 30}, {width: 30}
-            ];
-
             var wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
-            XLSX.writeFile(wb, nome + '.xlsx');
+            XLSX.writeFile(wb, `${nome}.xlsx`);
         }
 
         function exportarParaCSV(dados, nome) {
-            var csv = Papa.unparse(dados, {delimiter: ';', header: true});
+            var csv = Papa.unparse(dados, {delimiter: ';'});
             var blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = nome + '.csv';
+            link.download = `${nome}.csv`;
             link.click();
             URL.revokeObjectURL(link.href);
         }
 
-        // Notification System
         function showNotification(message, type) {
             var notification = document.createElement('div');
-            notification.className = 'notification ' + type;
+            notification.className = `notification ${type}`;
             notification.textContent = message;
             document.body.appendChild(notification);
-
-            setTimeout(function() { 
-                notification.classList.add('show'); 
-            }, 100);
-
-            setTimeout(function() {
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
                 notification.classList.remove('show');
-                setTimeout(function() { 
-                    notification.remove(); 
-                }, 300);
+                setTimeout(() => notification.remove(), 300);
             }, 4000);
         }
 
-        /*********************************
-         * FUNÇÕES DE DEBUG              *
-         *********************************/
         function debugDados() {
             console.log('🔍 === DEBUG DADOS ===');
-            console.log('📊 dadosCSV.length:', dadosCSV.length);
-            console.log('📋 dadosFiltrados.length:', dadosFiltrados.length);
-            console.log('🏭 equipamentosProcessados:', Object.keys(equipamentosProcessados).length);
-            console.log('⚠️ apontamentosIrregulares.length:', apontamentosIrregulares.length);
-            console.log('📁 arquivosProcessados.length:', arquivosProcessados.length);
-            console.log('🗂️ dadosUnicos.size:', dadosUnicos.size);
-            console.log('🔗 githubConnected:', githubConnected);
-            console.log('⏰ autoFetchInterval:', !!autoFetchInterval);
-            console.log('🕐 lastFetchTime:', lastFetchTime);
-            
-            if (dadosCSV.length > 0) {
-                console.log('📄 Amostra dadosCSV[0]:', dadosCSV[0]);
-                console.log('📋 Headers detectados:', Object.keys(dadosCSV[0]));
-            }
-            
-            if (arquivosProcessados.length > 0) {
-                console.log('📁 Arquivos processados:', arquivosProcessados);
-            }
-            
-            // Mostra/esconde botão debug
-            var debugBtn = document.getElementById('debugBtn');
-            if (debugBtn.style.display === 'none') {
-                debugBtn.style.display = 'inline-flex';
-            } else {
-                debugBtn.style.display = 'none';
-            }
-            
-            var debugInfo = 'Debug Info:\n' +
-                '📊 CSV Records: ' + dadosCSV.length + '\n' +
-                '🏭 Equipment: ' + Object.keys(equipamentosProcessados).length + '\n' +
-                '⚠️ Irregulares: ' + apontamentosIrregulares.length + '\n' +
-                '📁 Arquivos: ' + arquivosProcessados.length + '\n' +
-                '🗂️ Únicos: ' + dadosUnicos.size + '\n' +
-                '🔗 GitHub: ' + (githubConnected ? 'Conectado' : 'Desconectado') + '\n' +
-                '⏰ Auto-Fetch: ' + (autoFetchInterval ? 'Ativo' : 'Inativo') + '\n\n' +
-                'Verifique o console para mais detalhes.';
-            
-            alert(debugInfo);
+            console.log({
+                dadosCSV,
+                dadosFiltrados,
+                equipamentosProcessados,
+                apontamentosIrregulares,
+                arquivosProcessados,
+                dadosUnicos: Array.from(dadosUnicos.keys()),
+            });
+            alert(`Debug: Verifique o console (F12). Registros: ${dadosCSV.length}, Únicos: ${dadosUnicos.size}`);
         }
 
-        // Inicialização
-        console.log('🚛 GrupoGPS Sistema de Apontamentos v3.0 - Carregado com sucesso!');
-        console.log('✨ Funcionalidades: Processamento automático, detecção de duplicatas, suporte JSON/CSV');
+        console.log('🚛 GrupoGPS Sistema de Apontamentos v3.2 - Corrigido e Carregado!');
     </script>
 </body>
 </html>
