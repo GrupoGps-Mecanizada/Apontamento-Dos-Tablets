@@ -1590,13 +1590,15 @@
                 const delimiter = cleanContent.includes('";') ? ';' : ',';
                 // console.log('🔍 Delimitador detectado:', delimiter);
                 
+                // Dentro da função parseCSVContent
+
                 const result = Papa.parse(cleanContent, {
                     header: true,
                     skipEmptyLines: true,
                     delimiter: delimiter,
                     quoteChar: '"',
-                    escapeChar: '"',
-                    trimHeaders: true,
+                    trimHeaders: true, 
+                    transformHeader: header => header.replace(/^"|"$/g, '').trim(),
                     transform: (value) => {
                         return value.replace(/^"|"$/g, '').trim();
                     }
