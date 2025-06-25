@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle De Apontamentos - GrupoGPS</title>
+    <title>Controle De Apontamentos - GrupoGPS (GitHub Integration)</title>
 
+    <!-- libs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -104,6 +105,77 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* GitHub Status Bar */
+        .github-status-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow);
+        }
+
+        .github-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .github-sync-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+        }
+
+        .auto-sync-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 36px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--success-color);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(18px);
+        }
+
         /* Container */
         .container {
             max-width: 1400px;
@@ -182,27 +254,6 @@
         .upload-compact-sub {
             font-size: 0.75rem;
             color: var(--text-secondary);
-        }
-
-        /* Auto-processing status */
-        .auto-process-status {
-            background: var(--success-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .auto-process-status.processing {
-            background: var(--warning-color);
-        }
-
-        .auto-process-status.error {
-            background: var(--danger-color);
         }
 
         /* Tabs */
@@ -327,36 +378,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 36px;
-            height: 18px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 18px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-switch.active {
-            background: var(--success-color);
-        }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-switch.active::after {
-            transform: translateX(18px);
         }
 
         /* Stats Grid */
@@ -871,38 +892,6 @@
         .categoria-default { background: #7f8c8d !important; }
         .categoria-unknown { background: #95a5a6 !important; }
 
-        /* Status Bar Styles */
-        #statusBar {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        #statusBar.error {
-            animation: statusPulse 2s infinite;
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .status-control-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s ease;
-        }
-
-        /* Hidden utilities */
-        .hidden { display: none !important; }
-        
-        /* File input hidden */
-        #fileInput { display: none; }
-
         /* Modal */
         .modal {
             position: fixed;
@@ -1136,6 +1125,17 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+
+            .github-status-bar {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+
+            .github-sync-controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
 
         /* Scrollbar Styling */
@@ -1157,90 +1157,65 @@
             background: var(--text-secondary);
         }
 
-        /* Status Bar Styles */
-        #statusBar {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        #statusBar.error {
-            animation: statusPulse 2s infinite;
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .status-control-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s ease;
-        }
-
-        .status-control-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
-        }
+        /* Hidden utilities */
+        .hidden { display: none !important; }
         
         /* File input hidden */
         #fileInput { display: none; }
     </style>
 </head>
 <body data-theme="light">
-    <div id="tampermonkeyIndicator" style="
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 16px;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    " title="Status Tampermonkey: Conectado">
-        <span id="tampermonkeyIcon">🔗</span>
-    </div>
-
+    <!-- Header -->
     <div class="header">
         <div class="header-content">
-            <h1>Controle De Apontamentos - GrupoGPS</h1>
+            <h1 title="Duplo clique para ativar/desativar modo debug">🚛 Controle De Apontamentos - GrupoGPS</h1>
             <div class="header-controls">
                 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
             </div>
         </div>
     </div>
 
+    <!-- GitHub Status Bar -->
+    <div class="github-status-bar">
+        <div class="github-info">
+            <span>🔗 <strong>GitHub:</strong> GrupoGps-Mecanizada/Apontamento-Dos-Tablets</span>
+            <div class="sync-status" id="githubSyncStatus">
+                <span class="loading-spinner" id="syncSpinner" style="display: none;"></span>
+                <span id="syncStatusText">Aguardando sync...</span>
+            </div>
+        </div>
+        
+        <div class="github-sync-controls">
+            <div class="auto-sync-toggle">
+                <span>Auto-sync (30s):</span>
+                <div class="toggle-switch active" id="autoSyncToggle" onclick="toggleAutoSync()"></div>
+            </div>
+            
+            <button class="btn btn-primary btn-sm" onclick="manualGitHubSync()" id="manualSyncBtn">
+                🔄 Sync Manual
+            </button>
+            
+            <span id="lastSyncTime" style="font-size: 0.8rem; opacity: 0.8;">
+                Último sync: Nunca
+            </span>
+        </div>
+    </div>
+
     <div class="container">
+        <!-- Compact Controls Bar -->
         <div class="controls-bar">
             <div class="control-group">
                 <div class="upload-compact" id="uploadArea">
-                    <div class="upload-compact-text">Upload CSV/JSON</div>
+                    <div class="upload-compact-text">Upload CSV ou GitHub Sync</div>
                     <div class="upload-compact-sub" id="uploadStatus">
                         <span id="uploadMethod">Aguardando dados...</span>
                     </div>
                 </div>
-                <input type="file" id="fileInput" accept=".csv,.json" />
+                <input type="file" id="fileInput" accept=".csv" />
                 <button class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">📁 Arquivo Local</button>
+                <button class="btn btn-success btn-sm" onclick="manualGitHubSync()" id="syncDataBtn">📡 Sync GitHub</button>
+                <button class="btn btn-primary btn-sm" id="processBtn" onclick="processarArquivo()" disabled>⚙️ Processar</button>
                 <button class="btn btn-warning btn-sm" onclick="debugDados()" style="display: none;" id="debugBtn">🔍 Debug</button>
-            </div>
-
-            <div class="control-group">
-                <div class="auto-process-status" id="autoProcessStatus">
-                    ✅ Processamento Automático Ativo
-                </div>
             </div>
 
             <div class="control-group hidden" id="exportControls">
@@ -1269,12 +1244,22 @@
                 <button class="tab-button active" onclick="switchTab('dashboard')">📊 Dashboard</button>
                 <button class="tab-button" onclick="switchTab('regimes')">⏰ Regimes & Turnos</button>
                 <button class="tab-button" onclick="switchTab('timeline')">📅 Timeline</button>
-                <button class="tab-button" onclick="switchTab('configuracoes')">⚙️ Configurações</button>
+                <button class="tab-button" onclick="switchTab('github')">🔗 GitHub Data</button>
             </div>
 
+            <!-- Dashboard Tab -->
             <div class="tab-content" id="dashboard-tab">
-                <div class="stats-grid hidden" id="statsSection">
+                <div class="dashboard-controls hidden" id="dashboardControls">
+                    <h3 style="color: var(--text-primary); margin: 0;">Configurações de Visualização</h3>
+                    <div class="status-toggle">
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);">Colorir por Status:</span>
+                        <div class="toggle-switch" id="statusColorToggle" onclick="toggleStatusColors()"></div>
                     </div>
+                </div>
+
+                <div class="stats-grid hidden" id="statsSection">
+                    <!-- Stats will be populated here -->
+                </div>
 
                 <div class="problems-container hidden" id="problemsSection">
                     <div class="problems-header">
@@ -1282,21 +1267,25 @@
                         <button class="btn btn-warning btn-sm" id="viewAllProblemsBtn" onclick="showAllProblems()">Ver Todos</button>
                     </div>
                     <div id="problemsList">
-                        </div>
+                        <!-- Problems will be populated here -->
+                    </div>
                 </div>
 
                 <div class="equipment-grid hidden" id="equipmentGrid">
-                    </div>
+                    <!-- Equipment cards will be populated here -->
+                </div>
             </div>
 
+            <!-- Regimes Tab -->
             <div class="tab-content hidden" id="regimes-tab">
                 <div id="regimeContainer">
                     <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
-                        Carregue dados via upload para visualizar os regimes disponíveis.
+                        Carregue dados via upload ou sincronização GitHub para visualizar os regimes disponíveis.
                     </div>
                 </div>
             </div>
 
+            <!-- Timeline Tab -->
             <div class="tab-content hidden" id="timeline-tab">
                 <div class="timeline-container">
                     <div class="timeline-controls">
@@ -1333,69 +1322,22 @@
 
                     <div class="timeline-grid" id="timelineGrid">
                         <div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">
-                            Carregue dados para visualizar a timeline.
+                            Carregue dados via upload ou sincronização GitHub para visualizar a timeline.
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="tab-content hidden" id="configuracoes-tab">
+            <!-- GitHub Data Tab -->
+            <div class="tab-content hidden" id="github-tab">
                 <div style="background: var(--surface); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
                     <h3 style="color: var(--text-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        ⚙️ Configurações do Sistema
+                        🔗 Dados do GitHub
                     </h3>
                     
-                    <div id="configContainer">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                            <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);" id="totalArquivos">0</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Arquivos Processados</div>
-                            </div>
-                            <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);" id="totalRegistros">0</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Registros Únicos</div>
-                            </div>
-                            <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);" id="ultimaAtualizacao">N/A</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Última Atualização</div>
-                            </div>
-                            <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 1rem; font-weight: bold; color: var(--primary-color);" id="formatoArquivo">N/A</div>
-                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Formato do Arquivo</div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: var(--accent-bg); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                            <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📊 Configurações de Processamento</h4>
-                            <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.9rem;">
-                                <span style="font-weight: 600; color: var(--text-secondary);">Processamento Automático:</span>
-                                <span style="color: var(--success-color); font-weight: 600;">✅ Ativo</span>
-                                
-                                <span style="font-weight: 600; color: var(--text-secondary);">Detecção de Duplicatas:</span>
-                                <span style="color: var(--success-color); font-weight: 600;">✅ Ativo</span>
-                                
-                                <span style="font-weight: 600; color: var(--text-secondary);">Análise de Irregularidades:</span>
-                                <span style="color: var(--success-color); font-weight: 600;">✅ Ativo</span>
-                                
-                                <span style="font-weight: 600; color: var(--text-secondary);">Conexão Tampermonkey:</span>
-                                <span style="color: var(--success-color); font-weight: 600;" id="tampermonkeyStatusConfig">✅ Conectado</span>
-                                
-                                <span style="font-weight: 600; color: var(--text-secondary);">Formatos Suportados:</span>
-                                <span style="color: var(--text-primary);">CSV, JSON</span>
-                            </div>
-                            
-                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                <button class="btn btn-success btn-sm" onclick="forceProcessData()">⚙️ Reprocessar Dados</button>
-                            </div>
-                        </div>
-                        
-                        <div style="background: var(--accent-bg); border-radius: 8px; padding: 1rem;">
-                            <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📁 Histórico de Arquivos</h4>
-                            <div id="arquivosHistorico" style="max-height: 400px; overflow-y: auto;">
-                                <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
-                                    Nenhum arquivo processado ainda.
-                                </div>
-                            </div>
+                    <div id="githubDataContainer">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            Nenhum dado sincronizado do GitHub ainda. Clique em "Sync GitHub" para buscar dados.
                         </div>
                     </div>
                 </div>
@@ -1404,9 +1346,10 @@
     </div>
 
     <div class="footer">
-        Desenvolvido por Warlison Abreu - GrupoGPS
+        Desenvolvido por Warlison Abreu - Integração GitHub GrupoGPS v2.1
     </div>
 
+    <!-- Modal for appointment details -->
     <div class="modal" id="appointmentModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1414,10 +1357,12 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div id="appointmentDetails">
-                </div>
+                <!-- Details will be populated here -->
+            </div>
         </div>
     </div>
 
+    <!-- Modal for all problems -->
     <div class="modal" id="problemsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1425,33 +1370,50 @@
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div id="allProblemsContainer">
-                </div>
+                <!-- All problems will be populated here -->
+            </div>
         </div>
     </div>
 
     <script>
         /*********************************
-         * VARIÁVEIS GLOBAIS             *
+         * CONFIGURAÇÕES GITHUB          *
          *********************************/
-        var dadosCSV = []; // <-- CORREÇÃO PRINCIPAL: Variável inicializada
-        var equipamentosProcessados = {};
-        var apontamentosIrregulares = [];
-        var dadosFiltrados = [];
-        var regimesDisponiveis = {};
-        var regimeAtivo = null;
-        var timelineColumns = 2;
-        var showTimeGaps = true;
-        var statusColorsEnabled = false;
-        var timelineZoom = 1;
-        var arquivosProcessados = [];
-        var dadosUnicos = new Map();
+        const GITHUB_CONFIG = {
+            OWNER: 'GrupoGps-Mecanizada',
+            REPO: 'Apontamento-Dos-Tablets',
+            FILE_PATH: 'data/latest-export-data.json',
+            AUTO_SYNC: true,
+            SYNC_INTERVAL: 30000 // 30 segundos
+        };
+
+        /*********************************
+         * ESTADO GLOBAL                 *
+         *********************************/
+        let dadosCSV = [];
+        let equipamentosProcessados = {};
+        let apontamentosIrregulares = [];
+        let dadosFiltrados = [];
+        let regimesDisponiveis = {};
+        let regimeAtivo = null;
+        let timelineColumns = 2;
+        let showTimeGaps = true;
+        let statusColorsEnabled = false;
+        let timelineZoom = 1;
+
+        // GitHub sync state
+        let autoSyncEnabled = true;
+        let lastSyncTime = null;
+        let syncInterval = null;
+        let githubData = null;
+        let dataSource = 'none'; // 'none', 'file', 'github'
 
         // Touch zoom variables for mobile
-        var isZooming = false;
-        var initialDistance = 0;
-        var initialZoom = 1;
+        let isZooming = false;
+        let initialDistance = 0;
+        let initialZoom = 1;
 
-        var CATEGORIA_CORES = {
+        const CATEGORIA_CORES = {
             'REFEIÇÃO MOTORISTA': '#3498db',
             'AGUARDANDO ÁREA': '#3742fa',
             'DOCUMENTAÇÃO': '#e67e22',
@@ -1477,7 +1439,7 @@
             'LIMPEZA': '#f1c40f'
         };
 
-        var REGIMES_CONFIG = {
+        const REGIMES_CONFIG = {
             '24HS': {
                 nome: '24 Horas',
                 turnos: [
@@ -1505,429 +1467,440 @@
         };
 
         /*********************************
-         * PROCESSAMENTO DADOS TAMPERMONKEY *
+         * FUNÇÕES GITHUB SYNC           *
          *********************************/
-        function processarDadosTampermonkey(data) {
-            console.log('🔄 Processando dados do Tampermonkey...');
-            
-            dadosCSV = [];
-            dadosUnicos.clear();
-            arquivosProcessados = [];
-            
-            var novosApontamentosProcessados = [];
-            
-            if (data && data.files && Array.isArray(data.files)) {
-                console.log('📁 Processando ' + data.files.length + ' arquivos do Tampermonkey...');
+        async function fetchGitHubData() {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/${GITHUB_CONFIG.FILE_PATH}`);
                 
-                data.files.forEach(function(file) {
-                    console.log('🔍 Processando arquivo:', file.filename);
-                    
-                    if (file.processedData && file.processedData.data && Array.isArray(file.processedData.data)) {
-                        console.log('📊 Usando dados já processados do arquivo');
-                        file.processedData.data.forEach(function(row) {
-                            var apontamento = converterRowParaApontamento(row);
-                            if (apontamento && validarApontamento(apontamento)) {
-                                novosApontamentosProcessados.push(apontamento);
-                            }
-                        });
-                    } 
-                    else if (file.content) {
-                        console.log('🔄 Processando conteúdo raw do arquivo');
-                        var conteudo = file.content.trim();
-                        if (conteudo.startsWith('{') || conteudo.startsWith('[')) {
-                            try {
-                                var jsonData = JSON.parse(conteudo);
-                                var jsonApontamentos = processarDadosJSON(jsonData);
-                                novosApontamentosProcessados = novosApontamentosProcessados.concat(jsonApontamentos);
-                            } catch (e) {
-                                console.error('❌ Erro ao processar JSON:', e);
-                            }
-                        } else {
-                            var csvApontamentos = processarCSV(conteudo);
-                            novosApontamentosProcessados = novosApontamentosProcessados.concat(csvApontamentos);
-                        }
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Arquivo de dados não encontrado no GitHub');
                     }
-                    
-                    arquivosProcessados.push({
-                        nome: file.filename || 'Arquivo Tampermonkey',
-                        tipo: file.type || 'json',
-                        timestamp: file.capturedAt || new Date().toISOString(),
-                        totalRegistros: (file.processedData && file.processedData.data) ? file.processedData.data.length : 0,
-                        registrosUnicos: 0
-                    });
-                });
-            }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
 
-            if (novosApontamentosProcessados.length > 0) {
-                console.log('✅ ' + novosApontamentosProcessados.length + ' apontamentos extraídos');
+                const fileData = await response.json();
+                const content = atob(fileData.content);
+                const data = JSON.parse(content);
                 
-                dadosCSV = novosApontamentosProcessados;
-                limparDuplicatas();
-                
-                arquivosProcessados.forEach(function(arquivo) {
-                    arquivo.registrosUnicos = dadosCSV.length;
-                });
-
-                processarDadosAutomatico();
-                atualizarConfiguracoes();
-                updateTampermonkeyStatus('connected', dadosCSV.length + ' registros processados');
-                
-                return true;
-            } else {
-                console.log('⚠️ Nenhum apontamento válido encontrado');
-                updateTampermonkeyStatus('warning', 'Nenhum dado válido');
-                return false;
+                return data;
+            } catch (error) {
+                console.error('Erro ao buscar dados do GitHub:', error);
+                throw error;
             }
         }
 
-        /*********************************
-         * PROCESSAMENTO JSON CORRIGIDO   *
-         *********************************/
-        function processarDadosJSON(jsonData) {
+        async function manualGitHubSync() {
+            updateSyncStatus('syncing', 'Sincronizando...');
+            console.log('🔄 Iniciando sincronização manual com GitHub...');
+            
             try {
-                var apontamentos = [];
+                const data = await fetchGitHubData();
+                console.log('📦 Dados recebidos do GitHub:', data);
                 
-                if (Array.isArray(jsonData)) {
-                    jsonData.forEach(function(item) {
-                        var apontamento = converterRowParaApontamento(item);
-                        if (apontamento && validarApontamento(apontamento)) {
-                            apontamentos.push(apontamento);
-                        }
-                    });
-                }
-                else if (typeof jsonData === 'object') {
-                    var dataArray = jsonData.data || jsonData.records || jsonData.items || jsonData.apontamentos;
+                if (data && data.files && data.files.length > 0) {
+                    console.log(`📁 ${data.files.length} arquivos encontrados no GitHub`);
                     
-                    if (Array.isArray(dataArray)) {
-                        dataArray.forEach(function(item) {
-                            var apontamento = converterRowParaApontamento(item);
-                            if (apontamento && validarApontamento(apontamento)) {
-                                apontamentos.push(apontamento);
-                            }
-                        });
-                    }
-                    else {
-                        var apontamento = converterRowParaApontamento(jsonData);
-                        if (apontamento && validarApontamento(apontamento)) {
-                            apontamentos.push(apontamento);
-                        }
-                    }
+                    githubData = data;
+                    lastSyncTime = new Date();
+                    
+                    // Processa os dados CSV dos arquivos baixados
+                    const dadosAnteriores = dadosCSV.length;
+                    processGitHubData(data);
+                    const novosRegistros = dadosCSV.length - dadosAnteriores;
+                    
+                    console.log(`📊 ${novosRegistros} novos registros processados`);
+                    
+                    updateSyncStatus('success', `${data.files.length} arquivos, ${dadosCSV.length} registros`);
+                    updateLastSyncTime();
+                    showNotification(`GitHub sincronizado! ${data.files.length} arquivos, ${dadosCSV.length} registros processados.`, 'success');
+                    
+                    dataSource = 'github';
+                    document.getElementById('uploadStatus').innerHTML = 
+                        `<span id="uploadMethod">GitHub: ${data.files.length} arquivos (${dadosCSV.length} registros)</span>`;
+                    document.getElementById('processBtn').disabled = false;
+                    
+                } else {
+                    console.warn('⚠️ Nenhum arquivo encontrado no GitHub');
+                    updateSyncStatus('error', 'Nenhum arquivo encontrado');
+                    showNotification('Nenhum arquivo encontrado no GitHub.', 'error');
                 }
-                
-                console.log('✅ JSON processado: ' + apontamentos.length + ' apontamentos válidos');
-                return apontamentos;
                 
             } catch (error) {
-                console.error('❌ Erro ao processar JSON:', error);
-                return [];
+                console.error('❌ Erro na sincronização:', error);
+                updateSyncStatus('error', 'Erro: ' + error.message);
+                showNotification('Erro ao sincronizar: ' + error.message, 'error');
             }
         }
 
-        /*********************************
-         * VALIDAÇÃO DE APONTAMENTOS     *
-         *********************************/
-        function validarApontamento(apontamento) {
-            return apontamento && 
-                   apontamento.Placa && 
-                   apontamento.Vaga && 
-                   apontamento['Categoria Demora'] && 
-                   apontamento['Data Inicial'] && 
-                   apontamento['Data Final'] && 
-                   apontamento['Tempo Indisponível (HH:MM)'];
-        }
-
-        /*********************************
-         * INDICADOR TAMPERMONKEY        *
-         *********************************/
-        function updateTampermonkeyStatus(status, message) {
-            var indicator = document.getElementById('tampermonkeyIndicator');
-            var icon = document.getElementById('tampermonkeyIcon');
+        function processGitHubData(data) {
+            // Limpa dados anteriores se vindos do GitHub
+            if (dataSource === 'github') {
+                dadosCSV = [];
+            }
             
-            if (!indicator || !icon) return;
-            
-            var configs = {
-                'connected': { bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)', icon: '🔗', title: 'Tampermonkey: Conectado - ' + (message || 'Online') },
-                'disconnected': { bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', icon: '❌', title: 'Tampermonkey: Desconectado' },
-                'warning': { bg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', icon: '⚠️', title: 'Tampermonkey: ' + (message || 'Atenção') },
-                'processing': { bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', icon: '🔄', title: 'Tampermonkey: Processando...' }
-            };
-            
-            var config = configs[status] || configs.disconnected;
-            
-            indicator.style.background = config.bg;
-            indicator.title = config.title;
-            icon.textContent = config.icon;
-        }
-
-        /*********************************
-         * COMUNICAÇÃO COM TAMPERMONKEY   *
-         *********************************/
-        function setupTampermonkeyListener() {
-            window.addEventListener('message', function(event) {
-                if (event.source === window && event.data && event.data.type === 'TAMPERMONKEY_DATA') {
-                    console.log('📨 Dados recebidos do Tampermonkey');
-                    updateTampermonkeyStatus('processing', 'Recebendo dados...');
+            // Processa cada arquivo CSV/dados processados
+            if (data.files) {
+                data.files.forEach(file => {
+                    console.log('🔍 Processando arquivo:', file.filename, 'Tipo:', file.type);
                     
-                    setTimeout(function() {
-                        processarDadosTampermonkey(event.data.payload);
-                    }, 100);
-                }
-            });
-            
-            window.postMessage({ type: 'SISTEMA_READY', timestamp: new Date().toISOString() }, '*');
-            
-            console.log('🔔 Listener Tampermonkey configurado e aguardando dados.');
-            updateTampermonkeyStatus('connected', 'Aguardando dados');
-        }
-
-        /*********************************
-         * SISTEMA INTELIGENTE DE DUPLICATAS *
-         *********************************/
-        function gerarHashApontamento(apontamento) {
-            var campos = [
-                apontamento.Placa || '',
-                apontamento.Vaga || '',
-                apontamento['Categoria Demora'] || '',
-                apontamento['Data Inicial'] || '',
-                apontamento['Data Final'] || '',
-                apontamento['Tempo Indisponível (HH:MM)'] || ''
-            ];
-            return btoa(campos.join('|')).replace(/[^a-zA-Z0-9]/g, '');
-        }
-
-        function adicionarApontamentoUnico(apontamento) {
-            var hash = gerarHashApontamento(apontamento);
-            if (!dadosUnicos.has(hash)) {
-                dadosUnicos.set(hash, apontamento);
-                return true;
-            }
-            return false;
-        }
-
-        function limparDuplicatas() {
-            dadosUnicos.clear();
-            var dadosLimpos = [];
-            var duplicatasRemovidas = 0;
-
-            dadosCSV.forEach(function(apontamento) {
-                if (adicionarApontamentoUnico(apontamento)) {
-                    dadosLimpos.push(apontamento);
-                } else {
-                    duplicatasRemovidas++;
-                }
-            });
-
-            dadosCSV = dadosLimpos;
-            
-            if (duplicatasRemovidas > 0) {
-                showNotification(duplicatasRemovidas + ' apontamentos duplicados foram removidos.', 'info');
-                console.log('🧹 Removidas ' + duplicatasRemovidas + ' duplicatas. Total único: ' + dadosCSV.length);
-            }
-        }
-
-        /*********************************
-         * PROCESSAMENTO INTELIGENTE DE ARQUIVOS *
-         *********************************/
-        function processarArquivoInteligente(data, nomeArquivo, tipoArquivo) {
-            console.log('📋 Processando arquivo local: ' + nomeArquivo + ' (' + tipoArquivo + ')');
-            updateTampermonkeyStatus('processing', 'Processando ' + nomeArquivo + '...');
-            
-            var novosApontamentos = [];
-            
-            if (tipoArquivo === 'json') {
-                novosApontamentos = processarJSON(data);
-            } else if (tipoArquivo === 'csv') {
-                novosApontamentos = processarCSV(data);
-            }
-
-            if (novosApontamentos.length > 0) {
-                var totalAnterior = dadosCSV.length;
-                dadosCSV = dadosCSV.concat(novosApontamentos);
-                limparDuplicatas();
-                var novosUnicos = dadosCSV.length - totalAnterior;
-                
-                arquivosProcessados.push({
-                    nome: nomeArquivo,
-                    tipo: tipoArquivo,
-                    timestamp: new Date().toISOString(),
-                    totalRegistros: novosApontamentos.length,
-                    registrosUnicos: novosUnicos
-                });
-
-                atualizarConfiguracoes();
-                processarDadosAutomatico();
-                
-                updateTampermonkeyStatus('success', novosUnicos + ' novos registros adicionados');
-                showNotification('✅ Arquivo processado! ' + novosUnicos + ' novos apontamentos únicos adicionados.', 'success');
-                
-                return true;
-            } else {
-                updateTampermonkeyStatus('warning', 'Nenhum dado válido encontrado');
-                showNotification('❌ Nenhum dado válido encontrado no arquivo.', 'error');
-                return false;
-            }
-        }
-
-        function converterRowParaApontamento(row) {
-            var apontamento = {};
-            var mapeamentos = {
-                'Placa': ['Placa'],
-                'Vaga': ['Vaga'],
-                'Categoria Demora': ['Categoria Demora'],
-                'Data Inicial': ['Data Inicial'],
-                'Data Final': ['Data Final'],
-                'Tempo Indisponível (HH:MM)': ['Tempo Indisponível (HH:MM)']
-            };
-
-            Object.keys(mapeamentos).forEach(function(campoDestino) {
-                for (const chave of mapeamentos[campoDestino]) {
-                    // Remove caracteres de controle invisíveis, como \r
-                    const chaveLimpa = chave.replace(/\s+/g, ' ').trim();
-                    for(const rowKey in row){
-                        const rowKeyLimpa = rowKey.replace(/\s+/g, ' ').trim();
-                        if(rowKeyLimpa === chaveLimpa){
-                            apontamento[campoDestino] = row[rowKey];
-                            return;
+                    if (file.processedData && file.processedData.type === 'gaussfleet_timeline') {
+                        // Dados já processados do GaussFleet
+                        console.log('📊 Processando dados GaussFleet já parseados');
+                        const processedCSV = convertGaussFleetData(file.processedData.data);
+                        dadosCSV = dadosCSV.concat(processedCSV);
+                    } else if (file.content) {
+                        // Detecta se é CSV baseado no conteúdo
+                        const isCSV = file.content.includes('"Placa";"Vaga";"Categoria Demora"') || 
+                                     file.content.includes('Placa,Vaga,Categoria') ||
+                                     file.filename.toLowerCase().includes('.csv') ||
+                                     file.filename.toLowerCase().includes('export');
+                        
+                        if (isCSV) {
+                            console.log('📄 Processando arquivo CSV:', file.filename);
+                            const parsedData = parseCSVContent(file.content);
+                            console.log('✅ CSV parseado:', parsedData.length, 'registros');
+                            if (parsedData.length > 0) {
+                                dadosCSV = dadosCSV.concat(parsedData);
+                            }
                         }
                     }
-                }
-            });
-
-            return apontamento;
+                });
+                
+                console.log('📊 Total de registros processados do GitHub:', dadosCSV.length);
+            }
+            
+            // Atualiza a aba GitHub Data
+            updateGitHubDataTab(data);
         }
 
-        function processarCSV(csvContent) {
+        function convertGaussFleetData(data) {
+            // Converte dados do GaussFleet para o formato esperado
+            return data.map(row => ({
+                'Placa': row.placa || '',
+                'Vaga': row.vaga || '',
+                'Categoria Demora': row.categoria || '',
+                'Data Inicial': row.dataInicial || '',
+                'Data Final': row.dataFinal || '',
+                'Tempo Indisponível (HH:MM)': row.tempo || ''
+            }));
+        }
+
+        function parseCSVContent(csvContent) {
             try {
                 console.log('🔄 Iniciando parse do CSV...');
-                var cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                var delimiter = cleanContent.includes('";') ? ';' : ',';
+                console.log('📝 Primeiros 200 caracteres:', csvContent.substring(0, 200));
                 
-                var result = Papa.parse(cleanContent, {
+                // Remove caracteres de controle e normaliza quebras de linha
+                let cleanContent = csvContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Detecta o delimitador (ponto e vírgula é mais comum nos dados do GrupoGPS)
+                const delimiter = cleanContent.includes('";') ? ';' : ',';
+                console.log('🔍 Delimitador detectado:', delimiter);
+                
+                const result = Papa.parse(cleanContent, {
                     header: true,
                     skipEmptyLines: true,
                     delimiter: delimiter,
-                    transformHeader: header => header.trim(),
+                    quoteChar: '"',
+                    escapeChar: '"',
+                    trimHeaders: true,
+                    transform: (value) => {
+                        // Remove aspas extras e trim
+                        return value.replace(/^"|"$/g, '').trim();
+                    }
                 });
                 
+                console.log('📊 Headers detectados:', result.meta.fields);
+                console.log('📈 Total de linhas parseadas:', result.data.length);
+                
                 if (result.errors.length > 0) {
-                    console.warn('⚠️ Erros no parse do CSV:', result.errors);
+                    console.warn('⚠️ Erros no parse:', result.errors);
                 }
                 
-                return result.data;
+                // Filtra apenas registros válidos com todos os campos necessários
+                const validData = result.data.filter(linha => {
+                    const hasRequiredFields = linha.Placa && 
+                                            linha.Vaga && 
+                                            linha['Categoria Demora'] && 
+                                            linha['Data Inicial'] && 
+                                            linha['Data Final'] && 
+                                            linha['Tempo Indisponível (HH:MM)'];
+                    
+                    if (!hasRequiredFields) {
+                        console.log('❌ Registro inválido:', linha);
+                    }
+                    
+                    return hasRequiredFields;
+                });
+                
+                console.log('✅ Registros válidos filtrados:', validData.length);
+                
+                return validData;
                 
             } catch (error) {
-                console.error('❌ Erro fatal ao parsear CSV:', error);
+                console.error('❌ Erro ao parsear CSV:', error);
+                console.error('📄 Conteúdo que causou erro:', csvContent.substring(0, 500));
                 return [];
             }
         }
 
-        /*********************************
-         * PROCESSAMENTO AUTOMÁTICO      *
-         *********************************/
-        function processarDadosAutomatico() {
-            if (!dadosCSV.length) return;
-
-            console.log('🔄 Processamento automático com ' + dadosCSV.length + ' registros');
-            updateAutoProcessStatus('processing', 'Processando dados...');
+        function updateGitHubDataTab(data) {
+            const container = document.getElementById('githubDataContainer');
             
-            setTimeout(function() {
-                try {
-                    dadosFiltrados = [...dadosCSV];
-                    
-                    detectarRegimes(dadosFiltrados);
-                    detectarApontamentosIrregularesInteligente(dadosFiltrados);
-                    equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-                    
-                    exibirResultadosDashboard();
-                    exibirRegimes();
+            if (!data || !data.files || data.files.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        Nenhum dado encontrado no GitHub.
+                    </div>
+                `;
+                return;
+            }
+            
+            const metadata = data.metadata || {};
+            const totalRegistros = dadosCSV.length;
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">${data.files.length}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Arquivos Sincronizados</div>
+                    </div>
+                    <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">${totalRegistros}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Registros Processados</div>
+                    </div>
+                    <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${metadata.currentSite || 'N/A'}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Site Origem</div>
+                    </div>
+                    <div style="background: var(--accent-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1rem; font-weight: bold; color: var(--primary-color);">${metadata.totalDownloaded || 0}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Total Downloads</div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--accent-bg); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📊 Metadados da Sincronização</h4>
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; font-size: 0.9rem;">
+                        <span style="font-weight: 600; color: var(--text-secondary);">Última Atualização:</span>
+                        <span style="color: var(--text-primary);">${metadata.lastUpdate ? new Date(metadata.lastUpdate).toLocaleString('pt-BR') : 'N/A'}</span>
+                        
+                        <span style="font-weight: 600; color: var(--text-secondary);">Último Download:</span>
+                        <span style="color: var(--text-primary);">${metadata.lastDownload ? new Date(metadata.lastDownload).toLocaleString('pt-BR') : 'N/A'}</span>
+                        
+                        <span style="font-weight: 600; color: var(--text-secondary);">Versão do Exporter:</span>
+                        <span style="color: var(--text-primary);">${metadata.version || 'N/A'}</span>
+                        
+                        <span style="font-weight: 600; color: var(--text-secondary);">URL Atual:</span>
+                        <span style="color: var(--text-primary); word-break: break-all;">${metadata.currentUrl || 'N/A'}</span>
+                        
+                        <span style="font-weight: 600; color: var(--text-secondary);">Data Source:</span>
+                        <span style="color: var(--text-primary);">${dataSource}</span>
+                    </div>
+                </div>
+                
+                <div style="background: var(--accent-bg); border-radius: 8px; padding: 1rem;">
+                    <h4 style="color: var(--text-primary); margin-bottom: 0.75rem;">📁 Arquivos Sincronizados</h4>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${data.files.map((file, index) => {
+                            const isCSV = file.content && (
+                                file.content.includes('"Placa";"Vaga";"Categoria Demora"') ||
+                                file.content.includes('Placa,Vaga,Categoria') ||
+                                file.filename.toLowerCase().includes('.csv') ||
+                                file.filename.toLowerCase().includes('export')
+                            );
+                            
+                            const hasContent = file.content && file.content.length > 0;
+                            const contentPreview = file.content ? file.content.substring(0, 100) + '...' : 'Sem conteúdo';
+                            
+                            return `
+                                <div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid ${isCSV ? 'var(--success-color)' : 'var(--primary-color)'};">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                        <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${file.filename}</span>
+                                        <span style="font-size: 0.75rem; color: var(--text-secondary);">${formatFileSize(file.size)}</span>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                        📅 ${new Date(file.capturedAt).toLocaleString('pt-BR')}
+                                        ${file.processedData ? '• ✅ Dados processados' : ''}
+                                        ${isCSV ? '• 📊 CSV detectado' : ''}
+                                        ${hasContent ? '• 📄 Com conteúdo' : '• ❌ Sem conteúdo'}
+                                    </div>
+                                    ${file.site ? `<div style="font-size: 0.75rem; color: var(--text-secondary);">🌐 ${file.site}</div>` : ''}
+                                    ${file.type ? `<div style="font-size: 0.75rem; color: var(--text-secondary);">📋 Tipo: ${file.type}</div>` : ''}
+                                    
+                                    <details style="margin-top: 0.5rem;">
+                                        <summary style="cursor: pointer; font-size: 0.75rem; color: var(--primary-color);">👁️ Ver prévia do conteúdo</summary>
+                                        <div style="background: var(--accent-bg); border-radius: 4px; padding: 0.5rem; margin-top: 0.25rem; font-family: monospace; font-size: 0.7rem; max-height: 100px; overflow-y: auto;">
+                                            ${contentPreview}
+                                        </div>
+                                    </details>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
 
-                    document.getElementById('exportControls').classList.remove('hidden');
-                    document.getElementById('filterControls').classList.remove('hidden');
-                    ['statsSection', 'equipmentGrid'].forEach(id => document.getElementById(id).classList.remove('hidden'));
-                    
-                    var problemsEl = document.getElementById('problemsSection');
-                    problemsEl.classList.toggle('hidden', apontamentosIrregulares.length === 0);
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
 
-                    updateAutoProcessStatus('success', 'Dados processados');
-                    console.log('✅ Processamento automático concluído');
+        function updateSyncStatus(status, message) {
+            const statusEl = document.getElementById('githubSyncStatus');
+            const textEl = document.getElementById('syncStatusText');
+            const spinnerEl = document.getElementById('syncSpinner');
+            
+            // Reset classes
+            statusEl.className = 'sync-status';
+            
+            switch (status) {
+                case 'syncing':
+                    statusEl.style.background = 'rgba(255, 152, 0, 0.2)';
+                    statusEl.style.color = '#FF9800';
+                    spinnerEl.style.display = 'inline-block';
+                    break;
+                case 'success':
+                    statusEl.style.background = 'rgba(76, 175, 80, 0.2)';
+                    statusEl.style.color = '#4CAF50';
+                    spinnerEl.style.display = 'none';
+                    break;
+                case 'error':
+                    statusEl.style.background = 'rgba(244, 67, 54, 0.2)';
+                    statusEl.style.color = '#f44336';
+                    spinnerEl.style.display = 'none';
+                    break;
+                default:
+                    statusEl.style.background = 'rgba(255, 255, 255, 0.2)';
+                    statusEl.style.color = 'white';
+                    spinnerEl.style.display = 'none';
+            }
+            
+            textEl.textContent = message;
+        }
 
-                } catch(err) {
-                    console.error('❌ Erro no processamento automático:', err);
-                    updateAutoProcessStatus('error', 'Erro no processamento');
+        function updateLastSyncTime() {
+            const timeEl = document.getElementById('lastSyncTime');
+            if (lastSyncTime) {
+                timeEl.textContent = `Último sync: ${lastSyncTime.toLocaleTimeString('pt-BR')}`;
+            }
+        }
+
+        function toggleAutoSync() {
+            autoSyncEnabled = !autoSyncEnabled;
+            const toggle = document.getElementById('autoSyncToggle');
+            toggle.classList.toggle('active', autoSyncEnabled);
+            
+            if (autoSyncEnabled) {
+                startAutoSync();
+                showNotification('Auto-sync ativado (30s)', 'success');
+            } else {
+                stopAutoSync();
+                showNotification('Auto-sync desativado', 'info');
+            }
+        }
+
+        function startAutoSync() {
+            if (syncInterval) clearInterval(syncInterval);
+            
+            syncInterval = setInterval(async () => {
+                if (autoSyncEnabled) {
+                    try {
+                        console.log('🔄 Auto-sync executando...');
+                        const data = await fetchGitHubData();
+                        
+                        if (data && data.files) {
+                            const dadosAnteriores = dadosCSV.length;
+                            githubData = data;
+                            lastSyncTime = new Date();
+                            processGitHubData(data);
+                            
+                            const novosRegistros = dadosCSV.length - dadosAnteriores;
+                            
+                            if (novosRegistros > 0) {
+                                updateSyncStatus('success', `Auto: ${data.files.length} arquivos, ${novosRegistros} novos`);
+                                console.log(`✅ Auto-sync: ${novosRegistros} novos registros processados`);
+                                
+                                // Auto-processa se já havia dados carregados ou se é a primeira vez
+                                if (dataSource === 'github' && dadosCSV.length > 0) {
+                                    console.log('🔄 Auto-processando dados...');
+                                    document.getElementById('processBtn').disabled = false;
+                                    dataSource = 'github';
+                                    document.getElementById('uploadStatus').innerHTML = 
+                                        `<span id="uploadMethod">GitHub: ${data.files.length} arquivos (${dadosCSV.length} registros)</span>`;
+                                }
+                            } else {
+                                updateSyncStatus('success', `Auto: ${data.files.length} arquivos, sem novos registros`);
+                            }
+                            
+                            updateLastSyncTime();
+                        }
+                    } catch (error) {
+                        console.error('❌ Erro no auto-sync:', error);
+                        updateSyncStatus('error', 'Auto-sync falhou');
+                    }
                 }
-            }, 100);
+            }, GITHUB_CONFIG.SYNC_INTERVAL);
         }
 
-        function updateAutoProcessStatus(status, message) {
-            var statusEl = document.getElementById('autoProcessStatus');
-            if (!statusEl) return;
-            statusEl.className = 'auto-process-status ' + status;
-            var icons = { 'success': '✅', 'processing': '🔄', 'error': '❌' };
-            statusEl.innerHTML = `${icons[status] || '⚙️'} ${message}`;
+        function stopAutoSync() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
         }
 
         /*********************************
-         * FUNÇÕES DE CONTROLE MANUAL    *
-         *********************************/
-        function forceProcessData() {
-            if (dadosCSV.length === 0) {
-                showNotification('Nenhum dado carregado para reprocessar.', 'warning');
-                return;
-            }
-            console.log('⚙️ Reprocessamento forçado iniciado...');
-            updateTampermonkeyStatus('processing', 'Reprocessando dados...');
-            processarDadosAutomatico();
-            showNotification('Dados reprocessados com sucesso!', 'success');
-        }
-
-        function atualizarConfiguracoes() {
-            document.getElementById('totalArquivos').textContent = arquivosProcessados.length;
-            document.getElementById('totalRegistros').textContent = dadosCSV.length;
-            document.getElementById('ultimaAtualizacao').textContent = new Date().toLocaleString('pt-BR');
-            
-            var ultimoArquivo = arquivosProcessados[arquivosProcessados.length - 1];
-            document.getElementById('formatoArquivo').textContent = ultimoArquivo ? (ultimoArquivo.tipo || 'N/A').toUpperCase() : 'N/A';
-            
-            var histContainer = document.getElementById('arquivosHistorico');
-            if (arquivosProcessados.length === 0) {
-                histContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum arquivo processado ainda.</div>';
-                return;
-            }
-            
-            histContainer.innerHTML = arquivosProcessados.map(function(arquivo) {
-                return `<div style="background: var(--surface); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; border-left: 3px solid var(--primary-color);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                        <span style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${arquivo.nome}</span>
-                        <span style="font-size: 0.75rem; color: var(--text-secondary);">${(arquivo.tipo || '').toUpperCase()}</span>
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
-                        📅 ${new Date(arquivo.timestamp).toLocaleString('pt-BR')}
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                        📊 ${arquivo.totalRegistros} registros • ${arquivo.registrosUnicos} únicos
-                    </div>
-                </div>`;
-            }).reverse().join('');
-        }
-
-        /*********************************
-         * FUNÇÕES DE UI E EVENTOS       *
+         * FUNÇÕES ORIGINAIS ADAPTADAS   *
          *********************************/
         
+        // Theme toggle
         function toggleTheme() {
-            var newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', newTheme);
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
 
+        // Status colors toggle
+        function toggleStatusColors() {
+            statusColorsEnabled = !statusColorsEnabled;
+            const toggle = document.getElementById('statusColorToggle');
+            toggle.classList.toggle('active', statusColorsEnabled);
+            
+            updateEquipmentCardsColors();
+        }
+
+        function updateEquipmentCardsColors() {
+            const cards = document.querySelectorAll('.equipment-card');
+            cards.forEach(card => {
+                if (statusColorsEnabled) {
+                    card.classList.add('status-colored');
+                } else {
+                    card.classList.remove('status-colored');
+                }
+            });
+        }
+
+        // Toggle time gaps
         function toggleTimeGaps() {
             showTimeGaps = !showTimeGaps;
-            document.getElementById('gapsToggle').classList.toggle('active', showTimeGaps);
+            const toggle = document.getElementById('gapsToggle');
+            toggle.classList.toggle('active', showTimeGaps);
+            
             if (!document.getElementById('timeline-tab').classList.contains('hidden')) {
                 gerarTimelineVertical();
             }
         }
 
+        // Enhanced zoom functionality
         function adjustZoom(delta) {
             timelineZoom = Math.max(0.5, Math.min(3, timelineZoom + delta));
             updateTimelineZoom();
@@ -1940,152 +1913,389 @@
 
         function updateTimelineZoom() {
             document.getElementById('zoomLevel').textContent = timelineZoom.toFixed(1) + 'x';
-            document.querySelectorAll('.timeline-content').forEach(content => content.style.transform = `scale(${timelineZoom})`);
+            
+            document.querySelectorAll('.timeline-content').forEach(content => {
+                content.style.transform = `scale(${timelineZoom})`;
+            });
+
             document.querySelectorAll('.timeline-equipment').forEach(equipment => {
-                equipment.style.height = `${(600 * timelineZoom) + 80}px`;
+                const originalHeight = 600;
+                equipment.style.height = `${(originalHeight * timelineZoom) + 80}px`;
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+        function getDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Load saved theme and initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
             setupEventListeners();
-            initializeTampermonkeySystem();
+            
+            // Inicia auto-sync se habilitado
+            if (autoSyncEnabled) {
+                startAutoSync();
+                // Executa primeiro sync após 2 segundos
+                setTimeout(manualGitHubSync, 2000);
+            }
         });
 
-        function initializeTampermonkeySystem() {
-            console.log('🚀 Inicializando sistema de comunicação com Tampermonkey...');
-            setupTampermonkeyListener();
-        }
-
         function setupEventListeners() {
-            var uploadArea = document.getElementById('uploadArea');
-            var fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
 
-            uploadArea.addEventListener('dragover', e => { e.preventDefault(); e.currentTarget.classList.add('dragover'); });
-            uploadArea.addEventListener('dragleave', e => { e.preventDefault(); e.currentTarget.classList.remove('dragover'); });
+            // Upload area events
+            uploadArea.addEventListener('dragover', e => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', e => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
             uploadArea.addEventListener('drop', e => {
                 e.preventDefault();
-                e.currentTarget.classList.remove('dragover');
-                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+                uploadArea.classList.remove('dragover');
+                if(e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
             });
+
             uploadArea.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', () => { if(fileInput.files.length) handleFile(fileInput.files[0]); });
-
-            document.querySelector('.header h1').addEventListener('dblclick', () => {
-                var debugBtn = document.getElementById('debugBtn');
-                var isHidden = debugBtn.style.display === 'none';
-                debugBtn.style.display = isHidden ? 'inline-flex' : 'none';
-                showNotification(`Modo debug ${isHidden ? 'ativado' : 'desativado'}!`, 'info');
+            fileInput.addEventListener('change', () => {
+                if(fileInput.files.length > 0) handleFile(fileInput.files[0]);
             });
 
-            ['dataInicial','dataFinal','tipoFilter'].forEach(id => document.getElementById(id).addEventListener('change', aplicarFiltros));
-            ['timelineSearch','timelineDate'].forEach(id => document.getElementById(id).addEventListener('input', filtrarTimeline));
-            
-            document.addEventListener('click', e => { if (e.target.classList.contains('modal')) closeModal(); });
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+            // Debug mode toggle - duplo clique no header
+            document.querySelector('.header h1').addEventListener('dblclick', () => {
+                const debugBtn = document.getElementById('debugBtn');
+                if (debugBtn.style.display === 'none') {
+                    debugBtn.style.display = 'inline-flex';
+                    console.log('🔧 Modo debug ativado');
+                    showNotification('Modo debug ativado!', 'info');
+                } else {
+                    debugBtn.style.display = 'none';
+                    console.log('🔧 Modo debug desativado');
+                    showNotification('Modo debug desativado!', 'info');
+                }
+            });
+
+            // Filter events
+            ['dataInicial','dataFinal','tipoFilter'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('change', aplicarFiltros);
+            });
+
+            ['timelineSearch','timelineDate'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', filtrarTimeline);
+            });
+
+            // Enhanced zoom controls for timeline
+            document.addEventListener('wheel', (e) => {
+                if (e.ctrlKey && !document.getElementById('timeline-tab').classList.contains('hidden')) {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    adjustZoom(delta);
+                }
+            }, { passive: false });
+
+            // Touch zoom for mobile
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2 && !document.getElementById('timeline-tab').classList.contains('hidden')) {
+                    isZooming = true;
+                    initialDistance = getDistance(e.touches[0], e.touches[1]);
+                    initialZoom = timelineZoom;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', (e) => {
+                if (isZooming && e.touches.length === 2) {
+                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                    const scale = currentDistance / initialDistance;
+                    const newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+                    
+                    timelineZoom = newZoom;
+                    updateTimelineZoom();
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', (e) => {
+                if (isZooming) {
+                    isZooming = false;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Modal events
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
         }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
 
-            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const tab = document.getElementById(tabName + '-tab');
 
-            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) gerarTimelineVertical();
-            if(tabName === 'configuracoes') atualizarConfiguracoes();
+            button.classList.add('active');
+            tab.classList.remove('hidden');
+
+            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) {
+                gerarTimelineVertical();
+            }
         }
 
         function handleFile(file) {
-            var fileName = file.name;
-            var isCSV = fileName.toLowerCase().endsWith('.csv');
-            var isJSON = fileName.toLowerCase().endsWith('.json');
-            
-            if(!isCSV && !isJSON) {
-                showNotification('Selecione um arquivo CSV ou JSON válido.', 'error');
+            if(!file.name.endsWith('.csv')) {
+                showNotification('Selecione um arquivo CSV válido.', 'error');
                 return;
             }
 
-            document.getElementById('uploadStatus').innerHTML = '<span>Analisando...</span>';
-            var reader = new FileReader();
-            reader.onload = e => {
-                var content = e.target.result;
-                var tipoArquivo = isJSON ? 'json' : 'csv';
-                
-                if (processarArquivoInteligente(content, fileName, tipoArquivo)) {
-                    document.getElementById('uploadStatus').innerHTML = `<span>${fileName}: ${dadosCSV.length} registros</span>`;
-                } else {
-                    document.getElementById('uploadStatus').innerHTML = '<span>Erro</span>';
+            dataSource = 'file';
+            document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Analisando arquivo local...</span>';
+            document.getElementById('processBtn').disabled = true;
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                delimiter: ';',
+                complete: result => processarArquivoCarregado(result, file.name),
+                error: error => {
+                    showNotification('Erro ao ler CSV: ' + error.message, 'error');
+                    document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Erro no arquivo</span>';
                 }
-            };
-            reader.onerror = () => showNotification('Erro ao ler o arquivo.', 'error');
-            reader.readAsText(file);
+            });
+        }
+
+        function processarArquivoCarregado(result, fileName) {
+            dadosCSV = result.data.filter(linha => 
+                linha.Placa && linha.Vaga && linha['Categoria Demora'] && 
+                linha['Data Inicial'] && linha['Data Final'] && 
+                linha['Tempo Indisponível (HH:MM)']
+            );
+
+            if(!dadosCSV.length) {
+                showNotification('Nenhum registro válido no CSV.', 'error');
+                document.getElementById('uploadStatus').innerHTML = '<span id="uploadMethod">Arquivo inválido</span>';
+                return;
+            }
+
+            document.getElementById('uploadStatus').innerHTML = 
+                `<span id="uploadMethod">Arquivo local: ${dadosCSV.length} registros</span>`;
+            document.getElementById('processBtn').disabled = false;
+            showNotification('Arquivo carregado: ' + dadosCSV.length + ' registros prontos.', 'success');
+        }
+
+        function processarArquivo() {
+            let fonte = 'arquivo local';
+            
+            if(!dadosCSV.length) {
+                showNotification('Nenhum dado para processar. Faça upload de um arquivo ou sincronize com GitHub.', 'error');
+                return;
+            }
+
+            if (dataSource === 'github') {
+                fonte = 'GitHub';
+            }
+
+            console.log(`🔄 Processando ${dadosCSV.length} registros de ${fonte}...`);
+            document.getElementById('processBtn').textContent = 'Processando...';
+            document.getElementById('processBtn').disabled = true;
+
+            setTimeout(() => {
+                try {
+                    dadosFiltrados = [...dadosCSV];
+                    console.log('📊 Dados filtrados:', dadosFiltrados.length);
+                    
+                    detectarRegimes(dadosFiltrados);
+                    console.log('⚙️ Regimes detectados:', Object.keys(regimesDisponiveis));
+                    
+                    detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                    console.log('⚠️ Irregularidades detectadas:', apontamentosIrregulares.length);
+                    
+                    equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                    console.log('🚛 Equipamentos processados:', Object.keys(equipamentosProcessados).length);
+                    
+                    exibirResultadosDashboard();
+                    exibirRegimes();
+
+                    document.getElementById('processBtn').textContent = '⚙️ Processar';
+                    document.getElementById('processBtn').disabled = false;
+
+                    // Show controls
+                    document.getElementById('exportControls').classList.remove('hidden');
+                    document.getElementById('filterControls').classList.remove('hidden');
+                    document.getElementById('dashboardControls').classList.remove('hidden');
+
+                    ['statsSection','equipmentGrid'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el) el.classList.remove('hidden');
+                    });
+
+                    const problemsEl = document.getElementById('problemsSection');
+                    if(problemsEl) {
+                        if(apontamentosIrregulares.length) {
+                            problemsEl.classList.remove('hidden');
+                        } else {
+                            problemsEl.classList.add('hidden');
+                        }
+                    }
+
+                    showNotification(`✅ Dados processados com sucesso via ${fonte}! ${dadosFiltrados.length} apontamentos analisados.`, 'success');
+
+                } catch(err) {
+                    console.error('❌ Erro ao processar:', err);
+                    showNotification('Erro ao processar: ' + err.message, 'error');
+                    document.getElementById('processBtn').textContent = '⚙️ Processar';
+                    document.getElementById('processBtn').disabled = false;
+                }
+            }, 100);
         }
 
         function detectarRegimes(dados) {
             regimesDisponiveis = {};
+            
             dados.forEach(apt => {
-                var vaga = apt.Vaga;
+                const vaga = apt.Vaga;
                 if(!vaga) return;
-                var regime = 'ADM';
+
+                let regime = 'ADM';
+                
                 Object.keys(REGIMES_CONFIG).forEach(key => {
-                    if (REGIMES_CONFIG[key].identificadores.some(id => vaga.toUpperCase().includes(id))) {
-                        regime = key;
-                    }
+                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                        if(vaga.toUpperCase().includes(id)) {
+                            regime = key;
+                        }
+                    });
                 });
+
                 if(!regimesDisponiveis[regime]) {
                     regimesDisponiveis[regime] = {
-                        nome: REGIMES_CONFIG[regime].nome,
-                        turnos: REGIMES_CONFIG[regime].turnos,
+                        ...REGIMES_CONFIG[regime],
                         equipamentos: new Set(),
                         apontamentos: 0
                     };
                 }
-                var codigo = extrairCodigoVaga(vaga);
-                if(codigo) regimesDisponiveis[regime].equipamentos.add(codigo);
+
+                const codigo = extrairCodigoVaga(vaga);
+                if(codigo) {
+                    regimesDisponiveis[regime].equipamentos.add(codigo);
+                }
                 regimesDisponiveis[regime].apontamentos++;
             });
-            Object.values(regimesDisponiveis).forEach(r => r.equipamentos = Array.from(r.equipamentos));
+
+            Object.keys(regimesDisponiveis).forEach(regime => {
+                regimesDisponiveis[regime].equipamentos = Array.from(regimesDisponiveis[regime].equipamentos);
+            });
         }
 
         function detectarApontamentosIrregularesInteligente(dados) {
             apontamentosIrregulares = [];
-            var equipamentosContador = dados.reduce((acc, apt) => {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                if(codigo) acc[codigo] = (acc[codigo] || 0) + 1;
-                return acc;
-            }, {});
+            const equipamentosContador = {};
 
             dados.forEach(apt => {
-                var minutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
-                var codigo = extrairCodigoVaga(apt.Vaga);
-
-                if(minutos === 0) {
-                    apontamentosIrregulares.push({ tipo: 'Apontamento Zerado', appointment: apt, ...apt });
-                }
-                if(minutos > 0 && minutos <= 4) {
-                    apontamentosIrregulares.push({ tipo: 'Apontamento Curto', appointment: apt, ...apt });
-                }
-                if(codigo && equipamentosContador[codigo] <= 3) {
-                    apontamentosIrregulares.push({ tipo: 'Poucos Apontamentos', appointment: apt, ...apt });
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if(codigo) {
+                    equipamentosContador[codigo] = (equipamentosContador[codigo] || 0) + 1;
                 }
             });
-            // Remover duplicatas de irregularidades baseadas no appointment
-            apontamentosIrregulares = Array.from(new Map(apontamentosIrregulares.map(item => [item.appointment, item])).values());
+
+            dados.forEach((apt, idx) => {
+                const tempo = apt['Tempo Indisponível (HH:MM)'];
+                const categoria = apt['Categoria Demora'];
+                const minutos = tempoParaMinutos(tempo);
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const intervalo = extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']);
+                const idxOriginal = dadosCSV.indexOf(apt);
+
+                if(minutos === 0) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Zerado',
+                        descricao: `${codigo || 'N/D'} - ${categoria} 00:00`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'BAIXA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+
+                if(minutos > 0 && minutos <= 4) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Apontamento Muito Curto',
+                        descricao: `${codigo || 'N/D'} - ${categoria} de ${tempo}`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'BAIXA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+
+                if(codigo && equipamentosContador[codigo] <= 3) {
+                    apontamentosIrregulares.push({
+                        tipo: 'Equipamento com Poucos Apontamentos',
+                        descricao: `${codigo} - Total de apenas ${equipamentosContador[codigo]} apontamento(s)`,
+                        equipamento: codigo,
+                        categoria: categoria,
+                        tempo: tempo,
+                        intervalo: intervalo,
+                        gravidade: 'ALTA',
+                        index: idxOriginal,
+                        appointment: apt
+                    });
+                }
+            });
         }
 
         function extrairCodigoVaga(nomeVaga) {
             if(!nomeVaga) return null;
-            var nome = nomeVaga.toString().trim().toUpperCase();
-            var patterns = [
-                {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)/, prefix: 'AP'},
-                {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)/, prefix: 'AV'},
-                {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)/, prefix: 'HP'}
+
+            const nome = nomeVaga.toString().trim().toUpperCase();
+            
+            const patterns = [
+                {regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AP'},
+                {regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'AV'},
+                {regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)(?: - (16 HS|24 HS|ADM))?/, prefix: 'HP'}
             ];
+
             for(const pattern of patterns) {
-                var match = nome.match(pattern.regex);
-                if(match) return `${pattern.prefix}-${match[1].padStart(2, '0')}`;
+                const match = nome.match(pattern.regex);
+                if(match) {
+                    const numero = match[1].padStart(2, '0');
+                    let codigo = `${pattern.prefix}-${numero}`;
+                    
+                    if(match[2]) {
+                        if(match[2] === '24 HS') codigo += ' - 24HS';
+                        else if(match[2] === '16 HS') codigo += ' - 16HS';
+                        else if(match[2] === 'ADM') codigo += ' - ADM';
+                    }
+                    
+                    return codigo;
+                }
             }
+
             return null;
         }
 
@@ -2099,74 +2309,125 @@
 
         function extrairIntervaloTempo(dataInicial, dataFinal) {
             if(!dataInicial || !dataFinal) return 'N/A';
-            return `${extrairHora(dataInicial) || ''} às ${extrairHora(dataFinal) || ''}`;
+            
+            const horaInicial = extrairHora(dataInicial);
+            const horaFinal = extrairHora(dataFinal);
+            
+            return horaInicial && horaFinal ? `${horaInicial} às ${horaFinal}` : horaInicial || horaFinal || 'N/A';
         }
 
         function parseDataHora(str) {
             if(!str) return null;
-            var match = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})/);
-            return match ? new Date(match[3], match[2]-1, match[1], match[4], match[5]) : null;
+            const pattern = str.match(/(\d{2})\/(\d{2})\/(\d{4})\s*(\d{2}):(\d{2})(?::\d{2})?/);
+            return pattern ? new Date(pattern[3], pattern[2]-1, pattern[1], pattern[4], pattern[5], 0) : null;
         }
 
         function processarEquipamentosDoCSV(apontamentos) {
-            var equipamentos = {};
-            apontamentos.forEach(apt => {
-                var codigo = extrairCodigoVaga(apt.Vaga);
-                if(!codigo) return;
-                if(!equipamentos[codigo]) {
-                    equipamentos[codigo] = { codigo, tipo: getTipoEquipamento(codigo), totalApontamentos: 0, apontamentos: [], primeiroRegistro: null };
-                }
-                var equipamento = equipamentos[codigo];
-                var dataHoraInicio = parseDataHora(apt['Data Inicial']);
-                var inicioHHMM = extrairHora(apt['Data Inicial']);
+            const equipamentos = {};
+            const codigosUnicos = new Set(apontamentos.map(apt => extrairCodigoVaga(apt.Vaga)).filter(Boolean));
 
-                equipamento.apontamentos.push({
+            codigosUnicos.forEach(codigo => {
+                equipamentos[codigo] = {
+                    codigo: codigo,
+                    tipo: getTipoEquipamento(codigo),
+                    totalApontamentos: 0,
+                    apontamentos: [],
+                    primeiroRegistro: null,
+                    status: 'CRITICO'
+                };
+            });
+
+            apontamentos.forEach((apt) => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if(!codigo || !equipamentos[codigo]) return;
+
+                const equipamento = equipamentos[codigo];
+                const indexOriginal = dadosCSV.indexOf(apt);
+
+                const dataHoraInicio = parseDataHora(apt['Data Inicial']);
+                const dataHoraFim = parseDataHora(apt['Data Final']);
+
+                const objApontamento = {
                     categoria: apt['Categoria Demora'],
-                    dataHoraInicio,
+                    dataInicialOriginal: apt['Data Inicial'],
+                    dataFinalOriginal: apt['Data Final'],
+                    dataHoraInicio: dataHoraInicio,
+                    dataHoraFim: dataHoraFim,
                     tempoIndisponivel: apt['Tempo Indisponível (HH:MM)'],
-                    inicioHHMM,
+                    inicioHHMM: extrairHora(apt['Data Inicial']),
                     intervalo: extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']),
-                    irregular: apontamentosIrregulares.some(irr => irr.appointment === apt),
+                    irregular: apontamentosIrregulares.some(irr => irr.index === indexOriginal),
+                    placa: apt.Placa,
+                    vaga: apt.Vaga,
                     originalData: apt
-                });
+                };
+
+                equipamento.apontamentos.push(objApontamento);
                 equipamento.totalApontamentos++;
-                if(!equipamento.primeiroRegistro || (inicioHHMM && horaParaMinutos(inicioHHMM) < horaParaMinutos(equipamento.primeiroRegistro))) {
-                    equipamento.primeiroRegistro = inicioHHMM;
+
+                if(!equipamento.primeiroRegistro || 
+                   (objApontamento.inicioHHMM && horaParaMinutos(objApontamento.inicioHHMM) < horaParaMinutos(equipamento.primeiroRegistro))) {
+                    equipamento.primeiroRegistro = objApontamento.inicioHHMM;
                 }
             });
-            Object.values(equipamentos).forEach(eq => eq.status = calcularStatusInteligente(eq));
+
+            Object.values(equipamentos).forEach(equipamento => {
+                equipamento.status = calcularStatusInteligente(equipamento);
+            });
+
             return equipamentos;
         }
 
         function calcularStatusInteligente(equipamento) {
-            var total = equipamento.totalApontamentos;
-            var irregulares = equipamento.apontamentos.filter(apt => apt.irregular).length;
-            if(total <= 3 || irregulares / total > 0.4) return 'CRITICO';
-            if(irregulares / total > 0.2 || total < 6) return 'ATENCAO';
+            const { totalApontamentos, apontamentos } = equipamento;
+            const irregulares = apontamentos.filter(apt => apt.irregular).length;
+
+            if(totalApontamentos <= 3) return 'CRITICO';
+            if(irregulares > totalApontamentos * 0.4) return 'CRITICO';
+            if(irregulares > totalApontamentos * 0.2 || totalApontamentos < 6) return 'ATENCAO';
+            
             return 'BOM';
         }
 
         function extrairHora(timestamp) {
             if(!timestamp) return null;
-            var match = timestamp.toString().match(/(\d{2}:\d{2})/);
-            return match ? match[1] : null;
+            const match = timestamp.toString().match(/(\d{1,2}:\d{2}(?::\d{2})?)/);
+            if(match && match[1]) {
+                const [horas, minutos] = match[1].split(':');
+                return `${horas.padStart(2, '0')}:${minutos.padStart(2, '0')}`;
+            }
+            return null;
         }
 
-        function horaParaMinutos(hora) {
+        const horaParaMinutos = hora => {
             if(!hora || !hora.includes(':')) return 1441;
-            var [h, m] = hora.split(':').map(Number);
-            return h * 60 + m;
-        }
+            return hora.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
+        };
 
-        function tempoParaMinutos(tempo) {
+        const tempoParaMinutos = tempo => {
             if(!tempo || !tempo.includes(':')) return 0;
-            var [h, m] = tempo.split(':').map(Number);
-            return h * 60 + m;
+            return tempo.split(':').map(Number).reduce((acc, val, idx) => idx ? acc + val : acc + val * 60, 0);
+        };
+
+        function getCorCategoria(categoria) {
+            const key = categoria.toUpperCase();
+            return CATEGORIA_CORES[key] || '#7f8c8d';
         }
 
         function getCategoriaCSS(categoria) {
-            var clean = (categoria || 'unknown').toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-            return 'categoria-' + clean;
+            const cleanCategory = categoria.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[()]/g, '')
+                .replace(/ç/g, 'c')
+                .replace(/ã/g, 'a')
+                .replace(/á/g, 'a')
+                .replace(/é/g, 'e')
+                .replace(/í/g, 'i')
+                .replace(/ó/g, 'o')
+                .replace(/ú/g, 'u')
+                .replace(/--+/g, '-');
+            
+            return 'categoria-' + cleanCategory;
         }
 
         function exibirResultadosDashboard() {
@@ -2176,294 +2437,811 @@
         }
 
         function exibirEstatisticas() {
-            var stats = { total: Object.keys(equipamentosProcessados).length, bom: 0, atencao: 0, critico: 0, totalApontamentos: dadosFiltrados.length, irregulares: apontamentosIrregulares.length };
-            Object.values(equipamentosProcessados).forEach(eq => stats[eq.status.toLowerCase()]++);
-            document.getElementById('statsSection').innerHTML = `
-                <div class="stat-card"><div class="stat-number">${stats.total}</div><div class="stat-label">Equipamentos</div></div>
-                <div class="stat-card"><div class="stat-number stat-bom">${stats.bom}</div><div class="stat-label">Status Bom</div></div>
-                <div class="stat-card"><div class="stat-number stat-atencao">${stats.atencao}</div><div class="stat-label">Status Atenção</div></div>
-                <div class="stat-card"><div class="stat-number stat-critico">${stats.critico}</div><div class="stat-label">Status Crítico</div></div>
-                <div class="stat-card"><div class="stat-number">${stats.totalApontamentos}</div><div class="stat-label">Apontamentos</div></div>
-                <div class="stat-card"><div class="stat-number stat-critico">${stats.irregulares}</div><div class="stat-label">Irregulares</div></div>`;
+            const stats = {
+                total: Object.keys(equipamentosProcessados).length,
+                bom: 0,
+                atencao: 0,
+                critico: 0,
+                totalApontamentos: dadosFiltrados.length,
+                irregulares: apontamentosIrregulares.length
+            };
+
+            Object.values(equipamentosProcessados).forEach(eq => {
+                stats[eq.status.toLowerCase()]++;
+            });
+
+            const container = document.getElementById('statsSection');
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Equipamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-bom">${stats.bom}</div>
+                    <div class="stat-label">Status Bom</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-atencao">${stats.atencao}</div>
+                    <div class="stat-label">Status Atenção</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-critico">${stats.critico}</div>
+                    <div class="stat-label">Status Crítico</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.totalApontamentos}</div>
+                    <div class="stat-label">Apontamentos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number stat-critico">${stats.irregulares}</div>
+                    <div class="stat-label">Irregulares</div>
+                </div>
+            `;
         }
 
         function exibirProblemas() {
-            var container = document.getElementById('problemsList');
+            const container = document.getElementById('problemsList');
             if(!apontamentosIrregulares.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada.</p>';
-                document.getElementById('problemsSection').classList.add('hidden');
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary)">Nenhuma irregularidade detectada nos dados atuais.</p>';
                 return;
             }
-            
-            var uniqueProblems = Array.from(new Map(apontamentosIrregulares.map(p => [p.tipo + (p.Equipamento || ''), p])).values());
-            
-            container.innerHTML = uniqueProblems.slice(0, 5).map(p => {
-                const desc = `${p.tipo} em ${p.Equipamento || extrairCodigoVaga(p.Vaga) || 'N/D'}`;
-                return `<div class="problem-item" onclick='showAppointmentDetails(${JSON.stringify(p.appointment).replace(/"/g, "&quot;")})'>
-                    <div class="problem-type">${p.tipo}</div>
-                    <div class="problem-details">${desc}</div>
-                </div>`
-            }).join('');
-            
-            var viewAllBtn = document.getElementById('viewAllProblemsBtn');
-            viewAllBtn.textContent = `Ver Todos (${apontamentosIrregulares.length})`;
-            viewAllBtn.style.display = 'inline-flex';
-            document.getElementById('problemsSection').classList.remove('hidden');
+
+            const displayCount = Math.min(3, apontamentosIrregulares.length);
+            const byType = apontamentosIrregulares.slice(0, displayCount).reduce((acc, problema) => {
+                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
+                <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(items[0].appointment).replace(/"/g, '&quot;')})">
+                    <div class="problem-type">${tipo} (${items.length})</div>
+                    <div class="problem-details">
+                        ${items.slice(0, 2).map(p => p.descricao).join('<br>')}
+                        ${items.length > 2 ? `<br>...(+${items.length - 2} outros)` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            const viewAllBtn = document.getElementById('viewAllProblemsBtn');
+            if(apontamentosIrregulares.length > 3) {
+                viewAllBtn.textContent = `Ver Todos (${apontamentosIrregulares.length})`;
+                viewAllBtn.style.display = 'inline-flex';
+            } else {
+                viewAllBtn.style.display = 'none';
+            }
         }
 
         function showAllProblems() {
-            var modal = document.getElementById('problemsModal');
-            var container = document.getElementById('allProblemsContainer');
-            var byType = {};
-            apontamentosIrregulares.forEach(p => {
-                if(!byType[p.tipo]) byType[p.tipo] = [];
-                byType[p.tipo].push(p);
-            });
-            var html = Object.keys(byType).map(tipo => `
+            const modal = document.getElementById('problemsModal');
+            const container = document.getElementById('allProblemsContainer');
+            
+            const byType = apontamentosIrregulares.reduce((acc, problema) => {
+                (acc[problema.tipo] = acc[problema.tipo] || []).push(problema);
+                return acc;
+            }, {});
+
+            container.innerHTML = Object.entries(byType).map(([tipo, items]) => `
                 <div style="margin-bottom: 1rem;">
-                    <h4 style="color: #92400e; margin-bottom: 0.5rem;">${tipo} (${byType[tipo].length})</h4>
-                    ${byType[tipo].map(p => {
-                        const desc = `${p.tipo} em ${p.Equipamento || extrairCodigoVaga(p.Vaga) || 'N/D'}`;
-                        return `<div class="problem-item" onclick='showAppointmentDetails(${JSON.stringify(p.appointment).replace(/"/g, "&quot;")})'><div class="problem-details">${desc}</div></div>`
-                    }).join('')}
-                </div>`).join('');
-            container.innerHTML = html;
+                    <h4 style="color: #92400e; margin-bottom: 0.5rem; font-size: 1rem;">${tipo} (${items.length})</h4>
+                    ${items.map(problema => `
+                        <div class="problem-item" onclick="showAppointmentDetails(${JSON.stringify(problema.appointment).replace(/"/g, '&quot;')})" style="margin-bottom: 0.5rem; cursor: pointer;">
+                            <div class="problem-details">${problema.descricao}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
             modal.classList.add('show');
         }
 
         function exibirEquipamentos() {
-            var container = document.getElementById('equipmentGrid');
-            var equipamentos = Object.values(equipamentosProcessados).sort((a,b) => a.codigo.localeCompare(b.codigo));
+            const container = document.getElementById('equipmentGrid');
+            const equipamentos = Object.values(equipamentosProcessados).sort((a, b) => a.codigo.localeCompare(b.codigo));
+
             if(!equipamentos.length) {
-                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento para exibir.</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem">Nenhum equipamento encontrado.</p>';
                 return;
             }
-            container.innerHTML = equipamentos.map(eq => {
-                var tipoTexto = {AP: 'Alta Pressão', AV: 'Auto Vácuo', HP: 'Hiper Vácuo'}[eq.tipo] || 'N/D';
-                var appointmentsList = eq.apontamentos.length ? `<div class="appointments-list">${eq.apontamentos.map(apt => `
-                    <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick='showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, "&quot;")})'>
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
-                            <span style="font-weight: 600;">${apt.categoria.substring(0,25)}</span>
-                            <span>${apt.tempoIndisponivel}</span>
-                        </div>
-                    </div>`).join('')}</div>` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>';
-                
-                return `<div class="equipment-card status-${eq.status.toLowerCase()}">
+
+            container.innerHTML = equipamentos.map(eq => `
+                <div class="equipment-card ${statusColorsEnabled ? 'status-colored' : ''} status-${eq.status.toLowerCase()}">
                     <div class="equipment-header">
-                        <div><div class="equipment-code-card">${eq.codigo}</div><div class="equipment-type">${tipoTexto}</div></div>
+                        <div>
+                            <div class="equipment-code-card">${eq.codigo}</div>
+                            <div class="equipment-type">
+                                ${eq.tipo === 'AP' ? 'Alta Pressão' : 
+                                  eq.tipo === 'AV' ? 'Auto Vácuo' : 
+                                  eq.tipo === 'HP' ? 'Hiper Vácuo' : 'N/D'}
+                            </div>
+                        </div>
                         <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
                     </div>
-                    ${appointmentsList}
-                </div>`;
-            }).join('');
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1.25rem; font-weight: bold; color: var(--text-primary);">${eq.totalApontamentos}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.75rem; background: var(--accent-bg); border-radius: 6px;">
+                            <div style="font-size: 1rem; font-weight: bold; color: var(--text-primary);">${eq.primeiroRegistro || 'N/A'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary);">1º Registro</div>
+                        </div>
+                    </div>
+                    ${eq.apontamentos.length ? `
+                        <div class="appointments-list">
+                            ${eq.apontamentos.map(apt => `
+                                <div class="appointment-item ${apt.irregular ? 'irregular' : ''}" onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                        <span style="font-weight: 600; font-size: 0.8rem;">${apt.categoria.length > 25 ? apt.categoria.substring(0, 25) + '...' : apt.categoria}</span>
+                                        <span style="font-size: 0.7rem; color: var(--text-secondary);">${apt.tempoIndisponivel}</span>
+                                    </div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">${apt.intervalo}</div>
+                                    ${apt.irregular ? '<div style="color: var(--danger-color); font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="text-align:center;color:var(--text-secondary);padding:1rem">Sem apontamentos</div>'}
+                </div>
+            `).join('');
         }
 
         function exibirRegimes() {
-            var container = document.getElementById('regimeContainer');
+            const container = document.getElementById('regimeContainer');
+            
             if(!Object.keys(regimesDisponiveis).length) {
-                container.innerHTML = '<div style="text-align: center; padding: 2rem;">Nenhum regime detectado.</div>';
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum regime detectado nos dados carregados.</div>';
                 return;
             }
-            container.innerHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">${
-                Object.keys(regimesDisponiveis).map(key => {
-                    var regime = regimesDisponiveis[key];
-                    return `<div class="equipment-card">
-                        <h3>${regime.nome}</h3>
-                        <p>${regime.equipamentos.length} equipamentos, ${regime.apontamentos} apontamentos</p>
-                        <button class="btn btn-primary btn-sm" onclick="ativarRegime('${key}')">${regimeAtivo === key ? 'Ativo' : 'Ativar'}</button>
-                    </div>`;
-                }).join('')
-            }</div><div style="text-align:center; margin-top: 1rem;"><button class="btn btn-danger" onclick="limparRegime()">Limpar Filtro</button></div>`;
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    ${Object.entries(regimesDisponiveis).map(([key, regime]) => `
+                        <div style="background: var(--surface); border-radius: 8px; padding: 1rem; border: 1px solid ${regimeAtivo === key ? 'var(--success-color)' : 'var(--border-color)'};">
+                            <h3 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">${regime.nome}</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.8rem;">
+                                ${regime.turnos.map(turno => `${turno.inicio} - ${turno.fim}`).join(' | ')}
+                            </p>
+                            <button class="btn ${regimeAtivo === key ? 'btn-success' : 'btn-primary'} btn-sm" onclick="ativarRegime('${key}')" style="width: 100%; margin-bottom: 0.75rem;">
+                                ${regimeAtivo === key ? 'Ativo' : 'Ativar'}
+                            </button>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.equipamentos.length}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Equipamentos</div>
+                                </div>
+                                <div style="text-align: center; padding: 0.5rem; background: var(--accent-bg); border-radius: 6px;">
+                                    <div style="font-weight: bold; color: var(--text-primary); font-size: 0.9rem;">${regime.apontamentos}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Apontamentos</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn btn-success" onclick="exportarPorRegime()" ${!regimeAtivo ? 'disabled' : ''} style="margin-right: 0.5rem;">
+                        Exportar Regime Ativo
+                    </button>
+                    <button class="btn btn-primary" onclick="limparRegime()">Limpar Filtro</button>
+                </div>
+            `;
         }
 
         function ativarRegime(regime) {
             regimeAtivo = regime;
-            aplicarFiltros();
+            exibirRegimes();
+            aplicarFiltroRegime();
             showNotification(`Regime ${regimesDisponiveis[regime].nome} ativado!`, 'success');
         }
 
         function limparRegime() {
             regimeAtivo = null;
-            aplicarFiltros();
-            showNotification('Filtro de regime removido.', 'info');
+            exibirRegimes();
+            dadosFiltrados = [...dadosCSV];
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
+            showNotification('Filtro de regime removido.', 'success');
+        }
+
+        function aplicarFiltroRegime() {
+            if(!regimeAtivo) return;
+
+            const config = regimesDisponiveis[regimeAtivo];
+            dadosFiltrados = dadosCSV.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            detectarApontamentosIrregularesInteligente(dadosFiltrados);
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+            exibirResultadosDashboard();
         }
 
         function aplicarFiltros() {
-            var dataInicial = document.getElementById('dataInicial').value;
-            var dataFinal = document.getElementById('dataFinal').value;
-            var tipoFilter = document.getElementById('tipoFilter').value;
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+            const tipoFilter = document.getElementById('tipoFilter').value;
 
             dadosFiltrados = dadosCSV.filter(apt => {
-                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
-                if(regimeAtivo && !regimesDisponiveis[regimeAtivo].equipamentos.has(extrairCodigoVaga(apt.Vaga))) return false;
-                
-                var dataStr = apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : null;
+                const dataStr = apt['Data Inicial']?.split(' ')[0];
                 if(dataStr) {
-                    var [d, m, y] = dataStr.split('/');
-                    var dataObj = new Date(`${y}-${m}-${d}T00:00:00Z`);
-                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00Z')) return false;
-                    if(dataFinal && dataObj > new Date(dataFinal + 'T23:59:59Z')) return false;
+                    const [day, month, year] = dataStr.split('/');
+                    const dataObj = new Date(`${year}-${month}-${day}T00:00:00`);
+                    
+                    if(dataInicial && dataObj < new Date(dataInicial + 'T00:00:00')) return false;
+                    if(dataFinal && dataObj > new Date(dataFinal + 'T00:00:00')) return false;
+                } else if(dataInicial || dataFinal) {
+                    return false;
                 }
+
+                if(tipoFilter && getTipoEquipamento(extrairCodigoVaga(apt.Vaga)) !== tipoFilter) return false;
+
                 return true;
             });
 
-            processarDadosAutomaticoComFiltro();
-            showNotification(`Filtros aplicados! ${dadosFiltrados.length} resultados.`, 'success');
+            if(regimeAtivo) {
+                const config = regimesDisponiveis[regimeAtivo];
+                dadosFiltrados = dadosFiltrados.filter(apt => {
+                    const codigo = extrairCodigoVaga(apt.Vaga);
+                    return config.equipamentos.includes(codigo);
+                });
+            }
+
+            if(dadosFiltrados.length) {
+                detectarApontamentosIrregularesInteligente(dadosFiltrados);
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
+                exibirResultadosDashboard();
+                gerarTimelineVertical();
+                showNotification('Filtros aplicados! ' + dadosFiltrados.length + ' apontamentos encontrados.', 'success');
+            } else {
+                equipamentosProcessados = {};
+                apontamentosIrregulares = [];
+                exibirResultadosDashboard();
+                showNotification('Nenhum apontamento encontrado com os filtros aplicados.', 'error');
+            }
         }
 
-        function processarDadosAutomaticoComFiltro() {
-             detectarRegimes(dadosFiltrados);
-             detectarApontamentosIrregularesInteligente(dadosFiltrados);
-             equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-             exibirResultadosDashboard();
-             exibirRegimes();
-             if(!document.getElementById('timeline-tab').classList.contains('hidden')) gerarTimelineVertical();
-        }
-
+        // Enhanced Timeline Functions
         function setTimelineColumns(columns) {
             timelineColumns = columns;
+            
             document.querySelectorAll('.column-btn').forEach(btn => btn.classList.remove('active'));
-            var activeBtn = Array.from(document.querySelectorAll('.column-btn')).find(b => b.textContent == columns);
-            if(activeBtn) activeBtn.classList.add('active');
-            document.getElementById('timelineGrid').className = `timeline-grid cols-${columns}`;
+            event.target.classList.add('active');
+            
+            const grid = document.getElementById('timelineGrid');
+            grid.className = `timeline-grid cols-${columns}`;
+            
+            gerarTimelineVertical();
         }
 
         function gerarTimelineVertical() {
-            var container = document.getElementById('timelineGrid');
-            var equipamentos = Object.values(equipamentosProcessados).sort((a,b) => a.codigo.localeCompare(b.codigo));
+            const container = document.getElementById('timelineGrid');
+            const equipamentos = Object.values(equipamentosProcessados);
+            
             if(!equipamentos.length) {
-                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">Nenhum equipamento para exibir.</div>';
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem; grid-column: 1 / -1;">Nenhum equipamento encontrado para exibir na timeline.</div>';
                 return;
             }
-            container.innerHTML = equipamentos.map(eq => {
-                var timelineLaneHTML = gerarApontamentosTimelineInteligente(eq.apontamentos);
-                return `<div class="timeline-equipment" data-equipment-code="${eq.codigo}" data-equipment-type="${eq.tipo}">
-                    <div class="timeline-equipment-header"><div class="equipment-code">${eq.codigo}</div></div>
-                    <div class="timeline-content">
-                        <div class="timeline-hours">${Array.from({length: 24}, (_, i) => `<div class="timeline-hour">${String(i).padStart(2,'0')}</div>`).join('')}</div>
-                        <div class="timeline-lane">${timelineLaneHTML}</div>
+
+            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+            container.innerHTML = equipamentos.map(equipamento => {
+                const apontamentosOrdenados = [...equipamento.apontamentos].sort((a, b) => 
+                    (a.dataHoraInicio || 0) - (b.dataHoraInicio || 0)
+                );
+
+                return `
+                    <div class="timeline-equipment" data-equipment-code="${equipamento.codigo}" data-equipment-type="${equipamento.tipo}">
+                        <div class="timeline-equipment-header">
+                            <div class="equipment-code">${equipamento.codigo}</div>
+                            <div class="equipment-info">
+                                ${equipamento.tipo === 'AP' ? 'Alta Pressão' : 
+                                  equipamento.tipo === 'AV' ? 'Auto Vácuo' : 'Hiper Vácuo'} | 
+                                ${equipamento.totalApontamentos} apontamentos | 
+                                ${equipamento.status}
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-hours">
+                                ${Array.from({length: 24}, (_, i) => `
+                                    <div class="timeline-hour">${String(i).padStart(2, '0')}</div>
+                                `).join('')}
+                            </div>
+                            <div class="timeline-lane">
+                                ${gerarApontamentosTimelineInteligente(apontamentosOrdenados)}
+                            </div>
+                        </div>
                     </div>
-                </div>`;
+                `;
             }).join('');
+
             updateTimelineZoom();
+            filtrarTimeline();
         }
 
         function gerarApontamentosTimelineInteligente(apontamentos) {
-            // Simplificado para garantir a renderização
-            return apontamentos.map(apt => {
-                var inicioMinutos = horaParaMinutos(apt.inicioHHMM);
-                var duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel) || 5;
-                var top = (inicioMinutos / 1440) * 600;
-                var height = (duracaoMinutos / 1440) * 600;
-                return `<div class="timeline-appointment ${getCategoriaCSS(apt.categoria)}" 
-                    style="top: ${top}px; height: ${Math.max(height, 15)}px;"
-                    onclick='showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, "&quot;")})'>
-                    ${apt.categoria}
-                </div>`;
-            }).join('');
+            if(!apontamentos.length) return '';
+
+            let html = '';
+            
+            // Group by date and sort
+            const appointmentsByDate = {};
+            apontamentos.forEach(apt => {
+                const dateStr = apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : '';
+                if(!appointmentsByDate[dateStr]) {
+                    appointmentsByDate[dateStr] = [];
+                }
+                appointmentsByDate[dateStr].push(apt);
+            });
+
+            // Process each date
+            Object.keys(appointmentsByDate).forEach(date => {
+                const dayAppointments = appointmentsByDate[date].sort((a, b) => 
+                    horaParaMinutos(a.inicioHHMM || '00:00') - horaParaMinutos(b.inicioHHMM || '00:00')
+                );
+                
+                let lastEndTime = 0;
+
+                // Detect overlapping appointments
+                const processedAppointments = [];
+                dayAppointments.forEach((apt, index) => {
+                    if(!apt.inicioHHMM || !apt.tempoIndisponivel) return;
+
+                    const inicioMinutos = horaParaMinutos(apt.inicioHHMM);
+                    const duracaoMinutos = tempoParaMinutos(apt.tempoIndisponivel);
+
+                    if(!duracaoMinutos) return;
+
+                    // Check for overlaps with previous appointments
+                    let isOverlapping = false;
+                    if(index > 0) {
+                        const prevApt = processedAppointments[processedAppointments.length - 1];
+                        if(prevApt && inicioMinutos < prevApt.endTime) {
+                            isOverlapping = true;
+                        }
+                    }
+
+                    processedAppointments.push({
+                        ...apt,
+                        startTime: inicioMinutos,
+                        endTime: inicioMinutos + duracaoMinutos,
+                        isOverlapping: isOverlapping
+                    });
+                });
+
+                // Generate gaps
+                processedAppointments.forEach((apt, index) => {
+                    if(showTimeGaps) {
+                        if(index === 0 && apt.startTime > 420) { // Start gap after 7AM
+                            const gapHeight = ((apt.startTime - 420) / 1440) * 600;
+                            if(gapHeight > 25) {
+                                const gapHours = Math.round((apt.startTime - 420) / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${(420 / 1440) * 600}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h sem atividade</div>
+                                    </div>
+                                `;
+                            }
+                        } else if(index > 0 && apt.startTime > lastEndTime + 30) {
+                            const gapStart = (lastEndTime / 1440) * 600;
+                            const gapDuration = apt.startTime - lastEndTime;
+                            const gapHeight = (gapDuration / 1440) * 600;
+                            
+                            if(gapHeight > 20) {
+                                const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                                html += `
+                                    <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                        <div class="gap-label">${gapHours}h</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+
+                    // Generate appointment block
+                    const top = (apt.startTime / 1440) * 600;
+                    const height = Math.max((apt.endTime - apt.startTime) / 1440 * 600, 18);
+                    const cssClass = getCategoriaCSS(apt.categoria);
+
+                    html += `
+                        <div class="timeline-appointment ${cssClass} ${apt.irregular ? 'irregular' : ''} ${apt.isOverlapping ? 'overlapping' : ''}" 
+                             style="top: ${top.toFixed(2)}px; height: ${height.toFixed(2)}px;" 
+                             onclick="showAppointmentDetails(${JSON.stringify(apt.originalData).replace(/"/g, '&quot;')})"
+                             data-category="${apt.categoria.toLowerCase()}"
+                             data-date="${apt.dataInicialOriginal ? apt.dataInicialOriginal.split(' ')[0] : ''}"
+                             data-status="${apt.irregular ? 'irregular' : 'normal'}">
+                            <div class="appointment-text">${apt.categoria}</div>
+                        </div>
+                    `;
+
+                    lastEndTime = Math.max(lastEndTime, apt.endTime);
+                });
+
+                // End of day gap
+                if(showTimeGaps && lastEndTime < 1320 && lastEndTime > 0) {
+                    const gapStart = (lastEndTime / 1440) * 600;
+                    const gapDuration = 1320 - lastEndTime;
+                    const gapHeight = (gapDuration / 1440) * 600;
+                    
+                    if(gapHeight > 25) {
+                        const gapHours = Math.round(gapDuration / 60 * 10) / 10;
+                        html += `
+                            <div class="time-gap" style="top: ${gapStart.toFixed(2)}px; height: ${gapHeight.toFixed(2)}px;">
+                                <div class="gap-label">${gapHours}h sem atividade</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            return html;
         }
 
         function filtrarTimeline() {
-            var pesquisa = document.getElementById('timelineSearch').value.toLowerCase();
+            const pesquisa = (document.getElementById('timelineSearch').value || '').toLowerCase();
+            const data = document.getElementById('timelineDate').value;
+
             document.querySelectorAll('.timeline-equipment').forEach(div => {
-                div.style.display = div.dataset.equipmentCode.toLowerCase().includes(pesquisa) ? 'block' : 'none';
+                const codigo = div.dataset.equipmentCode;
+                let mostrar = true;
+
+                if(pesquisa && !codigo.toLowerCase().includes(pesquisa)) mostrar = false;
+
+                if(mostrar && data) {
+                    let temBlocoVisivel = false;
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        const [dia, mes, ano] = bloco.dataset.date.split('/');
+                        const blocoData = `${ano}-${mes}-${dia}`;
+                        const mostrarBloco = blocoData === data;
+                        
+                        bloco.style.display = mostrarBloco ? 'flex' : 'none';
+                        if(mostrarBloco) temBlocoVisivel = true;
+                    });
+
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = data ? 'none' : 'flex';
+                    });
+                    
+                    if(!temBlocoVisivel && data) mostrar = false;
+                } else {
+                    div.querySelectorAll('.timeline-appointment').forEach(bloco => {
+                        bloco.style.display = 'flex';
+                    });
+                    div.querySelectorAll('.time-gap').forEach(gap => {
+                        gap.style.display = showTimeGaps ? 'flex' : 'none';
+                    });
+                }
+
+                div.style.display = mostrar ? 'block' : 'none';
             });
         }
 
+        // Modal Functions
         function showAppointmentDetails(appointment) {
             closeModal();
+            
             setTimeout(() => {
-                var modal = document.getElementById('appointmentModal');
-                var container = document.getElementById('appointmentDetails');
-                var codigo = extrairCodigoVaga(appointment.Vaga);
-                var isIrregular = apontamentosIrregulares.some(irr => irr.appointment === appointment);
-                container.innerHTML = [
-                    {label: 'Status', value: isIrregular ? 'IRREGULAR' : 'NORMAL', color: isIrregular ? 'var(--danger-color)' : 'var(--success-color)'},
-                    {label: 'Equipamento', value: codigo || 'N/D'},
-                    {label: 'Categoria', value: appointment['Categoria Demora']},
-                    {label: 'Data Inicial', value: appointment['Data Inicial']},
-                    {label: 'Data Final', value: appointment['Data Final']},
-                    {label: 'Duração', value: appointment['Tempo Indisponível (HH:MM)']},
-                    {label: 'Placa', value: appointment.Placa},
-                    {label: 'Vaga', value: appointment.Vaga, small: true},
-                ].map(d => `<div class="modal-detail">
-                    <span class="modal-label">${d.label}:</span>
-                    <span class="modal-value" style="${d.color ? 'color:'+d.color : ''}; ${d.small ? 'font-size:0.8rem' : ''}">${d.value || 'N/A'}</span>
-                </div>`).join('');
+                const modal = document.getElementById('appointmentModal');
+                const container = document.getElementById('appointmentDetails');
+                
+                const codigo = extrairCodigoVaga(appointment.Vaga);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === dadosCSV.indexOf(appointment));
+                
+                container.innerHTML = `
+                    <div class="modal-detail">
+                        <span class="modal-label">Status:</span>
+                        <span class="modal-value" style="color: ${isIrregular ? 'var(--danger-color)' : 'var(--success-color)'};">
+                            ${isIrregular ? 'IRREGULAR' : 'NORMAL'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Equipamento:</span>
+                        <span class="modal-value">${codigo || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Categoria:</span>
+                        <span class="modal-value">${appointment['Categoria Demora'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Inicial:</span>
+                        <span class="modal-value">${appointment['Data Inicial'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Data Final:</span>
+                        <span class="modal-value">${appointment['Data Final'] || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Tempo Indisponível:</span>
+                        <span class="modal-value" style="color: ${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']) === 0 ? 'var(--danger-color)' : 'var(--text-primary)'};">
+                            ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'}
+                        </span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Placa:</span>
+                        <span class="modal-value">${appointment.Placa || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Vaga Completa:</span>
+                        <span class="modal-value">${appointment.Vaga || 'N/D'}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Intervalo:</span>
+                        <span class="modal-value">${extrairIntervaloTempo(appointment['Data Inicial'], appointment['Data Final'])}</span>
+                    </div>
+                    <div class="modal-detail">
+                        <span class="modal-label">Duração (minutos):</span>
+                        <span class="modal-value">${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)'])} min</span>
+                    </div>
+                `;
+
                 modal.classList.add('show');
             }, 100);
         }
 
         function closeModal() {
-            document.querySelectorAll('.modal.show').forEach(modal => modal.classList.remove('show'));
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('show');
+            });
         }
 
+        // Export Functions
         function exportarRelatorioAutomatizado(formato) {
-            if(!dadosFiltrados.length) { return showNotification('Nenhum dado para exportar.', 'error'); }
-            var dados = dadosFiltrados.map(apt => ({
-                'Equipamento': extrairCodigoVaga(apt.Vaga) || '',
-                'Data': apt['Data Inicial'] ? apt['Data Inicial'].split(' ')[0] : '',
-                'Categoria': apt['Categoria Demora'] || '',
-                'Intervalo': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
-            }));
-            var nome = `Relatorio_Apontamentos_${new Date().toISOString().split('T')[0]}`;
-            if(formato === 'xlsx') exportarParaXLSX(dados, nome); else exportarParaCSV(dados, nome);
+            if(!dadosFiltrados.length) {
+                showNotification('Nenhum apontamento para exportar.', 'error');
+                return;
+            }
+
+            const dados = dadosFiltrados.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                let regime = 'ADM';
+                Object.keys(REGIMES_CONFIG).forEach(key => {
+                    REGIMES_CONFIG[key].identificadores.forEach(id => {
+                        if(apt.Vaga && apt.Vaga.toUpperCase().includes(id)) {
+                            regime = REGIMES_CONFIG[key].nome;
+                        }
+                    });
+                });
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': regime,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Relatorio_Automatizado_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            
+            if(formato === 'xlsx') {
+                exportarParaXLSX(dados, nome);
+            } else {
+                exportarParaCSV(dados, nome);
+            }
+
+            showNotification(`Relatório automatizado exportado! ${dados.length} registros processados.`, 'success');
         }
-        
+
         function exportarIrregularesApenas() {
-            if(!apontamentosIrregulares.length) { return showNotification('Nenhuma irregularidade para exportar.', 'error'); }
-            var dados = apontamentosIrregulares.map(p => ({
-                'Equipamento': extrairCodigoVaga(p.Vaga) || '',
-                'Tipo Problema': p.tipo || '',
-                'Categoria': p['Categoria Demora'] || '',
-                'Intervalo': extrairIntervaloTempo(p['Data Inicial'], p['Data Final']) || '',
+            if(!apontamentosIrregulares.length) {
+                showNotification('Nenhum apontamento irregular para exportar.', 'error');
+                return;
+            }
+
+            const dados = apontamentosIrregulares.map(problema => ({
+                'Equipamento': problema.equipamento || '',
+                'Regime': regimeAtivo ? regimesDisponiveis[regimeAtivo].nome : '',
+                'Supervisor': '',
+                'Data De Apontamento': problema.intervalo?.split(' ')[0] || '',
+                'Motorista': '',
+                'Gravidade': problema.gravidade || 'MÉDIA',
+                'Apontamento': problema.categoria || '',
+                'Problemas Identificados': problema.tipo || '',
+                'Hora': problema.intervalo || problema.tempo || '',
+                'Justificativa': '',
+                'Tratativa': '',
+                'Sugestão': ''
             }));
-            exportarParaXLSX(dados, `Relatorio_Irregulares_${new Date().toISOString().split('T')[0]}`);
+
+            const nome = `Irregulares_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório de irregulares exportado! ${dados.length} registros.`, 'success');
+        }
+
+        function exportarPorRegime() {
+            if(!regimeAtivo) {
+                showNotification('Nenhum regime ativo para exportar.', 'error');
+                return;
+            }
+
+            const config = regimesDisponiveis[regimeAtivo];
+            const dadosRegime = dadosFiltrados.filter(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                return config.equipamentos.includes(codigo);
+            });
+
+            const dados = dadosRegime.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const indexOriginal = dadosCSV.indexOf(apt);
+                const isIrregular = apontamentosIrregulares.some(irr => irr.index === indexOriginal);
+
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': config.nome,
+                    'Supervisor': '',
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Motorista': '',
+                    'Gravidade': isIrregular ? 'Irregular' : 'Normal',
+                    'Apontamento': apt['Categoria Demora'] || '',
+                    'Problemas Identificados': isIrregular ? 'Detectado automaticamente' : '',
+                    'Hora': extrairIntervaloTempo(apt['Data Inicial'], apt['Data Final']) || '',
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
+                };
+            });
+
+            const nome = `Regime_${config.nome.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            exportarParaXLSX(dados, nome);
+            showNotification(`Relatório do regime ${config.nome} exportado! ${dados.length} registros.`, 'success');
         }
 
         function exportarParaXLSX(dados, nome) {
-            var ws = XLSX.utils.json_to_sheet(dados);
-            var wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(dados);
+            
+            ws['!cols'] = [
+                {width: 20}, {width: 15}, {width: 25}, {width: 20}, {width: 25}, {width: 12},
+                {width: 20}, {width: 25}, {width: 20}, {width: 30}, {width: 30}, {width: 30}
+            ];
+
+            const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
             XLSX.writeFile(wb, `${nome}.xlsx`);
         }
 
         function exportarParaCSV(dados, nome) {
-            var csv = Papa.unparse(dados, {delimiter: ';'});
-            var blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
-            var link = document.createElement('a');
+            const csv = Papa.unparse(dados, {delimiter: ';', header: true});
+            const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
+            const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${nome}.csv`;
             link.click();
             URL.revokeObjectURL(link.href);
         }
 
+        // Notification System
         function showNotification(message, type) {
-            var notification = document.createElement('div');
+            const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
             document.body.appendChild(notification);
+
             setTimeout(() => notification.classList.add('show'), 100);
+
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 300);
             }, 4000);
         }
 
+        /*********************************
+         * FUNÇÕES DE DEBUG              *
+         *********************************/
         function debugDados() {
             console.log('🔍 === DEBUG DADOS ===');
-            console.log({
-                dadosCSV,
-                dadosFiltrados,
-                equipamentosProcessados,
-                apontamentosIrregulares,
-                arquivosProcessados,
-                dadosUnicos: Array.from(dadosUnicos.keys()),
-            });
-            alert(`Debug: Verifique o console (F12). Registros: ${dadosCSV.length}, Únicos: ${dadosUnicos.size}`);
+            console.log('📊 dadosCSV.length:', dadosCSV.length);
+            console.log('📋 dadosFiltrados.length:', dadosFiltrados.length);
+            console.log('🏭 equipamentosProcessados:', Object.keys(equipamentosProcessados).length);
+            console.log('⚠️ apontamentosIrregulares.length:', apontamentosIrregulares.length);
+            console.log('📦 githubData:', githubData);
+            console.log('🔗 dataSource:', dataSource);
+            
+            if (dadosCSV.length > 0) {
+                console.log('📄 Amostra dadosCSV[0]:', dadosCSV[0]);
+                console.log('📋 Headers detectados:', Object.keys(dadosCSV[0]));
+            }
+            
+            if (githubData && githubData.files) {
+                console.log('📁 Arquivos GitHub:', githubData.files.length);
+                githubData.files.forEach((file, index) => {
+                    console.log(`📄 Arquivo ${index}:`, {
+                        filename: file.filename,
+                        size: file.size,
+                        hasContent: !!file.content,
+                        contentPreview: file.content ? file.content.substring(0, 100) : 'N/A'
+                    });
+                });
+            }
+            
+            // Mostra/esconde botão debug
+            const debugBtn = document.getElementById('debugBtn');
+            if (debugBtn.style.display === 'none') {
+                debugBtn.style.display = 'inline-flex';
+            } else {
+                debugBtn.style.display = 'none';
+            }
+            
+            alert(`Debug Info:
+📊 CSV Records: ${dadosCSV.length}
+🏭 Equipment: ${Object.keys(equipamentosProcessados).length}
+⚠️ Irregulares: ${apontamentosIrregulares.length}
+🔗 Source: ${dataSource}
+📦 GitHub Files: ${githubData?.files?.length || 0}
+
+Verifique o console para mais detalhes.`);
         }
 
-        console.log('🚛 GrupoGPS Sistema de Apontamentos v3.2 - Corrigido e Carregado!');
+        /*********************************
+         * FUNÇÕES AUXILIARES COMPLETAS  *
+         *********************************/
+        
+        // Função switchTab principal
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            // Activate selected tab
+            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            const tab = document.getElementById(tabName + '-tab');
+
+            if (button) button.classList.add('active');
+            if (tab) tab.classList.remove('hidden');
+
+            // Special actions for specific tabs
+            if(tabName === 'timeline' && Object.keys(equipamentosProcessados).length) {
+                gerarTimelineVertical();
+            }
+            
+            if(tabName === 'github' && githubData) {
+                updateGitHubDataTab(githubData);
+            }
+        }
+
+        // Função de inicialização completa
+        function initializeApp() {
+            console.log('🚛 Inicializando GrupoGPS Sistema de Apontamentos v2.1...');
+            
+            // Set default values
+            updateSyncStatus('success', 'Pronto para sincronizar');
+            
+            // Mostra botão de debug em modo desenvolvimento
+            if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
+                document.getElementById('debugBtn').style.display = 'inline-flex';
+                console.log('🔧 Modo debug ativado');
+            }
+            
+            // Auto-sync initial check
+            if (autoSyncEnabled) {
+                console.log('🔄 Auto-sync habilitado, executando primeira sincronização em 3 segundos...');
+                setTimeout(() => {
+                    manualGitHubSync();
+                }, 3000);
+            }
+            
+            console.log('✅ Sistema inicializado com sucesso!');
+            console.log('🔗 GitHub: GrupoGps-Mecanizada/Apontamento-Dos-Tablets');
+            console.log('💡 Dica: Use Ctrl+Shift+I para abrir DevTools e ver logs detalhados');
+        }
+
+        // Call initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Inicialização
+        console.log('🚛 GrupoGPS Sistema de Apontamentos v2.1 - Carregado com sucesso!');
     </script>
 </body>
 </html>
