@@ -1574,16 +1574,16 @@
             // Atualiza a aba GitHub Data
             updateGitHubDataTab(data);
         }
-
+        
         function convertGaussFleetData(data) {
             // Converte dados do GaussFleet para o formato esperado
             return data.map(row => ({
-                'Placa': row.placa || '',
-                'Vaga': row.vaga || '',
-                'Categoria Demora': row.categoria || '',
-                'Data Inicial': row.dataInicial || '',
-                'Data Final': row.dataFinal || '',
-                'Tempo Indisponível (HH:MM)': row.tempo || ''
+                'Placa': row['Placa'] || '',
+                'Vaga': row['Vaga'] || '',
+                'Categoria Demora': row['Categoria Demora'] || '',
+                'Data Inicial': row['Data Inicial'] || '',
+                'Data Final': row['Data Final'] || '',
+                'Tempo Indisponível (HH:MM)': row['Tempo Indisponível (HH:MM)'] || ''
             }));
         }
 
