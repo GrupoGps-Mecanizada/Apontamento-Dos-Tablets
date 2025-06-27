@@ -199,7 +199,7 @@
         }
 
         .panel-header {
-            padding: 2rem;
+            padding: 1rem 2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.5);
             display: flex;
@@ -213,38 +213,113 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .panel-content {
-            padding: 2rem;
+            padding: 1.5rem;
+        }
+
+        /* Compact Filter System */
+        .filter-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .filter-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .filter-panel.open {
+            max-height: 500px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Compact Stats */
+        .compact-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .compact-stat-card {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .compact-stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .compact-stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .compact-stat-label {
+            font-size: 0.8rem;
+            color: #5a6c7d;
+            margin-top: 0.25rem;
+            font-weight: 600;
         }
 
         /* Controls */
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
 
         .control-group label {
             font-weight: 600;
             color: #2c3e50;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
         select, input[type="date"], input[type="time"], input[type="text"], input[type="number"] {
-            padding: 1rem;
+            padding: 0.75rem;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             background: rgba(255, 255, 255, 0.8);
             transition: all 0.3s ease;
             color: #2c3e50;
@@ -253,7 +328,7 @@
         select:focus, input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             background: rgba(255, 255, 255, 0.95);
         }
 
@@ -261,8 +336,8 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -270,7 +345,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
@@ -297,46 +372,7 @@
             transform: none;
         }
 
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: #5a6c7d;
-            margin-top: 0.5rem;
-            font-weight: 600;
-        }
-
-        /* Equipment Grid */
+        /* Equipment Grid with Status Colors */
         .equipment-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -347,14 +383,33 @@
             background: rgba(255, 255, 255, 0.9);
             border-radius: 16px;
             padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .equipment-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Status-based colors for equipment cards */
+        .equipment-card.status-critico {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .equipment-card.status-atencao {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: #f59e0b;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .equipment-card.status-bom {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #22c55e;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
         }
 
         .equipment-header {
@@ -372,6 +427,29 @@
             color: #2c3e50;
         }
 
+        .equipment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-critico {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .status-atencao {
+            background: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+
+        .status-bom {
+            background: rgba(34, 197, 94, 0.2);
+            color: #16a34a;
+        }
+
         .equipment-type {
             font-size: 0.8rem;
             color: #7f8c8d;
@@ -382,7 +460,7 @@
         }
 
         .appointments-list {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -594,7 +672,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .stats-grid {
+            .compact-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
 
@@ -649,99 +727,87 @@
         <main class="main-content">
             <!-- Dashboard Tab -->
             <div id="dashboard-tab" class="tab-content active">
-                <!-- Controles de Filtro -->
-                <div class="glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span>🔍</span>
-                            Filtros e Pesquisa
+                <!-- Compact Filter System -->
+                <button class="filter-toggle" onclick="toggleFilters()">
+                    <span>🔍</span>
+                    <span id="filterToggleText">Mostrar Filtros</span>
+                    <span id="filterToggleIcon">▼</span>
+                </button>
+                
+                <div class="filter-panel" id="filterPanel">
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label>Data Inicial:</label>
+                            <input type="date" id="dataInicial">
                         </div>
-                    </div>
-                    <div class="panel-content">
-                        <div class="controls-grid">
-                            <div class="control-group">
-                                <label>Data Inicial:</label>
-                                <input type="date" id="dataInicial">
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Data Final:</label>
-                                <input type="date" id="dataFinal">
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Hora Inicial:</label>
-                                <input type="time" id="horaInicial">
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Hora Final:</label>
-                                <input type="time" id="horaFinal">
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Tipo de Equipamento:</label>
-                                <select id="tipoFilter">
-                                    <option value="">Todos os tipos</option>
-                                    <option value="AP">Alta Pressão</option>
-                                    <option value="AV">Auto Vácuo</option>
-                                    <option value="HP">Hiper Vácuo</option>
-                                </select>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>Categoria:</label>
-                                <select id="categoriaFilter">
-                                    <option value="">Todas as categorias</option>
-                                </select>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>&nbsp;</label>
-                                <button class="btn" onclick="aplicarFiltros()">
-                                    <span>🔍</span>
-                                    Aplicar Filtros
-                                </button>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>&nbsp;</label>
-                                <button class="btn secondary" onclick="limparFiltros()">
-                                    <span>🗑️</span>
-                                    Limpar
-                                </button>
-                            </div>
+                        
+                        <div class="control-group">
+                            <label>Data Final:</label>
+                            <input type="date" id="dataFinal">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Hora Inicial:</label>
+                            <input type="time" id="horaInicial">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Hora Final:</label>
+                            <input type="time" id="horaFinal">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Tipo:</label>
+                            <select id="tipoFilter">
+                                <option value="">Todos os tipos</option>
+                                <option value="AP">Alta Pressão</option>
+                                <option value="AV">Auto Vácuo</option>
+                                <option value="HP">Hiper Vácuo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Categoria:</label>
+                            <select id="categoriaFilter">
+                                <option value="">Todas as categorias</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>&nbsp;</label>
+                            <button class="btn" onclick="aplicarFiltros()">
+                                <span>🔍</span>
+                                Aplicar
+                            </button>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>&nbsp;</label>
+                            <button class="btn secondary" onclick="limparFiltros()">
+                                <span>🗑️</span>
+                                Limpar
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Estatísticas -->
-                <div class="glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span>📊</span>
-                            Estatísticas Gerais
-                        </div>
+                <!-- Compact Statistics -->
+                <div class="compact-stats" id="compactStats">
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="totalApontamentos">0</div>
+                        <div class="compact-stat-label">Apontamentos</div>
                     </div>
-                    <div class="panel-content">
-                        <div class="stats-grid" id="statsSection">
-                            <div class="stat-card">
-                                <div class="stat-value" id="totalApontamentos">0</div>
-                                <div class="stat-label">Total de Apontamentos</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="totalEquipamentos">0</div>
-                                <div class="stat-label">Equipamentos</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="apontamentosIrregulares">0</div>
-                                <div class="stat-label">Irregulares</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="tempoTotalParadas">0h</div>
-                                <div class="stat-label">Tempo Total de Paradas</div>
-                            </div>
-                        </div>
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="totalEquipamentos">0</div>
+                        <div class="compact-stat-label">Equipamentos</div>
+                    </div>
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="apontamentosIrregulares">0</div>
+                        <div class="compact-stat-label">Irregulares</div>
+                    </div>
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="tempoTotalParadas">0h</div>
+                        <div class="compact-stat-label">Tempo Total</div>
                     </div>
                 </div>
 
@@ -781,8 +847,8 @@
                             <div class="control-group">
                                 <label>Formato do Relatório:</label>
                                 <select id="formatoRelatorio">
+                                    <option value="irregulares">Relatório de Irregularidades</option>
                                     <option value="completo">Relatório Completo</option>
-                                    <option value="irregulares">Apenas Irregulares</option>
                                     <option value="resumo">Resumo por Equipamento</option>
                                     <option value="categoria">Por Categoria</option>
                                 </select>
@@ -892,7 +958,7 @@
                     </div>
                 </div>
 
-                <!-- Configurações de Filtros -->
+                <!-- Configurações de Sistema -->
                 <div class="config-section">
                     <h3>⚙️ Configurações de Sistema</h3>
                     <div class="controls-grid">
@@ -926,28 +992,42 @@
                                 <option value="auto">Automático</option>
                             </select>
                         </div>
+                        
+                        <div class="control-group">
+                            <label>Supervisor Padrão:</label>
+                            <input type="text" id="supervisorPadrao" placeholder="Ex: Junior Pereira">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Regime Padrão:</label>
+                            <select id="regimePadrao">
+                                <option value="ADM - 07 a 17">ADM - 07 a 17</option>
+                                <option value="24HS - 19h a 7h">24HS - 19h a 7h</option>
+                                <option value="16HS">16HS</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Status do Sistema -->
                 <div class="config-section">
                     <h3>📊 Status do Sistema</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value" id="ultimaSync">--:--</div>
-                            <div class="stat-label">Última Sincronização</div>
+                    <div class="compact-stats">
+                        <div class="compact-stat-card">
+                            <div class="compact-stat-value" id="ultimaSync">--:--</div>
+                            <div class="compact-stat-label">Última Sincronização</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="proximaSync">--:--</div>
-                            <div class="stat-label">Próxima Sincronização</div>
+                        <div class="compact-stat-card">
+                            <div class="compact-stat-value" id="proximaSync">--:--</div>
+                            <div class="compact-stat-label">Próxima Sincronização</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="registrosProcessados">0</div>
-                            <div class="stat-label">Registros Processados</div>
+                        <div class="compact-stat-card">
+                            <div class="compact-stat-value" id="registrosProcessados">0</div>
+                            <div class="compact-stat-label">Registros Processados</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="statusConexao">Offline</div>
-                            <div class="stat-label">Status da Conexão</div>
+                        <div class="compact-stat-card">
+                            <div class="compact-stat-value" id="statusConexao">Offline</div>
+                            <div class="compact-stat-label">Status da Conexão</div>
                         </div>
                     </div>
                 </div>
@@ -993,11 +1073,14 @@
         let equipamentosProcessados = {};
         let apontamentosIrregulares = [];
         let categorias = new Set();
+        let supervisores = new Set();
+        let motoristas = new Set();
         
         let autoSyncEnabled = true;
         let lastSyncTime = null;
         let syncInterval = null;
         let dataSource = 'none';
+        let filtersOpen = false;
 
         /*********************************
          * FUNÇÃO GITHUB SYNC ATUALIZADA *
@@ -1153,6 +1236,8 @@
         function processarEquipamentosDoCSV(dados) {
             const equipamentos = {};
             categorias.clear();
+            supervisores.clear();
+            motoristas.clear();
             
             dados.forEach(apt => {
                 const codigo = extrairCodigoVaga(apt.Vaga);
@@ -1164,7 +1249,8 @@
                         tipo: getTipoEquipamento(codigo),
                         apontamentos: [],
                         totalTempo: 0,
-                        placa: apt.Placa
+                        placa: apt.Placa,
+                        status: 'BOM' // Default status
                     };
                 }
                 
@@ -1173,12 +1259,34 @@
                 const tempoMinutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
                 equipamentos[codigo].apontamentos.push(apt);
                 equipamentos[codigo].totalTempo += tempoMinutos;
+                
+                // Extrair supervisores e motoristas para o relatório
+                if (apt.Supervisor) supervisores.add(apt.Supervisor);
+                if (apt.Motorista) motoristas.add(apt.Motorista);
+            });
+            
+            // Calcular status baseado em irregularidades
+            Object.values(equipamentos).forEach(eq => {
+                eq.status = calcularStatusEquipamento(eq);
             });
             
             // Atualizar filtro de categorias
             atualizarFiltroCategorias();
             
             return equipamentos;
+        }
+
+        function calcularStatusEquipamento(equipamento) {
+            const totalApontamentos = equipamento.apontamentos.length;
+            const irregulares = equipamento.apontamentos.filter(apt => 
+                apontamentosIrregulares.some(irr => irr === apt)
+            ).length;
+            
+            // Critérios para status
+            if (totalApontamentos <= 3) return 'CRITICO'; // Poucos apontamentos
+            if (irregulares > totalApontamentos * 0.4) return 'CRITICO'; // Muitas irregularidades
+            if (irregulares > totalApontamentos * 0.2) return 'ATENCAO'; // Algumas irregularidades
+            return 'BOM'; // Status normal
         }
 
         function detectarApontamentosIrregulares(dados) {
@@ -1192,13 +1300,37 @@
                 if (minutos === 0) {
                     apontamentosIrregulares.push({
                         ...apt,
-                        motivo: 'Apontamento com tempo zero'
+                        motivo: 'Apontamento Zerado',
+                        gravidade: 'BAIXA'
                     });
                 } else if (minutos <= tolerancia) {
                     apontamentosIrregulares.push({
                         ...apt,
-                        motivo: `Apontamento muito curto (${minutos} min)`
+                        motivo: 'Apontamento Muito Curto',
+                        gravidade: 'BAIXA'
                     });
+                }
+            });
+            
+            // Verificar equipamentos com poucos apontamentos
+            const equipamentosContador = {};
+            dados.forEach(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                if (codigo) equipamentosContador[codigo] = (equipamentosContador[codigo] || 0) + 1;
+            });
+            
+            Object.entries(equipamentosContador).forEach(([codigo, count]) => {
+                if (count <= 3) {
+                    // Adicionar um registro especial para equipamentos com poucos apontamentos
+                    const equipApt = dados.find(apt => extrairCodigoVaga(apt.Vaga) === codigo);
+                    if (equipApt) {
+                        apontamentosIrregulares.push({
+                            ...equipApt,
+                            motivo: 'Equipamento com Poucos Apontamentos',
+                            gravidade: 'ALTA',
+                            numeroApontamentos: count
+                        });
+                    }
                 }
             });
         }
@@ -1269,19 +1401,19 @@
             equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
             
             container.innerHTML = equipamentos.map(eq => `
-                <div class="equipment-card">
+                <div class="equipment-card status-${eq.status.toLowerCase()}">
                     <div class="equipment-header">
                         <div>
                             <div class="equipment-code">${eq.codigo}</div>
                             <div class="equipment-type">${getTipoNome(eq.tipo)} - ${eq.placa}</div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-weight: 600; color: #667eea;">${eq.apontamentos.length} apts</div>
-                            <div style="font-size: 0.8rem; color: #7f8c8d;">${Math.round(eq.totalTempo / 60)}h total</div>
+                            <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 0.25rem;">${eq.apontamentos.length} apts | ${Math.round(eq.totalTempo / 60)}h</div>
                         </div>
                     </div>
                     <div class="appointments-list">
-                        ${eq.apontamentos.slice(0, 5).map(apt => {
+                        ${eq.apontamentos.map(apt => {
                             const isIrregular = apontamentosIrregulares.some(irr => irr === apt);
                             return `
                                 <div class="appointment-item ${isIrregular ? 'irregular' : ''}" onclick='showAppointmentDetails(${JSON.stringify(apt).replace(/"/g, "&quot;")})'>
@@ -1296,7 +1428,6 @@
                                 </div>
                             `;
                         }).join('')}
-                        ${eq.apontamentos.length > 5 ? `<div style="text-align: center; padding: 0.5rem; color: #7f8c8d; font-size: 0.8rem;">... e mais ${eq.apontamentos.length - 5} apontamentos</div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1337,6 +1468,23 @@
                 if (categoria === currentValue) option.selected = true;
                 select.appendChild(option);
             });
+        }
+
+        function toggleFilters() {
+            filtersOpen = !filtersOpen;
+            const panel = document.getElementById('filterPanel');
+            const toggleText = document.getElementById('filterToggleText');
+            const toggleIcon = document.getElementById('filterToggleIcon');
+            
+            if (filtersOpen) {
+                panel.classList.add('open');
+                toggleText.textContent = 'Ocultar Filtros';
+                toggleIcon.textContent = '▲';
+            } else {
+                panel.classList.remove('open');
+                toggleText.textContent = 'Mostrar Filtros';
+                toggleIcon.textContent = '▼';
+            }
         }
 
         function aplicarFiltros() {
@@ -1417,11 +1565,11 @@
             let dadosRelatorio = [];
             
             switch (tipoRelatorio) {
+                case 'irregulares':
+                    dadosRelatorio = gerarRelatorioIrregularidades(dados);
+                    break;
                 case 'completo':
                     dadosRelatorio = gerarRelatorioCompleto(dados);
-                    break;
-                case 'irregulares':
-                    dadosRelatorio = gerarRelatorioIrregulares(dados);
                     break;
                 case 'resumo':
                     dadosRelatorio = gerarRelatorioResumo(dados);
@@ -1447,6 +1595,36 @@
             showNotification(`Relatório ${formato.toUpperCase()} exportado com sucesso!`, 'success');
         }
 
+        function gerarRelatorioIrregularidades(dados) {
+            // Formato exato do arquivo Excel anexado
+            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || 'Supervisor';
+            const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM - 07 a 17';
+            
+            return apontamentosIrregulares.map(apt => {
+                const codigo = extrairCodigoVaga(apt.Vaga);
+                const [dataInicial] = apt['Data Inicial']?.split(' ') || [''];
+                const horaInicial = apt['Data Inicial']?.split(' ')[1]?.substring(0, 5) || '';
+                const horaFinal = apt['Data Final']?.split(' ')[1]?.substring(0, 5) || '';
+                const horaApontamento = horaInicial && horaFinal ? `${horaInicial} às ${horaFinal}` : '-';
+                
+                return {
+                    'Equipamento': codigo || '',
+                    'Regime': regimePadrao,
+                    'Data De Apontamento': dataInicial,
+                    'Supervisor': supervisorPadrao,
+                    'Motorista': apt.Motorista || '',
+                    'Problemas Identificados': apt.motivo || '',
+                    'Gravidade': apt.gravidade || 'BAIXA',
+                    'Tipo De Apontamento': apt['Categoria Demora'] || '',
+                    'Hora Apontamento': horaApontamento,
+                    'Nº de Apontamentos': apt.numeroApontamentos ? `${apt.numeroApontamentos} Apontamentos` : '-',
+                    'Justificativa': 'Apontamento selecionado por engano',
+                    'Tratativa': 'Esta sendo criado uma rastreabilidade e investigação de casos relacionados aos apontamentos zerados.',
+                    'Sugestão': 'Implementar uma função de cancelar o apontamento caso o mesmo tenha sido selecionado por engano.'
+                };
+            });
+        }
+
         function gerarRelatorioCompleto(dados) {
             return dados.map(apt => {
                 const codigo = extrairCodigoVaga(apt.Vaga);
@@ -1462,23 +1640,6 @@
                     'Tempo (HH:MM)': apt['Tempo Indisponível (HH:MM)'] || '',
                     'Status': isIrregular ? 'Irregular' : 'Normal',
                     'Observações': isIrregular ? apontamentosIrregulares.find(irr => irr === apt)?.motivo || 'Irregular' : ''
-                };
-            });
-        }
-
-        function gerarRelatorioIrregulares(dados) {
-            return apontamentosIrregulares.map(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                
-                return {
-                    'Equipamento': codigo || '',
-                    'Placa': apt.Placa || '',
-                    'Categoria': apt['Categoria Demora'] || '',
-                    'Data Inicial': apt['Data Inicial'] || '',
-                    'Data Final': apt['Data Final'] || '',
-                    'Tempo (HH:MM)': apt['Tempo Indisponível (HH:MM)'] || '',
-                    'Motivo da Irregularidade': apt.motivo || '',
-                    'Ação Recomendada': tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']) === 0 ? 'Revisar apontamento' : 'Verificar procedimento'
                 };
             });
         }
