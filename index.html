@@ -260,7 +260,7 @@
         /* Compact Stats */
         .compact-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
@@ -472,6 +472,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border-left: 3px solid #667eea;
+            position: relative;
         }
 
         .appointment-item:hover {
@@ -482,6 +483,63 @@
         .appointment-item.irregular {
             border-left-color: #e74c3c;
             background: rgba(231, 76, 60, 0.1);
+        }
+
+        /* Destaque para apontamentos zerados */
+        .appointment-item.zerado {
+            border-left-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #dc2626;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .appointment-item.zerado::before {
+            content: '🚫';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Destaque para apontamentos curtos */
+        .appointment-item.curto {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 2px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .appointment-item.curto::before {
+            content: '⏱️';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* Badge para apontamentos especiais */
+        .appointment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        .badge-zerado {
+            background: #dc2626;
+            color: white;
+        }
+
+        .badge-curto {
+            background: #f59e0b;
+            color: white;
         }
 
         /* Configuration Section */
@@ -673,7 +731,7 @@
             }
 
             .compact-stats {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
 
             .equipment-grid {
@@ -800,6 +858,14 @@
                     <div class="compact-stat-card">
                         <div class="compact-stat-value" id="totalEquipamentos">0</div>
                         <div class="compact-stat-label">Equipamentos</div>
+                    </div>
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="apontamentosZerados">0</div>
+                        <div class="compact-stat-label">Zerados</div>
+                    </div>
+                    <div class="compact-stat-card">
+                        <div class="compact-stat-value" id="apontamentosCurtos">0</div>
+                        <div class="compact-stat-label">Curtos</div>
                     </div>
                     <div class="compact-stat-card">
                         <div class="compact-stat-value" id="apontamentosIrregulares">0</div>
@@ -1377,16 +1443,62 @@
             const totalApontamentos = dadosFiltrados.length || dadosCSV.length;
             const totalEquipamentos = Object.keys(equipamentosProcessados).length;
             const irregulares = apontamentosIrregulares.length;
+            const tolerancia = parseInt(document.getElementById('toleranciaIrregular')?.value || 5);
             
+            // Calcular apontamentos zerados e curtos
+            const dados = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
+            let zerados = 0;
+            let curtos = 0;
             let tempoTotal = 0;
+            
+            dados.forEach(apt => {
+                const minutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
+                if (minutos === 0) {
+                    zerados++;
+                } else if (minutos <= tolerancia) {
+                    curtos++;
+                }
+            });
+            
             Object.values(equipamentosProcessados).forEach(eq => {
                 tempoTotal += eq.totalTempo;
             });
             
             document.getElementById('totalApontamentos').textContent = totalApontamentos;
             document.getElementById('totalEquipamentos').textContent = totalEquipamentos;
+            document.getElementById('apontamentosZerados').textContent = zerados;
+            document.getElementById('apontamentosCurtos').textContent = curtos;
             document.getElementById('apontamentosIrregulares').textContent = irregulares;
             document.getElementById('tempoTotalParadas').textContent = Math.round(tempoTotal / 60) + 'h';
+            
+            // Aplicar cores especiais para destacar problemas
+            const zeradosCard = document.getElementById('apontamentosZerados').parentElement;
+            const curtosCard = document.getElementById('apontamentosCurtos').parentElement;
+            const irregularesCard = document.getElementById('apontamentosIrregulares').parentElement;
+            
+            if (zerados > 0) {
+                zeradosCard.style.background = 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)';
+                zeradosCard.style.border = '2px solid #dc2626';
+            } else {
+                zeradosCard.style.background = '';
+                zeradosCard.style.border = '';
+            }
+            
+            if (curtos > 0) {
+                curtosCard.style.background = 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)';
+                curtosCard.style.border = '2px solid #f59e0b';
+            } else {
+                curtosCard.style.background = '';
+                curtosCard.style.border = '';
+            }
+            
+            if (irregulares > 0) {
+                irregularesCard.style.background = 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)';
+                irregularesCard.style.border = '2px solid #e74c3c';
+            } else {
+                irregularesCard.style.background = '';
+                irregularesCard.style.border = '';
+            }
         }
 
         function exibirEquipamentos() {
@@ -1415,8 +1527,25 @@
                     <div class="appointments-list">
                         ${eq.apontamentos.map(apt => {
                             const isIrregular = apontamentosIrregulares.some(irr => irr === apt);
+                            const tempoMinutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
+                            const tolerancia = parseInt(document.getElementById('toleranciaIrregular')?.value || 5);
+                            
+                            // Classificar tipo de apontamento
+                            let appointmentClass = '';
+                            let badge = '';
+                            
+                            if (tempoMinutos === 0) {
+                                appointmentClass = 'zerado';
+                                badge = '<div class="appointment-badge badge-zerado">🚫 Zerado</div>';
+                            } else if (tempoMinutos <= tolerancia) {
+                                appointmentClass = 'curto';
+                                badge = '<div class="appointment-badge badge-curto">⏱️ Curto</div>';
+                            } else if (isIrregular) {
+                                appointmentClass = 'irregular';
+                            }
+                            
                             return `
-                                <div class="appointment-item ${isIrregular ? 'irregular' : ''}" onclick='showAppointmentDetails(${JSON.stringify(apt).replace(/"/g, "&quot;")})'>
+                                <div class="appointment-item ${appointmentClass}" onclick='showAppointmentDetails(${JSON.stringify(apt).replace(/"/g, "&quot;")})'>
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                                         <span style="font-weight: 600; font-size: 0.9rem;">${apt['Categoria Demora']}</span>
                                         <span style="font-size: 0.8rem; color: #7f8c8d;">${apt['Tempo Indisponível (HH:MM)']}</span>
@@ -1424,7 +1553,8 @@
                                     <div style="font-size: 0.8rem; color: #7f8c8d;">
                                         ${formatarDataHora(apt['Data Inicial'])} - ${formatarDataHora(apt['Data Final'])}
                                     </div>
-                                    ${isIrregular ? '<div style="color: #e74c3c; font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
+                                    ${badge}
+                                    ${isIrregular && !badge ? '<div style="color: #e74c3c; font-weight: 600; font-size: 0.7rem;">⚠️ Irregular</div>' : ''}
                                 </div>
                             `;
                         }).join('')}
