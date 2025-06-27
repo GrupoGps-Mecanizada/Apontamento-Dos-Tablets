@@ -472,7 +472,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border-left: 3px solid #667eea;
-            position: relative;
         }
 
         .appointment-item:hover {
@@ -493,30 +492,12 @@
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
 
-        .appointment-item.zerado::before {
-            content: '🚫';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.2rem;
-            opacity: 0.8;
-        }
-
         /* Destaque para apontamentos curtos */
         .appointment-item.curto {
             border-left-color: #f59e0b;
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
             border: 2px solid #f59e0b;
             box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-        }
-
-        .appointment-item.curto::before {
-            content: '⏱️';
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.2rem;
-            opacity: 0.8;
         }
 
         /* Badge para apontamentos especiais */
@@ -1061,7 +1042,7 @@
                         
                         <div class="control-group">
                             <label>Supervisor Padrão:</label>
-                            <input type="text" id="supervisorPadrao" placeholder="Ex: Junior Pereira">
+                            <input type="text" id="supervisorPadrao" placeholder="Ex: Junior Pereira" value="">
                         </div>
                         
                         <div class="control-group">
@@ -1536,10 +1517,10 @@
                             
                             if (tempoMinutos === 0) {
                                 appointmentClass = 'zerado';
-                                badge = '<div class="appointment-badge badge-zerado">🚫 Zerado</div>';
+                                badge = '<div class="appointment-badge badge-zerado">ZERADO</div>';
                             } else if (tempoMinutos <= tolerancia) {
                                 appointmentClass = 'curto';
-                                badge = '<div class="appointment-badge badge-curto">⏱️ Curto</div>';
+                                badge = '<div class="appointment-badge badge-curto">CURTO</div>';
                             } else if (isIrregular) {
                                 appointmentClass = 'irregular';
                             }
@@ -1727,7 +1708,7 @@
 
         function gerarRelatorioIrregularidades(dados) {
             // Formato exato do arquivo Excel anexado
-            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || 'Supervisor';
+            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || '';
             const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM - 07 a 17';
             
             return apontamentosIrregulares.map(apt => {
@@ -1748,9 +1729,9 @@
                     'Tipo De Apontamento': apt['Categoria Demora'] || '',
                     'Hora Apontamento': horaApontamento,
                     'Nº de Apontamentos': apt.numeroApontamentos ? `${apt.numeroApontamentos} Apontamentos` : '-',
-                    'Justificativa': 'Apontamento selecionado por engano',
-                    'Tratativa': 'Esta sendo criado uma rastreabilidade e investigação de casos relacionados aos apontamentos zerados.',
-                    'Sugestão': 'Implementar uma função de cancelar o apontamento caso o mesmo tenha sido selecionado por engano.'
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': ''
                 };
             });
         }
