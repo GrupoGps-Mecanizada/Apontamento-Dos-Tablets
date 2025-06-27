@@ -1,20 +1,37 @@
-Posição,Coluna,Rodapé,Fixar,Ocultar
-,Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,,Linhas selecionadas,,,
-,Data/Hora,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Área(local),Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Equipamento Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Destino,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Beneficiário,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contato Ben.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Rateio Centro de Custo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Marca,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Modelo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Numero,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Serviço,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Material,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Grupo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Solicitante,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contato Sol.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contratada,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Status hora extra,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+"Vaga";"Data/Hora";"Área(local)"
+"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"27/06/2025 00:00 às 07:00 (Sex)";"ALTOS FORNOS"
+"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"27/06/2025 19:01 às 23:59 (Sex)";"ALTOS FORNOS"
+"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"27/06/2025 07:01 às 19:00 (Sex)";"SINTERIZAÇÃO 1"
+"CAMINHÃO ALTA PRESSÃO - GPS - 02";"27/06/2025 07:30 às 16:30 (Sex)";"ALTOS FORNOS"
+"CAMINHÃO ALTA PRESSÃO - GPS - 03";"27/06/2025 07:30 às 16:30 (Sex)";"ESCRITÓRIO DOS GASÔMETROS"
+"CAMINHÃO ALTA PRESSÃO - GPS - 04";"27/06/2025 07:30 às 16:30 (Sex)";"CRALAM"
+"CAMINHÃO ALTA PRESSÃO - GPS - 05";"27/06/2025 07:00 às 16:00 (Sex)";"SINTERIZAÇÃO 2"
+"CAMINHÃO ALTA PRESSÃO - GPS - 06";"27/06/2025 07:00 às 16:00 (Sex)";"SINTERIZAÇÃO 2"
+"CAMINHÃO ALTA PRESSÃO - GPS - 07";"27/06/2025 07:30 às 16:30 (Sex)";"SINTERIZAÇÃO 3"
+"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS";"27/06/2025 07:01 às 23:00 (Sex)";"DECAPAGEM 4 "
+"CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS";"27/06/2025 00:00 às 07:00 (Sex)";"CRAL 03"
+"CAMINHÃO ALTA PRESSÃO - GPS - 09";"27/06/2025 07:30 às 16:30 (Sex)";"SINTERIZAÇÃO 3"
+"CAMINHÃO ALTA PRESSÃO - GPS - 10";"27/06/2025 07:30 às 16:30 (Sex)";"CRAL 03"
+"CAMINHÃO ALTA PRESSÃO - GPS - 11";"27/06/2025 07:30 às 16:30 (Sex)";"CALDEIRA 140"
+"CAMINHÃO ALTA PRESSÃO - GPS - 12";"27/06/2025 07:30 às 16:30 (Sex)";"OFICINA DE VEÍCULOS"
+"CAMINHÃO ALTA PRESSÃO - SERVITEC - 01 - SPOT";"27/06/2025 07:30 às 16:30 (Sex)";"ESCRITÓRIO DOS SERVIÇOS GERAIS"
+"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"27/06/2025 00:00 às 07:00 (Sex)";"ESCRITÓRIO DOS GASÔMETROS"
+"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"27/06/2025 15:00 às 23:59 (Sex)";"ESCRITÓRIO DOS GASÔMETROS"
+"CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS";"27/06/2025 07:00 às 23:00 (Sex)";"ESCRITÓRIO DOS GASÔMETROS"
+"CAMINHÃO AUTO VÁCUO - GPS - 03";"27/06/2025 07:30 às 16:30 (Sex)";"ESCRITÓRIO DOS GASÔMETROS"
+"CAMINHÃO AUTO VÁCUO - GPS - 04";"27/06/2025 07:30 às 16:30 (Sex)";"CRALAM"
+"CAMINHÃO AUTO VÁCUO - GPS - 05";"27/06/2025 14:01 às 15:00 (Sex)";"OFICINA DE REFRATÁRIOS - ACIARIA 02"
+"CAMINHÃO AUTO VÁCUO - GPS - 05";"27/06/2025 15:01 às 16:30 (Sex)";"ÁREA DE PANELAS - ACIARIA 02"
+"CAMINHÃO AUTO VÁCUO - GPS - 05";"27/06/2025 07:30 às 10:00 (Sex)";"PORTÃO 121 - HCM"
+"CAMINHÃO AUTO VÁCUO - GPS - 05";"27/06/2025 10:01 às 14:00 (Sex)";"USIROLL"
+"CAMINHÃO AUTO VÁCUO - GPS - 06";"27/06/2025 07:30 às 16:30 (Sex)";"SINTERIZAÇÃO 3"
+"CAMINHÃO AUTO VÁCUO - GPS - 07";"27/06/2025 10:00 às 19:00 (Sex)";"CRAL 03"
+"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS";"27/06/2025 07:01 às 23:00 (Sex)";"DECAPAGEM 4 "
+"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS";"27/06/2025 00:00 às 07:00 (Sex)";"CRAL 03"
+"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS";"27/06/2025 23:01 às 23:59 (Sex)";"CRAL 03"
+"CAMINHÃO AUTO VÁCUO - GPS - 09";"27/06/2025 07:30 às 16:30 (Sex)";"CALDEIRA 140"
+"CAMINHÃO AUTO VÁCUO - GPS - 10";"27/06/2025 07:30 às 16:30 (Sex)";"CRALAM"
+"CAMINHÃO HIPER VÁCUO - GPS - 01";"27/06/2025 07:30 às 16:30 (Sex)";"SINTERIZAÇÕES"
+"CAMINHÃO HIPER VÁCUO - GPS - 02";"27/06/2025 07:30 às 16:30 (Sex)";"LAM. CH. GROSSAS"
+"CAMINHÃO HIPER VÁCUO - SERVITEC - 01 - SPOT";"27/06/2025 07:30 às 16:30 (Sex)";"ESCRITÓRIO DOS SERVIÇOS GERAIS"
+"--";"--";"--"
