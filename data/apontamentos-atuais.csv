@@ -1,15 +1,14 @@
-Posição,Coluna,Rodapé,Fixar,Ocultar
-,,--,,,
-,Placa,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,ID Operação,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Código Veículo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Motorista,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Identificação Checklist,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Checklist,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Data/Hora Início,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Data/Hora Fim,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Tempo de Execução,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Planta de Operação,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Status,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Anormal,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Nº Itens,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+"Placa";"Vaga";"Categoria Demora";"Data Inicial";"Data Final";"Tempo Indisponível (HH:MM)"
+"EGC2993";"CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS";"Descarregamento";"02/07/2025 00:25:07";"02/07/2025 00:49:26";"00:24"
+"DSY6F81";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Abastecimento (Água)";"02/07/2025 01:33:57";"02/07/2025 01:50:51";"00:17"
+"DSY6F81";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Preparação";"02/07/2025 02:03:29";"02/07/2025 02:13:35";"00:10"
+"EAM3257";"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"Descarregamento";"02/07/2025 02:15:20";"02/07/2025 03:19:10";"01:04"
+"DSY6F81";"--";"Troca de Equipamento";"02/07/2025 02:59:31";"02/07/2025 03:17:15";"00:18"
+"EAM3262";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Abastecimento (Água)";"02/07/2025 03:26:13";"02/07/2025 03:35:14";"00:09"
+"EAM3262";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Aguardando semáforo/cancela";"02/07/2025 03:35:24";"02/07/2025 03:37:30";"00:02"
+"EAM3262";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Preparação";"02/07/2025 03:49:00";"02/07/2025 03:57:12";"00:08"
+"EAM3257";"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"Bloqueio";"02/07/2025 04:06:52";"02/07/2025 04:06:59";"00:00"
+"EAM3257";"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"Refeição Motorista";"02/07/2025 04:07:15";"02/07/2025 05:07:58";"01:01"
+"EAM3262";"CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS";"Pausas Diversas (água, banheiro)";"02/07/2025 04:16:23";"02/07/2025 04:31:55";"00:16"
+"EAM3257";"CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS";"Aguardando Área";"02/07/2025 05:08:23";"02/07/2025 05:58:07";"00:50"
+"DSY6472";"CAMINHÃO ALTA PRESSÃO - GPS - 05";"Abastecimento (Água)";"02/07/2025 05:18:09";"02/07/2025 05:56:44";"00:39"
