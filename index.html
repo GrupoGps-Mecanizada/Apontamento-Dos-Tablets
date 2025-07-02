@@ -95,6 +95,22 @@
             backdrop-filter: blur(10px);
         }
 
+        .data-source-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .data-source-github { color: #2c3e50; }
+        .data-source-local { color: #e67e22; }
+        .data-source-none { color: #95a5a6; }
+
         .sync-dot {
             width: 10px;
             height: 10px;
@@ -105,6 +121,7 @@
         .sync-dot.success { background: #27ae60; }
         .sync-dot.error { background: #e74c3c; }
         .sync-dot.loading { background: #f39c12; }
+        .sync-dot.disabled { background: #95a5a6; animation: none; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -220,6 +237,58 @@
             padding: 1.5rem;
         }
 
+        /* Upload Section */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .upload-section.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-info {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
         /* Compact Filter System */
         .filter-toggle {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -315,7 +384,7 @@
             font-size: 0.85rem;
         }
 
-        select, input[type="date"], input[type="time"], input[type="text"], input[type="number"] {
+        select, input[type="date"], input[type="time"], input[type="text"], input[type="number"], input[type="file"] {
             padding: 0.75rem;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
@@ -364,6 +433,10 @@
 
         .btn.warning {
             background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .btn:disabled {
@@ -680,6 +753,17 @@
             color: #2c3e50;
         }
 
+        /* Sync Status Indicators */
+        .sync-disabled-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -734,6 +818,11 @@
                 </div>
                 
                 <div class="header-controls">
+                    <div class="data-source-indicator" id="dataSourceIndicator">
+                        <span id="dataSourceIcon">📁</span>
+                        <span id="dataSourceText">Nenhum dado</span>
+                    </div>
+                    
                     <div class="sync-indicator">
                         <div class="sync-dot loading" id="syncDot"></div>
                         <span id="syncStatus">Aguardando dados...</span>
@@ -766,6 +855,11 @@
         <main class="main-content">
             <!-- Dashboard Tab -->
             <div id="dashboard-tab" class="tab-content active">
+                <!-- Warning when sync is disabled -->
+                <div id="syncDisabledWarning" class="sync-disabled-warning hidden">
+                    ⚠️ Sincronização automática desabilitada. Os dados não serão atualizados automaticamente do GitHub.
+                </div>
+
                 <!-- Compact Filter System -->
                 <button class="filter-toggle" onclick="toggleFilters()">
                     <span>🔍</span>
@@ -954,19 +1048,54 @@
 
             <!-- Configurações Tab -->
             <div id="settings-tab" class="tab-content">
+                <!-- Upload de Arquivo -->
+                <div class="config-section">
+                    <h3>📁 Upload de Arquivo CSV</h3>
+                    <div class="upload-section" id="uploadSection">
+                        <h4 style="margin-bottom: 1rem; color: #2c3e50;">Carregar arquivo para análise</h4>
+                        <p style="color: #5a6c7d; margin-bottom: 1rem;">
+                            Faça upload de um arquivo CSV para investigar dados de dias específicos ou períodos diferentes
+                        </p>
+                        
+                        <input type="file" id="csvFileInput" class="file-input" accept=".csv,.xlsx" onchange="handleFileUpload(event)">
+                        <button class="upload-button" onclick="document.getElementById('csvFileInput').click()">
+                            <span>📁</span>
+                            Selecionar Arquivo CSV/Excel
+                        </button>
+                        
+                        <div class="upload-info">
+                            <strong>Formatos aceitos:</strong> .csv, .xlsx<br>
+                            <strong>Estrutura esperada:</strong> Placa, Vaga, Categoria Demora, Data Inicial, Data Final, Tempo Indisponível (HH:MM)
+                        </div>
+                        
+                        <div id="uploadStatus" style="margin-top: 1rem; display: none;">
+                            <div class="compact-stats">
+                                <div class="compact-stat-card">
+                                    <div class="compact-stat-value" id="uploadedRecords">0</div>
+                                    <div class="compact-stat-label">Registros Carregados</div>
+                                </div>
+                                <div class="compact-stat-card">
+                                    <div class="compact-stat-value" id="uploadedEquipments">0</div>
+                                    <div class="compact-stat-label">Equipamentos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Configurações de Sincronização -->
                 <div class="config-section">
                     <h3>🔄 Configurações de Sincronização</h3>
                     <div class="controls-grid">
                         <div class="control-group">
-                            <label>Auto-Sync:</label>
-                            <select id="autoSyncEnabled">
+                            <label>Sincronização GitHub:</label>
+                            <select id="autoSyncEnabled" onchange="onSyncSettingChange()">
                                 <option value="true">Habilitado</option>
                                 <option value="false">Desabilitado</option>
                             </select>
                         </div>
                         
-                        <div class="control-group">
+                        <div class="control-group" id="syncIntervalGroup">
                             <label>Intervalo de Sync (minutos):</label>
                             <select id="syncInterval">
                                 <option value="5">5 minutos</option>
@@ -987,9 +1116,9 @@
                             <input type="text" id="githubFile" value="data/apontamentos-atuais.csv" readonly>
                         </div>
                         
-                        <div class="control-group">
+                        <div class="control-group" id="manualSyncGroup">
                             <label>&nbsp;</label>
-                            <button class="btn" onclick="manualSync()">
+                            <button class="btn" onclick="manualSync()" id="manualSyncBtn">
                                 <span>🔄</span>
                                 Sincronizar Agora
                             </button>
@@ -1000,6 +1129,29 @@
                             <button class="btn success" onclick="salvarConfiguracoes()">
                                 <span>💾</span>
                                 Salvar Configurações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controle de Dados -->
+                <div class="config-section">
+                    <h3>🗂️ Controle de Dados</h3>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label>Fonte de Dados Atual:</label>
+                            <select id="dataSourceSelect" onchange="changeDataSource()">
+                                <option value="none">Nenhuma fonte</option>
+                                <option value="github">GitHub (Atual)</option>
+                                <option value="local">Arquivo Local</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>&nbsp;</label>
+                            <button class="btn danger" onclick="clearAllData()">
+                                <span>🗑️</span>
+                                Limpar Todos os Dados
                             </button>
                         </div>
                     </div>
@@ -1126,8 +1278,9 @@
         let autoSyncEnabled = true;
         let lastSyncTime = null;
         let syncInterval = null;
-        let dataSource = 'none';
+        let dataSource = 'none'; // 'none', 'github', 'local'
         let filtersOpen = false;
+        let uploadedFileName = '';
 
         /*********************************
          * FUNÇÃO GITHUB SYNC ATUALIZADA *
@@ -1153,6 +1306,11 @@
         }
 
         async function manualSync() {
+            if (!autoSyncEnabled) {
+                showNotification('Sincronização desabilitada. Habilite nas configurações para usar esta função.', 'warning');
+                return;
+            }
+
             updateSyncStatus('loading', 'Sincronizando...');
             console.log('🔄 Iniciando sincronização manual com GitHub...');
             
@@ -1170,6 +1328,7 @@
                     showNotification(`Sincronização concluída! ${dadosCSV.length} registros processados.`, 'success');
                     
                     dataSource = 'github';
+                    updateDataSourceIndicator();
                     await processarDados();
                 } else {
                     updateSyncStatus('error', 'Arquivo CSV vazio');
@@ -1180,6 +1339,96 @@
                 updateSyncStatus('error', 'Erro: ' + error.message);
                 showNotification('Erro ao sincronizar: ' + error.message, 'error');
             }
+        }
+
+        /*********************************
+         * FUNÇÃO UPLOAD DE ARQUIVO      *
+         *********************************/
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            console.log('📁 Processando arquivo:', file.name);
+            uploadedFileName = file.name;
+            
+            updateSyncStatus('loading', 'Processando arquivo...');
+            
+            try {
+                let content;
+                
+                if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                    content = await processExcelFile(file);
+                } else if (file.name.endsWith('.csv')) {
+                    content = await processCSVFile(file);
+                } else {
+                    throw new Error('Formato de arquivo não suportado. Use .csv ou .xlsx');
+                }
+                
+                if (content) {
+                    const parsedData = typeof content === 'string' ? parseCSVContent(content) : content;
+                    dadosCSV = parsedData;
+                    lastSyncTime = new Date();
+                    
+                    dataSource = 'local';
+                    updateDataSourceIndicator();
+                    updateSyncStatus('success', `${dadosCSV.length} registros carregados do arquivo`);
+                    updateLastSyncTime();
+                    
+                    // Atualizar status do upload
+                    document.getElementById('uploadStatus').style.display = 'block';
+                    document.getElementById('uploadedRecords').textContent = dadosCSV.length;
+                    
+                    await processarDados();
+                    
+                    const equipamentosCount = Object.keys(equipamentosProcessados).length;
+                    document.getElementById('uploadedEquipments').textContent = equipamentosCount;
+                    
+                    showNotification(`Arquivo "${file.name}" carregado com sucesso! ${dadosCSV.length} registros processados.`, 'success');
+                } else {
+                    throw new Error('Não foi possível processar o arquivo');
+                }
+            } catch (error) {
+                console.error('❌ Erro no upload:', error);
+                updateSyncStatus('error', 'Erro no upload: ' + error.message);
+                showNotification('Erro ao processar arquivo: ' + error.message, 'error');
+            }
+            
+            // Limpar input
+            event.target.value = '';
+        }
+
+        async function processCSVFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = () => reject(new Error('Erro ao ler arquivo CSV'));
+                reader.readAsText(file);
+            });
+        }
+
+        async function processExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Converter para JSON
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        
+                        // Converter para formato CSV
+                        const csvContent = Papa.unparse(jsonData);
+                        resolve(csvContent);
+                    } catch (error) {
+                        reject(new Error('Erro ao processar arquivo Excel: ' + error.message));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Erro ao ler arquivo Excel'));
+                reader.readAsArrayBuffer(file);
+            });
         }
 
         function parseCSVContent(csvString) {
@@ -1226,6 +1475,37 @@
             }
         }
 
+        /*********************************
+         * CONTROLE DE SINCRONIZAÇÃO     *
+         *********************************/
+        function onSyncSettingChange() {
+            const enabled = document.getElementById('autoSyncEnabled').value === 'true';
+            autoSyncEnabled = enabled;
+            
+            const syncIntervalGroup = document.getElementById('syncIntervalGroup');
+            const manualSyncGroup = document.getElementById('manualSyncGroup');
+            const manualSyncBtn = document.getElementById('manualSyncBtn');
+            const syncWarning = document.getElementById('syncDisabledWarning');
+            
+            if (enabled) {
+                syncIntervalGroup.style.opacity = '1';
+                manualSyncBtn.disabled = false;
+                manualSyncBtn.textContent = '🔄 Sincronizar Agora';
+                syncWarning.classList.add('hidden');
+                startAutoSync();
+                updateSyncStatus('success', 'Sincronização habilitada');
+            } else {
+                syncIntervalGroup.style.opacity = '0.5';
+                manualSyncBtn.disabled = true;
+                manualSyncBtn.textContent = '🔄 Sincronização Desabilitada';
+                syncWarning.classList.remove('hidden');
+                stopAutoSync();
+                updateSyncStatus('disabled', 'Sincronização desabilitada');
+            }
+            
+            updateDataSourceIndicator();
+        }
+
         function startAutoSync() {
             if (syncInterval) clearInterval(syncInterval);
             
@@ -1234,7 +1514,7 @@
                 const intervalMs = intervalMinutes * 60 * 1000;
                 
                 syncInterval = setInterval(async () => {
-                    if (!document.hidden) { // Só sincronizar se a página estiver visível
+                    if (!document.hidden && dataSource !== 'local') { // Só sincronizar se não estiver usando arquivo local
                         console.log('🔄 Auto-sync executando...');
                         await manualSync();
                     }
@@ -1250,8 +1530,76 @@
                 clearInterval(syncInterval);
                 syncInterval = null;
             }
+            updateSyncStatus('disabled', 'Auto-sync desabilitado');
+            document.getElementById('proximaSync').textContent = 'Desabilitado';
         }
 
+        /*********************************
+         * CONTROLE DE FONTE DE DADOS    *
+         *********************************/
+        function updateDataSourceIndicator() {
+            const indicator = document.getElementById('dataSourceIndicator');
+            const icon = document.getElementById('dataSourceIcon');
+            const text = document.getElementById('dataSourceText');
+            
+            // Remover classes anteriores
+            indicator.classList.remove('data-source-github', 'data-source-local', 'data-source-none');
+            
+            switch (dataSource) {
+                case 'github':
+                    indicator.classList.add('data-source-github');
+                    icon.textContent = '🔄';
+                    text.textContent = autoSyncEnabled ? 'GitHub (Sync)' : 'GitHub (Manual)';
+                    break;
+                case 'local':
+                    indicator.classList.add('data-source-local');
+                    icon.textContent = '📁';
+                    text.textContent = `Arquivo: ${uploadedFileName.substring(0, 15)}${uploadedFileName.length > 15 ? '...' : ''}`;
+                    break;
+                default:
+                    indicator.classList.add('data-source-none');
+                    icon.textContent = '📁';
+                    text.textContent = 'Nenhum dado';
+            }
+        }
+
+        function changeDataSource() {
+            const newSource = document.getElementById('dataSourceSelect').value;
+            
+            if (newSource === 'none') {
+                clearAllData();
+            } else if (newSource === 'github' && dataSource !== 'github') {
+                if (autoSyncEnabled) {
+                    manualSync();
+                } else {
+                    showNotification('Habilite a sincronização para usar dados do GitHub', 'warning');
+                    document.getElementById('dataSourceSelect').value = dataSource;
+                }
+            }
+            // Para 'local', o usuário precisa fazer upload manualmente
+        }
+
+        function clearAllData() {
+            dadosCSV = [];
+            dadosFiltrados = [];
+            equipamentosProcessados = {};
+            apontamentosIrregulares = [];
+            dataSource = 'none';
+            uploadedFileName = '';
+            
+            updateDataSourceIndicator();
+            updateSyncStatus('disabled', 'Dados limpos');
+            atualizarInterface();
+            
+            // Ocultar status do upload
+            document.getElementById('uploadStatus').style.display = 'none';
+            
+            showNotification('Todos os dados foram limpos', 'info');
+        }
+
+        /*********************************
+         * PROCESSAMENTO DE DADOS        *
+         *********************************/
         async function processarDados() {
             if (!dadosCSV.length) {
                 showNotification('Nenhum dado para processar.', 'warning');
@@ -1889,11 +2237,23 @@
             document.getElementById('ultimaSync').textContent = lastSyncTime ? 
                 lastSyncTime.toLocaleTimeString('pt-BR') : '--:--';
             document.getElementById('registrosProcessados').textContent = dadosCSV.length;
-            document.getElementById('statusConexao').textContent = dataSource === 'github' ? 'Online' : 'Offline';
+            
+            // Atualizar status da conexão baseado na fonte de dados e sync
+            let statusConexao = 'Offline';
+            if (dataSource === 'github') {
+                statusConexao = autoSyncEnabled ? 'Online (Auto)' : 'Online (Manual)';
+            } else if (dataSource === 'local') {
+                statusConexao = 'Local';
+            }
+            
+            document.getElementById('statusConexao').textContent = statusConexao;
+            
+            // Atualizar seletor de fonte de dados
+            document.getElementById('dataSourceSelect').value = dataSource;
         }
 
         function updateNextSyncTime(intervalMs) {
-            if (intervalMs && autoSyncEnabled) {
+            if (intervalMs && autoSyncEnabled && dataSource !== 'local') {
                 const nextUpdate = new Date(Date.now() + intervalMs);
                 document.getElementById('proximaSync').textContent = nextUpdate.toLocaleTimeString('pt-BR');
             } else {
@@ -1914,8 +2274,54 @@
                 stopAutoSync();
             }
             
+            // Salvar configurações no localStorage (se disponível)
+            try {
+                const config = {
+                    autoSyncEnabled,
+                    syncInterval: interval,
+                    toleranciaIrregular: document.getElementById('toleranciaIrregular').value,
+                    supervisorPadrao: document.getElementById('supervisorPadrao').value,
+                    regimePadrao: document.getElementById('regimePadrao').value
+                };
+                localStorage.setItem('grupoGPS_config', JSON.stringify(config));
+            } catch (e) {
+                console.log('Não foi possível salvar configurações no localStorage');
+            }
+            
             showNotification('Configurações salvas com sucesso!', 'success');
             atualizarStatusSistema();
+        }
+
+        function carregarConfiguracoes() {
+            try {
+                const config = JSON.parse(localStorage.getItem('grupoGPS_config') || '{}');
+                
+                if (config.autoSyncEnabled !== undefined) {
+                    document.getElementById('autoSyncEnabled').value = config.autoSyncEnabled.toString();
+                    autoSyncEnabled = config.autoSyncEnabled;
+                }
+                
+                if (config.syncInterval) {
+                    document.getElementById('syncInterval').value = config.syncInterval;
+                }
+                
+                if (config.toleranciaIrregular) {
+                    document.getElementById('toleranciaIrregular').value = config.toleranciaIrregular;
+                }
+                
+                if (config.supervisorPadrao) {
+                    document.getElementById('supervisorPadrao').value = config.supervisorPadrao;
+                }
+                
+                if (config.regimePadrao) {
+                    document.getElementById('regimePadrao').value = config.regimePadrao;
+                }
+                
+                // Aplicar configuração de sync
+                onSyncSettingChange();
+            } catch (e) {
+                console.log('Não foi possível carregar configurações do localStorage');
+            }
         }
 
         function showAppointmentDetails(appointment) {
@@ -1924,6 +2330,7 @@
             
             const codigo = extrairCodigoVaga(appointment.Vaga);
             const isIrregular = apontamentosIrregulares.some(irr => irr === appointment);
+            const tempoMinutos = tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']);
             
             container.innerHTML = `
                 <div style="margin-bottom: 1rem;">
@@ -1937,9 +2344,11 @@
                 <div style="margin-bottom: 1rem;"><strong>Categoria:</strong> ${appointment['Categoria Demora'] || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Data Inicial:</strong> ${appointment['Data Inicial'] || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Data Final:</strong> ${appointment['Data Final'] || 'N/D'}</div>
-                <div style="margin-bottom: 1rem;"><strong>Tempo:</strong> ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'}</div>
+                <div style="margin-bottom: 1rem;"><strong>Tempo:</strong> ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'} (${tempoMinutos} minutos)</div>
                 <div style="margin-bottom: 1rem;"><strong>Vaga:</strong> ${appointment.Vaga || 'N/D'}</div>
-                ${isIrregular ? `<div style="color: #e74c3c; font-weight: 600;">⚠️ Motivo: ${apontamentosIrregulares.find(irr => irr === appointment)?.motivo || 'Irregular'}</div>` : ''}
+                ${appointment.Supervisor ? `<div style="margin-bottom: 1rem;"><strong>Supervisor:</strong> ${appointment.Supervisor}</div>` : ''}
+                ${appointment.Motorista ? `<div style="margin-bottom: 1rem;"><strong>Motorista:</strong> ${appointment.Motorista}</div>` : ''}
+                ${isIrregular ? `<div style="color: #e74c3c; font-weight: 600; margin-top: 1rem;">⚠️ Motivo: ${apontamentosIrregulares.find(irr => irr === appointment)?.motivo || 'Irregular'}</div>` : ''}
             `;
             
             modal.classList.add('show');
@@ -1957,29 +2366,32 @@
             const tab = document.getElementById(tabName + '-tab');
 
             if (button) button.classList.add('active');
-            if (tab) tab.classList.remove('hidden');
+            if (tab) tab.classList.add('active');
             
-            // Mostrar/ocultar campos de período personalizado
+            // Mostrar/ocultar campos de período personalizado na aba de relatórios
             if (tabName === 'reports') {
                 const periodoSelect = document.getElementById('periodoRelatorio');
                 if (periodoSelect) {
-                    periodoSelect.addEventListener('change', function() {
-                        const isPersonalizado = this.value === 'personalizado';
+                    const togglePeriodoPersonalizado = () => {
+                        const isPersonalizado = periodoSelect.value === 'personalizado';
                         document.getElementById('periodoPersonalizado').style.display = isPersonalizado ? 'block' : 'none';
                         document.getElementById('periodoPersonalizado2').style.display = isPersonalizado ? 'block' : 'none';
-                    });
+                    };
+                    
+                    periodoSelect.removeEventListener('change', togglePeriodoPersonalizado);
+                    periodoSelect.addEventListener('change', togglePeriodoPersonalizado);
+                    togglePeriodoPersonalizado(); // Aplicar estado inicial
                 }
             }
-            
-            // Mostrar aba ativa
-            document.getElementById(tabName + '-tab').classList.add('active');
         }
 
         function updateSyncStatus(status, message) {
             const dot = document.getElementById('syncDot');
             const statusText = document.getElementById('syncStatus');
             
-            dot.className = `sync-dot ${status}`;
+            // Remover classes anteriores
+            dot.className = 'sync-dot';
+            dot.classList.add(status);
             statusText.textContent = message;
         }
 
@@ -2006,17 +2418,69 @@
             }, 4000);
         }
 
-        // Inicialização
+        /*********************************
+         * FUNÇÕES DE DRAG & DROP        *
+         *********************************/
+        function setupDragAndDrop() {
+            const uploadSection = document.getElementById('uploadSection');
+            
+            uploadSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadSection.classList.add('drag-over');
+            });
+            
+            uploadSection.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadSection.classList.remove('drag-over');
+            });
+            
+            uploadSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadSection.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                        // Simular o evento de mudança no input file
+                        const fileInput = document.getElementById('csvFileInput');
+                        fileInput.files = files;
+                        handleFileUpload({ target: fileInput });
+                    } else {
+                        showNotification('Formato de arquivo não suportado. Use .csv ou .xlsx', 'error');
+                    }
+                }
+            });
+        }
+
+        /*********************************
+         * INICIALIZAÇÃO                 *
+         *********************************/
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚛 Iniciando Controle de Apontamentos - GrupoGPS');
+            
+            // Carregar configurações salvas
+            carregarConfiguracoes();
+            
+            // Configurar drag & drop
+            setupDragAndDrop();
+            
+            // Configurar indicadores iniciais
+            updateDataSourceIndicator();
             updateSyncStatus('success', 'Sistema inicializado');
             updateLastSyncTime();
             
-            // Configurar auto-sync
-            if (GITHUB_CONFIG.AUTO_SYNC) {
+            // Configurar auto-sync se habilitado
+            if (autoSyncEnabled && GITHUB_CONFIG.AUTO_SYNC) {
                 startAutoSync();
                 // Primeira sincronização após 2 segundos
-                setTimeout(manualSync, 2000);
+                setTimeout(() => {
+                    if (autoSyncEnabled) {
+                        manualSync();
+                    }
+                }, 2000);
+            } else {
+                onSyncSettingChange(); // Aplicar estado correto da interface
             }
             
             // Event listeners para fechar modal
@@ -2028,7 +2492,118 @@
                 if (e.key === 'Escape') closeModal();
             });
             
+            // Verificar se a página está sendo fechada para parar auto-sync
+            window.addEventListener('beforeunload', () => {
+                stopAutoSync();
+            });
+            
+            // Pausar auto-sync quando a página não estiver visível
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    console.log('Página não visível - pausando auto-sync');
+                } else {
+                    console.log('Página visível - retomando auto-sync');
+                    if (autoSyncEnabled && !syncInterval) {
+                        startAutoSync();
+                    }
+                }
+            });
+            
             console.log('✅ Sistema inicializado com sucesso!');
+            showNotification('Sistema inicializado! Use o upload de arquivo ou habilite a sincronização para começar.', 'info');
+        });
+
+        /*********************************
+         * FUNÇÕES AUXILIARES            *
+         *********************************/
+        
+        // Adicionar funcionalidade de busca rápida (futura implementação)
+        function buscarEquipamento(termo) {
+            // Implementação futura para busca rápida de equipamentos
+            console.log('Busca por:', termo);
+        }
+
+        // Função para exportar configurações
+        function exportarConfiguracoes() {
+            try {
+                const config = {
+                    autoSyncEnabled,
+                    syncInterval: document.getElementById('syncInterval').value,
+                    toleranciaIrregular: document.getElementById('toleranciaIrregular').value,
+                    supervisorPadrao: document.getElementById('supervisorPadrao').value,
+                    regimePadrao: document.getElementById('regimePadrao').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `configuracoes_grupogps_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                
+                showNotification('Configurações exportadas com sucesso!', 'success');
+            } catch (error) {
+                showNotification('Erro ao exportar configurações: ' + error.message, 'error');
+            }
+        }
+
+        // Função para importar configurações
+        function importarConfiguracoes(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    
+                    // Aplicar configurações importadas
+                    if (config.autoSyncEnabled !== undefined) {
+                        document.getElementById('autoSyncEnabled').value = config.autoSyncEnabled.toString();
+                    }
+                    if (config.syncInterval) {
+                        document.getElementById('syncInterval').value = config.syncInterval;
+                    }
+                    if (config.toleranciaIrregular) {
+                        document.getElementById('toleranciaIrregular').value = config.toleranciaIrregular;
+                    }
+                    if (config.supervisorPadrao) {
+                        document.getElementById('supervisorPadrao').value = config.supervisorPadrao;
+                    }
+                    if (config.regimePadrao) {
+                        document.getElementById('regimePadrao').value = config.regimePadrao;
+                    }
+                    
+                    showNotification('Configurações importadas com sucesso!', 'success');
+                } catch (error) {
+                    showNotification('Erro ao importar configurações: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Adicionar funcionalidade de atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + R para refresh manual
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r' && autoSyncEnabled) {
+                e.preventDefault();
+                manualSync();
+            }
+            
+            // Ctrl/Cmd + F para abrir filtros
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                if (!filtersOpen) {
+                    toggleFilters();
+                }
+                // Focar no primeiro campo de filtro
+                setTimeout(() => {
+                    document.getElementById('dataInicial').focus();
+                }, 100);
+            }
+            
+            // Esc para fechar filtros
+            if (e.key === 'Escape' && filtersOpen) {
+                toggleFilters();
+            }
         });
     </script>
 </body>
