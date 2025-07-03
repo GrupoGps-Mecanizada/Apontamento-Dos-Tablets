@@ -1,20 +1,15 @@
-Posição,Coluna,Rodapé,Fixar,Ocultar
-,,Linhas selecionadas,,,
-,Equipamento Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Marca,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Modelo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Serviço,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Material,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Destino,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Data/Hora,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Área(local),Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Grupo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Numero,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Solicitante,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contato Sol.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Beneficiário,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contato Ben.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Rateio Centro de Custo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Contratada,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
-,Status hora extra,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+Cor,Descrição
+,Motor Ligado
+,Motor Secundário Ligado
+,Motor Desligado
+,Parado Ligado
+,Em Manutenção
+,Fora da Planta
+,Indisponível / Sem Apropriação
+,Troca de Turno
+,Fora do Regime
+,Sem Dados de Bordo
+,Parada Apontada
+,Almoço
+,Vaga Disponível
+,Chave Geral Desligada
