@@ -1,32 +1,20 @@
-Data/Hora,Vaga,Área(local)
-03/07/2025 00:00 às 07:00 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS,CRAL 03
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 06,PÁTIO DAS TRANSPORTADORAS
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 06,PÁTIO DAS TRANSPORTADORAS
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 07,LAM. TIRAS QUENTE
-03/07/2025 19:01 às 23:59 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS,CARBOQUÍMICO
-03/07/2025 19:01 às 23:59 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS,CARBOQUÍMICO
-03/07/2025 00:00 às 07:00 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS,CRAL 03
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 02,ALTOS FORNOS
-03/07/2025 10:31 às 14:00 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 05,OFICINA 410 - SINTERIZAÇÃO
-03/07/2025 07:00 às 16:00 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 05,SINTERIZAÇÃO 2
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 07,SINTERIZAÇÃO 2
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO HIPER VÁCUO - GPS - 01,SINTERIZAÇÕES
-03/07/2025 14:01 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 05,COQUERIA 02
-03/07/2025 00:00 às 07:00 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS,ESCRITÓRIO DOS GASÔMETROS
-03/07/2025 15:00 às 23:59 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 01 - 16 HS,ESCRITÓRIO DOS GASÔMETROS
-03/07/2025 07:00 às 23:00 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 02 - 16 HS,ESCRITÓRIO DOS GASÔMETROS
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 03,ESCRITÓRIO DOS GASÔMETROS
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 03,ESCRITÓRIO DOS GASÔMETROS
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 12,BAIA DE RESÍDUOS - TRANSPORTE RODOVIÁRIO
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO HIPER VÁCUO - GPS - 02,BAIA DE RESÍDUOS - TRANSPORTE RODOVIÁRIO
-03/07/2025 09:31 às 10:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 05,OFICINA ELÉTRICA - ANTIGA IOE - RUA 15
-03/07/2025 07:01 às 19:00 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 01 - 24 HS,SINTERIZAÇÃO 1
-03/07/2025 07:01 às 19:00 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 08 - 24 HS,POÇO REDONDO - ETAV
-03/07/2025 07:01 às 19:00 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 08 - 24 HS,ALTO FORNO 02
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 11,REBOBINAMENTO 3 (AJUSTES / LIMPEZA)
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 09,REBOBINAMENTO 3 (AJUSTES / LIMPEZA)
-03/07/2025 11:00 às 20:00 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 09,LAM. TIRAS QUENTE
-03/07/2025 07:30 às 16:30 (Qui),CAMINHÃO AUTO VÁCUO - GPS - 10,LAM. TIRAS QUENTE
-03/07/2025 07:30 às 12:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 10,LAM. TIRAS QUENTE
-03/07/2025 12:31 às 16:30 (Qui),CAMINHÃO ALTA PRESSÃO - GPS - 10,LAM. TIRAS QUENTE
---,--,--
+Posição,Coluna,Rodapé,Fixar,Ocultar
+,,Linhas selecionadas,,,
+,Equipamento Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Marca,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Modelo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Serviço,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Material,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Destino,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Data/Hora,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Vaga,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Área(local),Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Grupo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Numero,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Solicitante,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Contato Sol.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Beneficiário,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Contato Ben.,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Rateio Centro de Custo,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Contratada,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
+,Status hora extra,Selecione...                            Soma               Média               Maior               Menor                                         Mais aparece               Menos aparece               Primeiro               Último,,,
