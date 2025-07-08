@@ -1674,7 +1674,7 @@
                         <input type="text" id="invDataApontamento" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Hora Apontamento:</label>
+                        <label>Período:</label>
                         <input type="text" id="invHoraApontamento" readonly>
                     </div>
                 </div>
@@ -2308,7 +2308,7 @@
                                         </div>
                                     </div>
                                     <div class="appointment-datetime">
-                                        ${formatarDataHoraCompleta(apt['Data Inicial'])} - ${formatarDataHoraCompleta(apt['Data Final'])}
+                                        ${formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final'])}
                                     </div>
                                 </div>
                             `;
@@ -2393,7 +2393,7 @@
                                     </div>
                                 </div>
                                 <div style="font-size: 0.8rem; color: #7f8c8d; margin-bottom: 0.25rem;">
-                                    ${formatarDataHoraCompleta(alerta['Data Inicial'])} - ${formatarDataHoraCompleta(alerta['Data Final'])}
+                                    ${formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final'])}
                                 </div>
                                 <div style="font-size: 0.8rem; font-weight: 600; color: ${alerta.gravidade === 'ALTA' ? '#dc2626' : '#f59e0b'};">
                                     ${alerta.motivo}
@@ -2466,7 +2466,7 @@
                     'Motorista': alerta.Motorista || '',
                     'Problemas Identificados': alerta.motivo,
                     'Tipo De Apontamento': alerta['Categoria Demora'],
-                    'Hora Apontamento': `${formatarHoraCompleta(alerta['Data Inicial'])} - ${formatarHoraCompleta(alerta['Data Final'])}`,
+                    'Hora Apontamento': formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']),
                     'Tempo Total': alerta['Tempo Indisponível (HH:MM)'],
                     'Justificativa': '',
                     'Ações Corretivas': ''
@@ -2618,13 +2618,11 @@
             document.getElementById('invEquipamento').value = codigo || '';
             document.getElementById('invCategoria').value = categoria || '';
             
-            // Formatação de data e hora completa
+            // Formatação de data e hora melhorada
             const dataApontamento = alerta['Data Inicial']?.split(' ')[0] || '';
-            const horaInicial = formatarHoraCompleta(alerta['Data Inicial']);
-            const horaFinal = formatarHoraCompleta(alerta['Data Final']);
-            const horaApontamento = `${horaInicial} - ${horaFinal}`;
+            const horaApontamento = formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']);
             
-            document.getElementById('invDataApontamento').value = dataApontamento;
+            document.getElementById('invDataApontamento').value = formatarDataCompacta(alerta['Data Inicial']);
             document.getElementById('invHoraApontamento').value = horaApontamento;
             document.getElementById('invTempoTotal').value = alerta['Tempo Indisponível (HH:MM)'] || '';
             document.getElementById('invStatus').value = 'pendente';
@@ -2737,7 +2735,7 @@
                         </div>
                     </div>
                     <div style="font-size: 0.9rem; color: #5a6c7d; margin-bottom: 0.5rem;">
-                        <strong>Data Apontamento:</strong> ${inv.dataApontamento} | <strong>Hora:</strong> ${inv.horaApontamento} | <strong>Tempo:</strong> ${inv.tempoTotal}
+                        <strong>Período:</strong> ${inv.horaApontamento} | <strong>Tempo:</strong> ${inv.tempoTotal}
                     </div>
                     <div style="font-size: 0.9rem; color: #2c3e50; margin-bottom: 0.5rem;">
                         <strong>Justificativa:</strong> ${inv.justificativa}
@@ -3050,6 +3048,52 @@
             }
         }
 
+        function formatarPeriodoApontamento(dataInicial, dataFinal) {
+            if (!dataInicial || !dataFinal) return '';
+            
+            try {
+                // Extrair componentes das datas
+                const [dataIni, horaIni] = dataInicial.split(' ');
+                const [diaIni, mesIni, anoIni] = dataIni.split('/');
+                const horaIniFormatada = horaIni ? horaIni.substring(0, 5) : '00:00';
+                
+                const [dataFim, horaFim] = dataFinal.split(' ');
+                const [diaFim, mesFim, anoFim] = dataFim.split('/');
+                const horaFimFormatada = horaFim ? horaFim.substring(0, 5) : '00:00';
+                
+                // Se for o mesmo dia
+                if (dataIni === dataFim) {
+                    return `${diaIni}/${mesIni} ${horaIniFormatada} - ${horaFimFormatada}`;
+                } else {
+                    // Dias diferentes
+                    return `${diaIni}/${mesIni} ${horaIniFormatada} - ${diaFim}/${mesFim} ${horaFimFormatada}`;
+                }
+            } catch {
+                return `${dataInicial} - ${dataFinal}`;
+            }
+        }
+
+        function formatarDataCompacta(dataStr) {
+            if (!dataStr) return '';
+            try {
+                const [data] = dataStr.split(' ');
+                const [dia, mes] = data.split('/');
+                return `${dia}/${mes}`;
+            } catch {
+                return dataStr;
+            }
+        }
+
+        function formatarHoraCompacta(dataStr) {
+            if (!dataStr) return '';
+            try {
+                const [, hora] = dataStr.split(' ');
+                return hora ? hora.substring(0, 5) : '00:00';
+            } catch {
+                return '';
+            }
+        }
+
         /*********************************
          * FUNÇÕES DE INTERFACE          *
          *********************************/
@@ -3247,7 +3291,7 @@
                     alertas.push({
                         'Equipamento': codigo || '',
                         'Categoria': apt['Categoria Demora'],
-                        'Data/Hora': formatarDataHoraCompleta(apt['Data Inicial']),
+                        'Data/Hora': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
                         'Tempo (min)': tempo,
                         'Limite (min)': gatilho,
                         'Excesso (min)': tempo - gatilho,
@@ -3286,9 +3330,7 @@
                 if (status !== 'normal') {
                     const codigo = extrairCodigoVaga(apt.Vaga);
                     const dataInicial = apt['Data Inicial']?.split(' ')[0] || '';
-                    const horaInicial = formatarHoraCompleta(apt['Data Inicial']);
-                    const horaFinal = formatarHoraCompleta(apt['Data Final']);
-                    const horaApontamento = `${horaInicial} - ${horaFinal}`;
+                    const horaApontamento = formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']);
                     
                     irregularidades.push({
                         'Equipamento': codigo || '',
@@ -3323,6 +3365,7 @@
                     'Categoria': apt['Categoria Demora'] || '',
                     'Data Inicial': formatarDataHoraCompleta(apt['Data Inicial']),
                     'Data Final': formatarDataHoraCompleta(apt['Data Final']),
+                    'Período': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
                     'Tempo (HH:MM)': apt['Tempo Indisponível (HH:MM)'] || '',
                     'Tempo (min)': tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']),
                     'Status': status === 'normal' ? 'Normal' : 'Alerta',
@@ -3698,8 +3741,7 @@
                 <div style="margin-bottom: 1rem;"><strong>Equipamento:</strong> ${codigo || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Placa:</strong> ${appointment.Placa || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Categoria:</strong> ${appointment['Categoria Demora'] || 'N/D'}</div>
-                <div style="margin-bottom: 1rem;"><strong>Data/Hora Inicial:</strong> ${formatarDataHoraCompleta(appointment['Data Inicial'])}</div>
-                <div style="margin-bottom: 1rem;"><strong>Data/Hora Final:</strong> ${formatarDataHoraCompleta(appointment['Data Final'])}</div>
+                <div style="margin-bottom: 1rem;"><strong>Período:</strong> ${formatarPeriodoApontamento(appointment['Data Inicial'], appointment['Data Final'])}</div>
                 <div style="margin-bottom: 1rem;"><strong>Tempo:</strong> ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'} (${tempoMinutos} minutos)</div>
                 <div style="margin-bottom: 1rem;"><strong>Limite Configurado:</strong> ${gatilho} minutos</div>
                 <div style="margin-bottom: 1rem;"><strong>Vaga:</strong> ${appointment.Vaga || 'N/D'}</div>
