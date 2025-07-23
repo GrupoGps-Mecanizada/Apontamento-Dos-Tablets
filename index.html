@@ -18,7 +18,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: #2c3e50;
             line-height: 1.6;
             min-height: 100vh;
@@ -28,19 +28,18 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            backdrop-filter: blur(10px);
         }
 
         /* Header Profissional */
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid #e9ecef;
             padding: 1.5rem 2rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .header-content {
@@ -56,7 +55,7 @@
         .header-brand h1 {
             font-size: 2rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -77,18 +76,18 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #dc3545, #c0392b);
             color: white;
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
             animation: pulse 2s infinite;
         }
 
         .alert-indicator.zero {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, #198754, #20c997);
+            box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
             animation: none;
         }
 
@@ -97,12 +96,12 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e9ecef;
             border-radius: 50px;
             font-size: 0.9rem;
-            color: #5a6c7d;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #495057;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         .last-update-info {
@@ -110,9 +109,9 @@
             flex-direction: column;
             align-items: center;
             padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             backdrop-filter: blur(10px);
         }
 
@@ -121,16 +120,16 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .data-source-github { color: #2c3e50; }
-        .data-source-local { color: #e67e22; }
-        .data-source-none { color: #95a5a6; }
+        .data-source-github { color: #0d6efd; }
+        .data-source-local { color: #fd7e14; }
+        .data-source-none { color: #6c757d; }
 
         .sync-dot {
             width: 10px;
@@ -139,10 +138,10 @@
             animation: pulse 2s infinite;
         }
 
-        .sync-dot.success { background: #27ae60; }
-        .sync-dot.error { background: #e74c3c; }
-        .sync-dot.loading { background: #f39c12; }
-        .sync-dot.disabled { background: #95a5a6; animation: none; }
+        .sync-dot.success { background: #198754; }
+        .sync-dot.error { background: #dc3545; }
+        .sync-dot.loading { background: #fd7e14; }
+        .sync-dot.disabled { background: #6c757d; animation: none; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -151,9 +150,9 @@
 
         /* Navigation Tabs */
         .nav-tabs {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid #e9ecef;
             padding: 0 2rem;
         }
 
@@ -170,7 +169,7 @@
             border-bottom: 3px solid transparent;
             cursor: pointer;
             font-weight: 600;
-            color: #7f8c8d;
+            color: #6c757d;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             position: relative;
@@ -185,7 +184,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             opacity: 0;
             transition: opacity 0.3s ease;
             border-radius: 8px 8px 0 0;
@@ -206,8 +205,8 @@
         }
 
         .nav-tab:hover:not(.active) {
-            color: #2c3e50;
-            background: rgba(255, 255, 255, 0.6);
+            color: #0d6efd;
+            background: rgba(13, 110, 253, 0.1);
         }
 
         /* Main Content - Layout Optimizado */
@@ -229,19 +228,19 @@
 
         /* Glass Panel - Layout Otimizado */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid #e9ecef;
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             margin-bottom: 1.5rem;
             overflow: hidden;
         }
 
         .panel-header {
             padding: 1rem 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 2px solid #e9ecef;
+            background: rgba(248, 249, 250, 0.8);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -262,27 +261,27 @@
 
         /* Upload Section */
         .upload-section {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            border: 2px dashed rgba(102, 126, 234, 0.3);
+            border: 2px dashed #0d6efd;
             text-align: center;
             transition: all 0.3s ease;
         }
 
         .upload-section:hover {
-            border-color: rgba(102, 126, 234, 0.6);
-            background: rgba(255, 255, 255, 0.9);
+            border-color: #6f42c1;
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .upload-section.drag-over {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.1);
         }
 
         .upload-button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             color: white;
             border: none;
             padding: 1rem 2rem;
@@ -299,7 +298,7 @@
 
         .upload-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .file-input {
@@ -307,7 +306,7 @@
         }
 
         .upload-info {
-            color: #5a6c7d;
+            color: #6c757d;
             font-size: 0.9rem;
             margin-top: 1rem;
         }
@@ -321,8 +320,8 @@
         }
 
         .quick-filter-btn {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e9ecef;
             padding: 0.75rem 1.5rem;
             border-radius: 25px;
             cursor: pointer;
@@ -335,15 +334,15 @@
         }
 
         .quick-filter-btn.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             color: white;
             border-color: transparent;
         }
 
         .quick-filter-btn:hover:not(.active) {
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
         }
 
         /* Auto-refresh Control */
@@ -352,9 +351,9 @@
             align-items: center;
             gap: 1rem;
             padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
         }
 
         .auto-refresh-control label {
@@ -365,7 +364,7 @@
 
         /* Compact Filter System */
         .filter-toggle {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -377,19 +376,19 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
         .filter-toggle:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .filter-panel {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             margin-bottom: 1rem;
         }
@@ -397,7 +396,7 @@
         .filter-panel.open {
             max-height: 500px;
             padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
         }
 
         /* Compact Stats - Layout Melhorado */
@@ -411,21 +410,22 @@
         .compact-stat-card {
             text-align: center;
             padding: 1.2rem;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             transition: all 0.3s ease;
         }
 
         .compact-stat-card:hover {
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 1);
+            border-color: #0d6efd;
         }
 
         .compact-stat-value {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -433,7 +433,7 @@
 
         .compact-stat-label {
             font-size: 0.8rem;
-            color: #5a6c7d;
+            color: #6c757d;
             margin-top: 0.25rem;
             font-weight: 600;
         }
@@ -460,10 +460,10 @@
 
         select, input[type="date"], input[type="time"], input[type="text"], input[type="number"], input[type="file"], input[type="checkbox"] {
             padding: 0.75rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             border-radius: 8px;
             font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
             color: #2c3e50;
         }
@@ -475,13 +475,13 @@
 
         select:focus, input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            background: rgba(255, 255, 255, 0.95);
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+            background: rgba(255, 255, 255, 1);
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -494,28 +494,28 @@
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .btn.secondary {
-            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            background: linear-gradient(135deg, #6c757d, #495057);
         }
 
         .btn.success {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            background: linear-gradient(135deg, #198754, #20c997);
         }
 
         .btn.warning {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
+            background: linear-gradient(135deg, #fd7e14, #ffb74d);
         }
 
         .btn.danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
         }
 
         .btn:disabled {
@@ -532,36 +532,36 @@
         }
 
         .equipment-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
             padding: 1.5rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         .equipment-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
 
         /* Status-based colors for equipment cards */
         .equipment-card.status-critico {
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border-color: #ef4444;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-color: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
         }
 
         .equipment-card.status-atencao {
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border-color: #f59e0b;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            border-color: #fd7e14;
+            box-shadow: 0 4px 15px rgba(253, 126, 20, 0.2);
         }
 
         .equipment-card.status-bom {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-color: #22c55e;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-color: #198754;
+            box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
         }
 
         .equipment-header {
@@ -570,7 +570,7 @@
             align-items: center;
             margin-bottom: 1rem;
             padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid rgba(233, 236, 239, 0.5);
         }
 
         .equipment-code {
@@ -588,24 +588,24 @@
         }
 
         .status-critico {
-            background: rgba(239, 68, 68, 0.2);
-            color: #dc2626;
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
         }
 
         .status-atencao {
-            background: rgba(245, 158, 11, 0.2);
-            color: #d97706;
+            background: rgba(253, 126, 20, 0.2);
+            color: #fd7e14;
         }
 
         .status-bom {
-            background: rgba(34, 197, 94, 0.2);
-            color: #16a34a;
+            background: rgba(25, 135, 84, 0.2);
+            color: #198754;
         }
 
         .equipment-type {
             font-size: 0.8rem;
-            color: #7f8c8d;
-            background: rgba(255, 255, 255, 0.7);
+            color: #6c757d;
+            background: rgba(255, 255, 255, 0.8);
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
             font-weight: 600;
@@ -620,15 +620,15 @@
             font-weight: 600;
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
-            background: rgba(239, 68, 68, 0.1);
-            color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
         }
 
         .alert-counter.zero {
-            background: rgba(34, 197, 94, 0.1);
-            color: #16a34a;
-            border-color: rgba(34, 197, 94, 0.2);
+            background: rgba(25, 135, 84, 0.1);
+            color: #198754;
+            border-color: rgba(25, 135, 84, 0.2);
         }
 
         .appointments-list {
@@ -643,7 +643,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #0d6efd;
             position: relative;
         }
 
@@ -669,7 +669,7 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.8rem;
-            color: #7f8c8d;
+            color: #6c757d;
         }
 
         .appointment-status-indicator {
@@ -679,15 +679,15 @@
             flex-shrink: 0;
         }
 
-        .status-excede { background: #dc2626; }
-        .status-atencao-prox { background: #f59e0b; }
-        .status-normal { background: #16a34a; }
-        .status-zerado { background: #374151; }
-        .status-curto { background: #ea580c; }
+        .status-excede { background: #dc3545; }
+        .status-atencao-prox { background: #fd7e14; }
+        .status-normal { background: #198754; }
+        .status-zerado { background: #6c757d; }
+        .status-curto { background: #fd7e14; }
 
         .appointment-datetime {
             font-size: 0.8rem;
-            color: #7f8c8d;
+            color: #6c757d;
         }
 
         /* Categories Management Table */
@@ -701,17 +701,17 @@
         .categories-table td {
             padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid #e9ecef;
         }
 
         .categories-table th {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(248, 249, 250, 0.8);
             font-weight: 600;
             color: #2c3e50;
         }
 
         .categories-table tr:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(13, 110, 253, 0.05);
         }
 
         .editable-field {
@@ -724,7 +724,7 @@
 
         .editable-field:focus {
             background: rgba(255, 255, 255, 0.9);
-            border-color: #667eea;
+            border-color: #0d6efd;
             outline: none;
         }
 
@@ -737,26 +737,26 @@
         }
 
         .quality-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
         }
 
         .quality-card.critical {
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            border-color: #ef4444;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-color: #dc3545;
         }
 
         .quality-card.warning {
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border-color: #f59e0b;
+            border-color: #fd7e14;
         }
 
         .quality-card.good {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border-color: #22c55e;
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-color: #198754;
         }
 
         .quality-value {
@@ -767,13 +767,13 @@
 
         .quality-label {
             font-size: 0.9rem;
-            color: #5a6c7d;
+            color: #6c757d;
             font-weight: 600;
         }
 
         /* Investigation Form - Layout Melhorado */
         .investigation-form {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             padding: 1.5rem;
             margin-top: 1rem;
@@ -795,7 +795,7 @@
         .form-group select {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #e9ecef;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.9);
         }
@@ -814,9 +814,9 @@
         }
 
         .template-btn {
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            color: #667eea;
+            background: rgba(13, 110, 253, 0.1);
+            border: 1px solid rgba(13, 110, 253, 0.3);
+            color: #0d6efd;
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
             font-size: 0.8rem;
@@ -825,8 +825,98 @@
         }
 
         .template-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
+            background: rgba(13, 110, 253, 0.2);
+            border-color: #0d6efd;
+        }
+
+        /* Report Selection Grid */
+        .report-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-option {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .report-option:hover {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.05);
+        }
+
+        .report-option.selected {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.1);
+        }
+
+        .report-option-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #0d6efd;
+        }
+
+        .report-option-title {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .report-option-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-option-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .report-preview-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+
+        .preview-table th {
+            background: rgba(248, 249, 250, 0.8);
+            font-weight: 600;
+            color: #2c3e50;
         }
 
         /* Loading States */
@@ -836,14 +926,14 @@
             align-items: center;
             justify-content: center;
             height: 200px;
-            color: #5a6c7d;
+            color: #6c757d;
         }
 
         .loading-spinner {
             width: 3rem;
             height: 3rem;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #667eea;
+            border: 3px solid rgba(233, 236, 239, 0.3);
+            border-top: 3px solid #0d6efd;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
@@ -856,12 +946,12 @@
 
         /* Footer */
         .footer {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #e9ecef;
             padding: 1.5rem;
             text-align: center;
-            color: #5a6c7d;
+            color: #6c757d;
             font-size: 0.9rem;
         }
 
@@ -885,10 +975,10 @@
             backdrop-filter: blur(20px);
         }
 
-        .notification.success { background: linear-gradient(135deg, #27ae60, #2ecc71); }
-        .notification.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .notification.warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .notification.info { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .notification.success { background: linear-gradient(135deg, #198754, #20c997); }
+        .notification.error { background: linear-gradient(135deg, #dc3545, #e74c3c); }
+        .notification.warning { background: linear-gradient(135deg, #fd7e14, #ffb74d); }
+        .notification.info { background: linear-gradient(135deg, #0dcaf0, #0d6efd); }
 
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
@@ -918,15 +1008,15 @@
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
             padding: 2rem;
             max-width: 900px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e9ecef;
             transform: scale(0.9);
             transition: all 0.3s ease;
             backdrop-filter: blur(20px);
@@ -942,7 +1032,7 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid #e9ecef;
         }
 
         .modal-title {
@@ -956,14 +1046,14 @@
             border: none;
             font-size: 2rem;
             cursor: pointer;
-            color: #7f8c8d;
+            color: #6c757d;
             padding: 0.25rem;
             border-radius: 8px;
             transition: all 0.2s ease;
         }
 
         .modal-close:hover {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(108, 117, 125, 0.1);
             color: #2c3e50;
         }
 
@@ -1013,6 +1103,10 @@
             .quick-filters {
                 flex-direction: column;
             }
+
+            .report-selection-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Hidden utilities */
@@ -1034,13 +1128,18 @@
                         <span id="dataSourceText">Nenhum dado</span>
                     </div>
                     
+                    <button class="btn" id="headerSyncBtn" onclick="manualSync()" style="padding: 0.5rem 1rem; font-size: 0.8rem; display: none;">
+                        <span>🔄</span>
+                        Sincronizar
+                    </button>
+                    
                     <div class="sync-indicator">
                         <div class="sync-dot loading" id="syncDot"></div>
                         <span id="syncStatus">Aguardando dados...</span>
                     </div>
                     
                     <div class="last-update-info">
-                        <span style="font-size: 0.85rem; color: #5a6c7d;">Última atualização:</span>
+                        <span style="font-size: 0.85rem; color: #6c757d;">Última atualização:</span>
                         <span id="lastUpdateTime" style="font-weight: 600; color: #2c3e50;">--:--</span>
                     </div>
                 </div>
@@ -1188,7 +1287,13 @@
                         <div id="equipmentGrid" class="equipment-grid">
                             <div class="loading-state">
                                 <div class="loading-spinner"></div>
-                                <div>Carregue os dados para visualizar os equipamentos</div>
+                                <div id="equipmentLoadingMessage">Carregando dados do GitHub...</div>
+                                <div style="margin-top: 1rem; font-size: 0.9rem; color: #6c757d;">
+                                    Se os dados não carregarem automaticamente, você pode:
+                                    <br>• Verificar se a sincronização está habilitada nas ⚙️ Configurações
+                                    <br>• Usar o botão "🔄 Sincronizar" no topo da página
+                                    <br>• Fazer upload de um arquivo CSV local
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1318,7 +1423,7 @@
                     <div class="panel-content">
                         <div style="margin-bottom: 2rem;">
                             <h3 style="margin-bottom: 1rem;">Configuração de Gatilhos de Alerta</h3>
-                            <p style="color: #5a6c7d; margin-bottom: 1rem;">
+                            <p style="color: #6c757d; margin-bottom: 1rem;">
                                 Configure os tempos limite para cada categoria de apontamento. Apontamentos que excederem estes limites serão destacados no sistema.
                             </p>
                         </div>
@@ -1360,7 +1465,7 @@
                                 </thead>
                                 <tbody id="categoriesTableBody">
                                     <tr>
-                                        <td colspan="7" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                                        <td colspan="7" style="text-align: center; padding: 2rem; color: #6c757d;">
                                             Carregando categorias...
                                         </td>
                                     </tr>
@@ -1377,70 +1482,228 @@
                     <div class="panel-header">
                         <div class="panel-title">
                             <span>📈</span>
-                            Relatórios de Apontamentos
+                            Relatório Inteligente e Customizável
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="previewReport()">
+                                <span>👁️</span>
+                                Prévia
+                            </button>
+                            <button class="btn success" onclick="exportCustomReport('xlsx')">
+                                <span>📊</span>
+                                Exportar Excel
+                            </button>
+                            <button class="btn warning" onclick="exportCustomReport('csv')">
+                                <span>📋</span>
+                                Exportar CSV
+                            </button>
                         </div>
                     </div>
                     <div class="panel-content">
-                        <div class="controls-grid">
-                            <div class="control-group">
-                                <label>Formato do Relatório:</label>
-                                <select id="formatoRelatorio">
-                                    <option value="irregulares">Relatório de Irregularidades</option>
-                                    <option value="alertas">Relatório de Alertas</option>
-                                    <option value="completo">Relatório Completo</option>
-                                    <option value="resumo">Resumo por Equipamento</option>
-                                    <option value="categoria">Por Categoria</option>
-                                    <option value="investigacoes">Investigações</option>
-                                </select>
+                        <!-- Configurações de Período -->
+                        <div class="glass-panel" style="margin-bottom: 2rem;">
+                            <div class="panel-header">
+                                <div class="panel-title">⏰ Configuração de Período</div>
                             </div>
-                            
-                            <div class="control-group">
-                                <label>Período do Relatório:</label>
-                                <select id="periodoRelatorio">
-                                    <option value="todos">Todos os dados</option>
-                                    <option value="hoje">Hoje</option>
-                                    <option value="ontem">Ontem</option>
-                                    <option value="semana">Última semana</option>
-                                    <option value="mes">Último mês</option>
-                                    <option value="personalizado">Período personalizado</option>
-                                </select>
+                            <div class="panel-content">
+                                <div class="controls-grid">
+                                    <div class="control-group">
+                                        <label>Período do Relatório:</label>
+                                        <select id="periodoRelatorio" onchange="updatePeriodFields()">
+                                            <option value="todos">Todos os dados</option>
+                                            <option value="hoje">Hoje</option>
+                                            <option value="ontem">Ontem</option>
+                                            <option value="semana">Última semana</option>
+                                            <option value="mes">Último mês</option>
+                                            <option value="personalizado">Período personalizado</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="control-group" id="periodoPersonalizado" style="display: none;">
+                                        <label>Data Inicial:</label>
+                                        <input type="date" id="dataInicialRelatorio">
+                                    </div>
+                                    
+                                    <div class="control-group" id="periodoPersonalizado2" style="display: none;">
+                                        <label>Data Final:</label>
+                                        <input type="date" id="dataFinalRelatorio">
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="control-group" id="periodoPersonalizado" style="display: none;">
-                                <label>Data Inicial Relatório:</label>
-                                <input type="date" id="dataInicialRelatorio">
+                        </div>
+
+                        <!-- Seleção de Componentes do Relatório -->
+                        <div class="glass-panel" style="margin-bottom: 2rem;">
+                            <div class="panel-header">
+                                <div class="panel-title">📋 Selecione os Componentes do Relatório</div>
+                                <div style="display: flex; gap: 1rem;">
+                                    <button class="btn secondary" onclick="selectAllReportOptions()">
+                                        <span>☑️</span>
+                                        Selecionar Todos
+                                    </button>
+                                    <button class="btn secondary" onclick="clearAllReportOptions()">
+                                        <span>❌</span>
+                                        Limpar Seleção
+                                    </button>
+                                </div>
                             </div>
-                            
-                            <div class="control-group" id="periodoPersonalizado2" style="display: none;">
-                                <label>Data Final Relatório:</label>
-                                <input type="date" id="dataFinalRelatorio">
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>&nbsp;</label>
-                                <button class="btn success" onclick="exportarRelatorio('xlsx')">
-                                    <span>📊</span>
-                                    Exportar Excel
-                                </button>
-                            </div>
-                            
-                            <div class="control-group">
-                                <label>&nbsp;</label>
-                                <button class="btn warning" onclick="exportarRelatorio('csv')">
-                                    <span>📋</span>
-                                    Exportar CSV
-                                </button>
+                            <div class="panel-content">
+                                <div class="report-selection-grid" id="reportSelectionGrid">
+                                    <div class="report-option" onclick="toggleReportOption('equipamentos-criticos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-equipamentos-criticos">
+                                            <div class="report-option-title">🔴 Equipamentos Críticos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Equipamentos com status crítico (poucos apontamentos ou muitos alertas)
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Equipamentos encontrados:</span>
+                                            <span id="count-equipamentos-criticos">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('apontamentos-zerados')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-zerados">
+                                            <div class="report-option-title">⚫ Apontamentos Zerados</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Todos os apontamentos com tempo igual a zero
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Apontamentos encontrados:</span>
+                                            <span id="count-apontamentos-zerados">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('apontamentos-curtos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-curtos">
+                                            <div class="report-option-title">⏱️ Apontamentos Muito Curtos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Apontamentos com duração muito curta (suspeitos)
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Apontamentos encontrados:</span>
+                                            <span id="count-apontamentos-curtos">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('alertas-criticos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-alertas-criticos">
+                                            <div class="report-option-title">🚨 Alertas Críticos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Apontamentos que excedem significativamente os limites configurados
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Alertas encontrados:</span>
+                                            <span id="count-alertas-criticos">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('alertas-atencao')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-alertas-atencao">
+                                            <div class="report-option-title">🟡 Alertas de Atenção</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Apontamentos próximos aos limites configurados
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Alertas encontrados:</span>
+                                            <span id="count-alertas-atencao">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('resumo-equipamentos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-resumo-equipamentos">
+                                            <div class="report-option-title">📊 Resumo por Equipamento</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Estatísticas consolidadas por equipamento (tempo total, alertas, etc.)
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Equipamentos:</span>
+                                            <span id="count-resumo-equipamentos">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('resumo-categorias')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-resumo-categorias">
+                                            <div class="report-option-title">📋 Resumo por Categoria</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Análise de desempenho por categoria de apontamento
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Categorias ativas:</span>
+                                            <span id="count-resumo-categorias">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('equipamentos-poucos-apontamentos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-equipamentos-poucos-apontamentos">
+                                            <div class="report-option-title">📉 Equipamentos com Poucos Apontamentos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Equipamentos que tiveram poucos apontamentos (possível subutilização)
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Equipamentos encontrados:</span>
+                                            <span id="count-equipamentos-poucos-apontamentos">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('investigacoes')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-investigacoes">
+                                            <div class="report-option-title">🔍 Investigações Realizadas</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Histórico completo de investigações e ações corretivas
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Investigações:</span>
+                                            <span id="count-investigacoes">0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="report-option" onclick="toggleReportOption('dados-completos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-dados-completos">
+                                            <div class="report-option-title">📄 Dados Completos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Todos os apontamentos do período com informações detalhadas
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Total de registros:</span>
+                                            <span id="count-dados-completos">0</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
+                        <!-- Prévia do Relatório -->
                         <div class="glass-panel">
                             <div class="panel-header">
-                                <div class="panel-title">📋 Prévia do Relatório</div>
+                                <div class="panel-title">👁️ Prévia do Relatório</div>
+                                <div id="previewStats" style="font-size: 0.9rem; color: #6c757d;">
+                                    Selecione os componentes e clique em "Prévia" para visualizar
+                                </div>
                             </div>
                             <div class="panel-content">
                                 <div id="previewRelatorio">
                                     <div class="loading-state">
-                                        <div>Configure os filtros acima e aplique para ver a prévia</div>
+                                        <div>👆 Selecione os componentes acima e clique em "Prévia" para visualizar o relatório</div>
                                     </div>
                                 </div>
                             </div>
@@ -1462,7 +1725,7 @@
                     <div class="panel-content">
                         <div class="upload-section" id="uploadSection">
                             <h4 style="margin-bottom: 1rem; color: #2c3e50;">Carregar arquivo para análise</h4>
-                            <p style="color: #5a6c7d; margin-bottom: 1rem;">
+                            <p style="color: #6c757d; margin-bottom: 1rem;">
                                 Faça upload de um arquivo CSV para investigar dados de dias específicos ou períodos diferentes
                             </p>
                             
@@ -1506,7 +1769,7 @@
                             <div class="control-group">
                                 <label>Sincronização GitHub:</label>
                                 <select id="autoSyncEnabled" onchange="onSyncSettingChange()">
-                                    <option value="true">Habilitado</option>
+                                    <option value="true" selected>Habilitado</option>
                                     <option value="false">Desabilitado</option>
                                 </select>
                             </div>
@@ -1524,12 +1787,12 @@
                             
                             <div class="control-group">
                                 <label>Repositório GitHub:</label>
-                                <input type="text" id="githubRepo" value="GrupoGps-Mecanizada/Apontamento-Dos-Tablets" readonly>
+                                <input type="text" id="githubRepo" value="GrupoGps-Mecanizada/Banco-De-Dados" readonly>
                             </div>
                             
                             <div class="control-group">
                                 <label>Arquivo de Dados:</label>
-                                <input type="text" id="githubFile" value="data/apontamentos-atuais.csv" readonly>
+                                <input type="text" id="githubFile" value="Apontamentos/apontamentos-atuais.csv" readonly>
                             </div>
                             
                             <div class="control-group" id="manualSyncGroup">
@@ -1729,7 +1992,7 @@
                     "tipo_atividade": "Preparação / Setup",
                     "gatilho_alerta_minutos": 30,
                     "tempo_normal_minutos": 16,
-                    "cor_indicador": "#667eea",
+                    "cor_indicador": "#0d6efd",
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1744,7 +2007,7 @@
                     "tipo_atividade": "Descarga / Limpeza",
                     "gatilho_alerta_minutos": 75,
                     "tempo_normal_minutos": 30,
-                    "cor_indicador": "#2ecc71",
+                    "cor_indicador": "#198754",
                     "icone": "📦",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1758,7 +2021,7 @@
                     "tipo_atividade": "Processo Administrativo",
                     "gatilho_alerta_minutos": 40,
                     "tempo_normal_minutos": 21,
-                    "cor_indicador": "#3498db",
+                    "cor_indicador": "#0dcaf0",
                     "icone": "📋",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1772,7 +2035,7 @@
                     "tipo_atividade": "Procedimento de Segurança",
                     "gatilho_alerta_minutos": 45,
                     "tempo_normal_minutos": 29,
-                    "cor_indicador": "#e74c3c",
+                    "cor_indicador": "#dc3545",
                     "icone": "🔒",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1786,7 +2049,7 @@
                     "tipo_atividade": "Procedimento de Segurança",
                     "gatilho_alerta_minutos": 25,
                     "tempo_normal_minutos": 12,
-                    "cor_indicador": "#f39c12",
+                    "cor_indicador": "#fd7e14",
                     "icone": "⚠️",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1800,7 +2063,7 @@
                     "tipo_atividade": "Abastecimento",
                     "gatilho_alerta_minutos": 40,
                     "tempo_normal_minutos": 21,
-                    "cor_indicador": "#1abc9c",
+                    "cor_indicador": "#20c997",
                     "icone": "⛽",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1814,7 +2077,7 @@
                     "tipo_atividade": "Troca de Equipamento",
                     "gatilho_alerta_minutos": 20,
                     "tempo_normal_minutos": 3,
-                    "cor_indicador": "#9b59b6",
+                    "cor_indicador": "#6f42c1",
                     "icone": "🔄",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1828,7 +2091,7 @@
                     "tipo_atividade": "Refeição / Descanso",
                     "gatilho_alerta_minutos": 75,
                     "tempo_normal_minutos": 61,
-                    "cor_indicador": "#27ae60",
+                    "cor_indicador": "#198754",
                     "icone": "🍽️",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1842,7 +2105,7 @@
                     "tipo_atividade": "Início de Turno / DDS",
                     "gatilho_alerta_minutos": 25,
                     "tempo_normal_minutos": 14,
-                    "cor_indicador": "#34495e",
+                    "cor_indicador": "#495057",
                     "icone": "🕐",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1856,7 +2119,7 @@
                     "tipo_atividade": "Pausa Pessoal",
                     "gatilho_alerta_minutos": 15,
                     "tempo_normal_minutos": 5,
-                    "cor_indicador": "#95a5a6",
+                    "cor_indicador": "#6c757d",
                     "icone": "☕",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1870,7 +2133,7 @@
                     "tipo_atividade": "Fator Externo",
                     "gatilho_alerta_minutos": 10,
                     "tempo_normal_minutos": 0,
-                    "cor_indicador": "#7f8c8d",
+                    "cor_indicador": "#6c757d",
                     "icone": "🌧️",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1884,7 +2147,7 @@
                     "tipo_atividade": "Fila / Espera Externa",
                     "gatilho_alerta_minutos": 60,
                     "tempo_normal_minutos": 36,
-                    "cor_indicador": "#e67e22",
+                    "cor_indicador": "#fd7e14",
                     "icone": "⏳",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1898,7 +2161,7 @@
                     "tipo_atividade": "Fila / Espera Externa",
                     "gatilho_alerta_minutos": 15,
                     "tempo_normal_minutos": 6,
-                    "cor_indicador": "#d35400",
+                    "cor_indicador": "#fd7e14",
                     "icone": "🚛",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1912,7 +2175,7 @@
                     "tipo_atividade": "Fila / Espera Externa",
                     "gatilho_alerta_minutos": 10,
                     "tempo_normal_minutos": 2,
-                    "cor_indicador": "#c0392b",
+                    "cor_indicador": "#dc3545",
                     "icone": "🚦",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1926,7 +2189,7 @@
                     "tipo_atividade": "Falha de Planejamento",
                     "gatilho_alerta_minutos": 15,
                     "tempo_normal_minutos": 8,
-                    "cor_indicador": "#8e44ad",
+                    "cor_indicador": "#6f42c1",
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1940,7 +2203,7 @@
                     "tipo_atividade": "Manutenção Corretiva Leve",
                     "gatilho_alerta_minutos": 30,
                     "tempo_normal_minutos": 13,
-                    "cor_indicador": "#2c3e50",
+                    "cor_indicador": "#495057",
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
@@ -1961,9 +2224,9 @@
 
         const GITHUB_CONFIG = {
             OWNER: 'GrupoGps-Mecanizada',
-            REPO: 'Banco-De-Dados', // Repositório onde estão os dados
+            REPO: 'Banco-De-Dados',
             BRANCH: 'main',
-            FILE_PATH: 'Apontamentos/apontamentos-atuais.csv', // Caminho dentro do repo Banco-De-Dados
+            FILE_PATH: 'Apontamentos/apontamentos-atuais.csv',
             CONFIG_FILE_PATH: 'config/apontamentos-config.json',
             AUTO_SYNC: true,
             SYNC_INTERVAL: 30000
@@ -1981,6 +2244,7 @@
         let supervisores = new Set();
         let motoristas = new Set();
         
+        // **CORREÇÃO: Sincronização habilitada por padrão**
         let autoSyncEnabled = true;
         let lastSyncTime = null;
         let syncInterval = null;
@@ -1990,6 +2254,7 @@
         let uploadedFileName = '';
         let apontamentosConfig = DEFAULT_CATEGORIES_CONFIG;
         let currentQualityFilter = 'all';
+        let selectedReportOptions = new Set();
 
         /*********************************
          * CONFIGURAÇÃO E GITHUB          *
@@ -1999,6 +2264,7 @@
                 const configUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/${GITHUB_CONFIG.CONFIG_FILE_PATH}`;
                 console.log('🔄 Tentando carregar configuração do GitHub:', configUrl);
                 
+                // **CORREÇÃO CORS: Simplificar request**
                 const response = await fetch(configUrl + '?v=' + Date.now());
                 if (response.ok) {
                     const configContent = await response.text();
@@ -2008,11 +2274,10 @@
                     return true;
                 } else if (response.status === 404) {
                     console.log('📝 Arquivo de configuração não encontrado no GitHub, usando padrão');
-                    await saveConfigToGitHub();
                     return false;
                 }
             } catch (error) {
-                console.error('❌ Erro ao carregar configuração do GitHub:', error);
+                console.log('⚠️ Erro ao carregar configuração do GitHub (usando padrão):', error.message);
                 return false;
             }
         }
@@ -2062,7 +2327,7 @@
                 "tipo_atividade": "Categoria Não Mapeada",
                 "gatilho_alerta_minutos": 60,
                 "tempo_normal_minutos": 30,
-                "cor_indicador": "#95a5a6",
+                "cor_indicador": "#6c757d",
                 "icone": "❓",
                 "ativo": true,
                 "templates_justificativa": ["Categoria não configurada"]
@@ -2085,6 +2350,7 @@
                 equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados.length ? dadosFiltrados : dadosCSV);
                 detectarApontamentosComAlertas(dadosFiltrados.length ? dadosFiltrados : dadosCSV);
                 atualizarInterface();
+                atualizarContadoresRelatorio();
                 
                 showNotification(`✅ Processamento concluído! ${Object.keys(equipamentosProcessados).length} equipamentos analisados.`, 'success');
             } catch (error) {
@@ -2230,6 +2496,368 @@
         }
 
         /*********************************
+         * RELATÓRIOS CUSTOMIZÁVEIS      *
+         *********************************/
+        function updatePeriodFields() {
+            const periodo = document.getElementById('periodoRelatorio').value;
+            const isPersonalizado = periodo === 'personalizado';
+            
+            document.getElementById('periodoPersonalizado').style.display = isPersonalizado ? 'block' : 'none';
+            document.getElementById('periodoPersonalizado2').style.display = isPersonalizado ? 'block' : 'none';
+            
+            if (dadosCSV.length > 0) {
+                atualizarContadoresRelatorio();
+            }
+        }
+
+        function atualizarContadoresRelatorio() {
+            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, document.getElementById('periodoRelatorio').value);
+            
+            // Contar equipamentos críticos
+            let equipamentosCriticos = 0;
+            Object.values(equipamentosProcessados).forEach(eq => {
+                if (eq.status === 'CRITICO') equipamentosCriticos++;
+            });
+            
+            // Contar apontamentos zerados
+            const apontamentosZerados = dados.filter(apt => classificarApontamento(apt) === 'zerado').length;
+            
+            // Contar apontamentos curtos
+            const apontamentosCurtos = dados.filter(apt => classificarApontamento(apt) === 'curto').length;
+            
+            // Contar alertas críticos
+            const alertasCriticos = dados.filter(apt => classificarApontamento(apt) === 'excede').length;
+            
+            // Contar alertas de atenção
+            const alertasAtencao = dados.filter(apt => classificarApontamento(apt) === 'atencao_prox').length;
+            
+            // Contar equipamentos com poucos apontamentos
+            let equipamentosPoucos = 0;
+            const limiar = parseInt(apontamentosConfig.regras_processamento?.equipamentos_poucos_apontamentos || 3);
+            Object.values(equipamentosProcessados).forEach(eq => {
+                if (eq.apontamentos.length <= limiar) equipamentosPoucos++;
+            });
+            
+            // Atualizar contadores na interface
+            document.getElementById('count-equipamentos-criticos').textContent = equipamentosCriticos;
+            document.getElementById('count-apontamentos-zerados').textContent = apontamentosZerados;
+            document.getElementById('count-apontamentos-curtos').textContent = apontamentosCurtos;
+            document.getElementById('count-alertas-criticos').textContent = alertasCriticos;
+            document.getElementById('count-alertas-atencao').textContent = alertasAtencao;
+            document.getElementById('count-resumo-equipamentos').textContent = Object.keys(equipamentosProcessados).length;
+            document.getElementById('count-resumo-categorias').textContent = categorias.size;
+            document.getElementById('count-equipamentos-poucos-apontamentos').textContent = equipamentosPoucos;
+            document.getElementById('count-investigacoes').textContent = investigacoes.length;
+            document.getElementById('count-dados-completos').textContent = dados.length;
+        }
+
+        function toggleReportOption(optionId) {
+            const checkbox = document.getElementById(`checkbox-${optionId}`);
+            const option = checkbox.closest('.report-option');
+            
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                selectedReportOptions.add(optionId);
+                option.classList.add('selected');
+            } else {
+                selectedReportOptions.delete(optionId);
+                option.classList.remove('selected');
+            }
+        }
+
+        function selectAllReportOptions() {
+            document.querySelectorAll('.report-checkbox').forEach(checkbox => {
+                if (!checkbox.checked) {
+                    const optionId = checkbox.id.replace('checkbox-', '');
+                    toggleReportOption(optionId);
+                }
+            });
+        }
+
+        function clearAllReportOptions() {
+            document.querySelectorAll('.report-checkbox').forEach(checkbox => {
+                if (checkbox.checked) {
+                    const optionId = checkbox.id.replace('checkbox-', '');
+                    toggleReportOption(optionId);
+                }
+            });
+        }
+
+        function previewReport() {
+            if (selectedReportOptions.size === 0) {
+                showNotification('Selecione pelo menos um componente para o relatório', 'warning');
+                return;
+            }
+            
+            const container = document.getElementById('previewRelatorio');
+            const periodo = document.getElementById('periodoRelatorio').value;
+            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, periodo);
+            
+            let totalRegistros = 0;
+            let previewHtml = '';
+            
+            selectedReportOptions.forEach(optionId => {
+                const sectionData = generateReportSection(optionId, dados);
+                
+                if (sectionData && sectionData.length > 0) {
+                    totalRegistros += sectionData.length;
+                    
+                    previewHtml += `
+                        <div style="margin-bottom: 2rem;">
+                            <h4 style="color: #2c3e50; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e9ecef;">
+                                ${getReportSectionTitle(optionId)} (${sectionData.length} registros)
+                            </h4>
+                            <div style="overflow-x: auto;">
+                                <table class="preview-table">
+                                    <thead>
+                                        <tr>
+                                            ${Object.keys(sectionData[0]).map(key => `<th>${key}</th>`).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${sectionData.slice(0, 5).map(row => 
+                                            `<tr>${Object.values(row).map(value => `<td>${value || ''}</td>`).join('')}</tr>`
+                                        ).join('')}
+                                        ${sectionData.length > 5 ? `<tr><td colspan="${Object.keys(sectionData[0]).length}" style="text-align: center; font-style: italic; color: #6c757d;">... e mais ${sectionData.length - 5} registros</td></tr>` : ''}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (previewHtml) {
+                container.innerHTML = previewHtml;
+                document.getElementById('previewStats').textContent = `Total: ${totalRegistros} registros em ${selectedReportOptions.size} seções`;
+            } else {
+                container.innerHTML = '<div class="loading-state"><div>Nenhum dado encontrado para os componentes selecionados</div></div>';
+                document.getElementById('previewStats').textContent = 'Nenhum dado disponível';
+            }
+        }
+
+        function generateReportSection(optionId, dados) {
+            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || '';
+            const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM';
+            
+            // Estrutura padrão para todos os relatórios principais
+            const formatarRegistroPadrao = (apt) => {
+                const status = classificarApontamento(apt);
+                const tempoMinutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
+                const gatilho = getGatilhoAlerta(apt['Categoria Demora']);
+                
+                return {
+                    'Equipamento': extrairCodigoVaga(apt.Vaga) || '',
+                    'Regime': regimePadrao,
+                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                    'Supervisor': supervisorPadrao,
+                    'Motorista': apt.Motorista || '',
+                    'Problemas Identificados': getMotivo(status, apt),
+                    'Gravidade': getGravidade(status),
+                    'Tipo De Apontamento': apt['Categoria Demora'] || '',
+                    'Hora Apontamento': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
+                    'Tempo (min)': tempoMinutos,
+                    'Justificativa': '',
+                    'Tratativa': '',
+                    'Sugestão': getSugestaoTratativa(status, apt)
+                };
+            };
+            
+            switch (optionId) {
+                case 'equipamentos-criticos':
+                    const equipamentosCriticos = [];
+                    Object.values(equipamentosProcessados)
+                        .filter(eq => eq.status === 'CRITICO')
+                        .forEach(eq => {
+                            eq.apontamentos.forEach(apt => {
+                                equipamentosCriticos.push(formatarRegistroPadrao(apt));
+                            });
+                        });
+                    return equipamentosCriticos;
+
+                case 'apontamentos-zerados':
+                    return dados
+                        .filter(apt => classificarApontamento(apt) === 'zerado')
+                        .map(apt => formatarRegistroPadrao(apt));
+
+                case 'apontamentos-curtos':
+                    return dados
+                        .filter(apt => classificarApontamento(apt) === 'curto')
+                        .map(apt => formatarRegistroPadrao(apt));
+
+                case 'alertas-criticos':
+                    return dados
+                        .filter(apt => classificarApontamento(apt) === 'excede')
+                        .map(apt => formatarRegistroPadrao(apt));
+
+                case 'alertas-atencao':
+                    return dados
+                        .filter(apt => classificarApontamento(apt) === 'atencao_prox')
+                        .map(apt => formatarRegistroPadrao(apt));
+
+                case 'resumo-equipamentos':
+                    const resumoEquipamentos = [];
+                    Object.values(equipamentosProcessados).forEach(eq => {
+                        eq.apontamentos.forEach(apt => {
+                            resumoEquipamentos.push(formatarRegistroPadrao(apt));
+                        });
+                    });
+                    return resumoEquipamentos;
+
+                case 'resumo-categorias':
+                    const resumoCategorias = [];
+                    dados.forEach(apt => {
+                        resumoCategorias.push(formatarRegistroPadrao(apt));
+                    });
+                    return resumoCategorias;
+
+                case 'equipamentos-poucos-apontamentos':
+                    const limiar = parseInt(apontamentosConfig.regras_processamento?.equipamentos_poucos_apontamentos || 3);
+                    const equipamentosPoucos = [];
+                    Object.values(equipamentosProcessados)
+                        .filter(eq => eq.apontamentos.length <= limiar)
+                        .forEach(eq => {
+                            eq.apontamentos.forEach(apt => {
+                                const registro = formatarRegistroPadrao(apt);
+                                registro['Problemas Identificados'] = eq.apontamentos.length === 0 ? 'Equipamento não utilizado' : 'Baixa utilização detectada';
+                                registro['Sugestão'] = eq.apontamentos.length === 0 ? 'Verificar se está em operação' : 'Investigar motivo da baixa utilização';
+                                equipamentosPoucos.push(registro);
+                            });
+                        });
+                    return equipamentosPoucos;
+
+                case 'investigacoes':
+                    return investigacoes.map(inv => ({
+                        'Equipamento': inv.equipamento,
+                        'Regime': regimePadrao,
+                        'Data De Apontamento': inv.dataApontamento,
+                        'Supervisor': supervisorPadrao,
+                        'Motorista': inv.alertaOriginal?.Motorista || '',
+                        'Problemas Identificados': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
+                        'Gravidade': inv.alertaOriginal ? getGravidade(inv.alertaOriginal.statusAlerta) : '',
+                        'Tipo De Apontamento': inv.categoria,
+                        'Hora Apontamento': inv.horaApontamento,
+                        'Tempo (min)': tempoParaMinutos(inv.tempoTotal),
+                        'Justificativa': inv.justificativa,
+                        'Tratativa': inv.acoesCorretivas || '',
+                        'Sugestão': getStatusText(inv.status)
+                    }));
+
+                case 'dados-completos':
+                    return dados.map(apt => formatarRegistroPadrao(apt));
+
+                default:
+                    return [];
+            }
+        }
+
+        function getSugestaoTratativa(status, apontamento) {
+            const categoria = apontamento['Categoria Demora'];
+            const config = getCategoriaConfig(categoria);
+            
+            switch (status) {
+                case 'excede':
+                    return `Investigar excesso de tempo na atividade "${categoria}". Verificar se há problema operacional.`;
+                case 'atencao_prox':
+                    return `Monitorar categoria "${categoria}" para evitar que exceda o limite configurado.`;
+                case 'zerado':
+                    return 'Validar com operador se o apontamento está correto ou se houve erro de sistema.';
+                case 'curto':
+                    return `Verificar se o tempo curto para "${categoria}" está correto ou se houve erro no apontamento.`;
+                default:
+                    return 'Apontamento dentro dos parâmetros normais.';
+            }
+        }
+
+        function getReportSectionTitle(optionId) {
+            const titles = {
+                'equipamentos-criticos': '🔴 Equipamentos Críticos',
+                'apontamentos-zerados': '⚫ Apontamentos Zerados',
+                'apontamentos-curtos': '⏱️ Apontamentos Muito Curtos',
+                'alertas-criticos': '🚨 Alertas Críticos',
+                'alertas-atencao': '🟡 Alertas de Atenção',
+                'resumo-equipamentos': '📊 Resumo por Equipamento',
+                'resumo-categorias': '📋 Resumo por Categoria',
+                'equipamentos-poucos-apontamentos': '📉 Equipamentos com Poucos Apontamentos',
+                'investigacoes': '🔍 Investigações Realizadas',
+                'dados-completos': '📄 Dados Completos'
+            };
+            return titles[optionId] || optionId;
+        }
+
+        function exportCustomReport(formato) {
+            if (selectedReportOptions.size === 0) {
+                showNotification('Selecione pelo menos um componente para exportar', 'warning');
+                return;
+            }
+            
+            const periodo = document.getElementById('periodoRelatorio').value;
+            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, periodo);
+            
+            // Criar um workbook do Excel com múltiplas abas
+            if (formato === 'xlsx') {
+                const wb = XLSX.utils.book_new();
+                
+                selectedReportOptions.forEach(optionId => {
+                    const sectionData = generateReportSection(optionId, dados);
+                    if (sectionData && sectionData.length > 0) {
+                        const ws = XLSX.utils.json_to_sheet(sectionData);
+                        
+                        // Configurar largura das colunas
+                        const colWidths = Object.keys(sectionData[0]).map(key => ({
+                            wch: Math.max(key.length, 15)
+                        }));
+                        ws['!cols'] = colWidths;
+                        
+                        // Adicionar aba com nome limpo
+                        const sheetName = getReportSectionTitle(optionId).substring(2).substring(0, 30);
+                        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                    }
+                });
+                
+                const nomeArquivo = `Relatorio_Inteligente_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+                XLSX.writeFile(wb, `${nomeArquivo}.xlsx`);
+                
+            } else {
+                // Para CSV, concatenar todas as seções
+                let dadosCompletos = [];
+                let secaoAtual = '';
+                
+                selectedReportOptions.forEach(optionId => {
+                    const sectionData = generateReportSection(optionId, dados);
+                    if (sectionData && sectionData.length > 0) {
+                        // Adicionar cabeçalho da seção
+                        dadosCompletos.push({
+                            'SEÇÃO': getReportSectionTitle(optionId),
+                            '': '',
+                            ' ': '',
+                            '  ': ''
+                        });
+                        
+                        // Adicionar dados da seção
+                        dadosCompletos = dadosCompletos.concat(sectionData);
+                        
+                        // Adicionar linha em branco
+                        dadosCompletos.push({});
+                    }
+                });
+                
+                const csv = Papa.unparse(dadosCompletos, { delimiter: ';', header: true });
+                const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+                
+                const link = document.createElement('a');
+                const nomeArquivo = `Relatorio_Inteligente_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+                link.href = URL.createObjectURL(blob);
+                link.download = `${nomeArquivo}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+            
+            showNotification(`Relatório ${formato.toUpperCase()} exportado com sucesso!`, 'success');
+        }
+
+        /*********************************
          * INTERFACE E INDICADORES       *
          *********************************/
         function atualizarInterface() {
@@ -2288,7 +2916,7 @@
                         <div style="text-align: right;">
                             <div class="equipment-status status-${eq.status.toLowerCase()}">${eq.status}</div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end;">
-                                <div style="font-size: 0.8rem; color: #7f8c8d;">${eq.apontamentos.length} apts | ${Math.round(eq.totalTempo / 60)}h</div>
+                                <div style="font-size: 0.8rem; color: #6c757d;">${eq.apontamentos.length} apts | ${Math.round(eq.totalTempo / 60)}h</div>
                                 <div class="alert-counter ${eq.alertasAtivos === 0 ? 'zero' : ''}">
                                     ${eq.alertasAtivos === 0 ? '✅' : '🔴'} ${eq.alertasAtivos} alerta${eq.alertasAtivos !== 1 ? 's' : ''}
                                 </div>
@@ -2383,20 +3011,20 @@
                     </div>
                     <div class="appointments-list" style="max-height: 200px;">
                         ${alertas.map(alerta => `
-                            <div class="appointment-item" style="border-left-color: ${alerta.gravidade === 'ALTA' ? '#dc2626' : '#f59e0b'};">
+                            <div class="appointment-item" style="border-left-color: ${alerta.gravidade === 'ALTA' ? '#dc3545' : '#fd7e14'};">
                                 <div class="appointment-header">
                                     <span class="appointment-category">${alerta['Categoria Demora']}</span>
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <span style="font-size: 0.8rem; color: #7f8c8d;">${alerta['Tempo Indisponível (HH:MM)']}</span>
+                                        <span style="font-size: 0.8rem; color: #6c757d;">${alerta['Tempo Indisponível (HH:MM)']}</span>
                                         <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick='startInvestigation(${JSON.stringify(alerta).replace(/"/g, "&quot;")})'>
                                             Investigar
                                         </button>
                                     </div>
                                 </div>
-                                <div style="font-size: 0.8rem; color: #7f8c8d; margin-bottom: 0.25rem;">
+                                <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 0.25rem;">
                                     ${formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final'])}
                                 </div>
-                                <div style="font-size: 0.8rem; font-weight: 600; color: ${alerta.gravidade === 'ALTA' ? '#dc2626' : '#f59e0b'};">
+                                <div style="font-size: 0.8rem; font-weight: 600; color: ${alerta.gravidade === 'ALTA' ? '#dc3545' : '#fd7e14'};">
                                     ${alerta.motivo}
                                 </div>
                             </div>
@@ -2556,7 +3184,7 @@
                     "tipo_atividade": "Definir Tipo",
                     "gatilho_alerta_minutos": 30,
                     "tempo_normal_minutos": 15,
-                    "cor_indicador": "#95a5a6",
+                    "cor_indicador": "#6c757d",
                     "icone": "📝",
                     "ativo": true,
                     "templates_justificativa": ["Template padrão"]
@@ -2723,19 +3351,19 @@
             );
             
             container.innerHTML = investigacoesOrdenadas.map(inv => `
-                <div class="investigation-item" style="background: rgba(255, 255, 255, 0.8); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border-left: 3px solid ${getStatusColor(inv.status)};">
+                <div class="investigation-item" style="background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border-left: 3px solid ${getStatusColor(inv.status)};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <div style="font-weight: 600; color: #2c3e50;">${inv.equipamento} - ${inv.categoria}</div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: ${getStatusColor(inv.status)}20; color: ${getStatusColor(inv.status)};">
                                 ${getStatusText(inv.status)}
                             </span>
-                            <span style="font-size: 0.8rem; color: #7f8c8d;">
+                            <span style="font-size: 0.8rem; color: #6c757d;">
                                 ${new Date(inv.dataInvestigacao).toLocaleDateString('pt-BR')}
                             </span>
                         </div>
                     </div>
-                    <div style="font-size: 0.9rem; color: #5a6c7d; margin-bottom: 0.5rem;">
+                    <div style="font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem;">
                         <strong>Período:</strong> ${inv.horaApontamento} | <strong>Tempo:</strong> ${inv.tempoTotal}
                     </div>
                     <div style="font-size: 0.9rem; color: #2c3e50; margin-bottom: 0.5rem;">
@@ -2748,11 +3376,11 @@
 
         function getStatusColor(status) {
             switch (status) {
-                case 'pendente': return '#f39c12';
-                case 'em_investigacao': return '#3498db';
-                case 'justificado': return '#27ae60';
-                case 'resolvido': return '#27ae60';
-                default: return '#95a5a6';
+                case 'pendente': return '#fd7e14';
+                case 'em_investigacao': return '#0dcaf0';
+                case 'justificado': return '#198754';
+                case 'resolvido': return '#198754';
+                default: return '#6c757d';
             }
         }
 
@@ -2800,57 +3428,86 @@
                 const rawUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/${GITHUB_CONFIG.FILE_PATH}`;
                 console.log('🔄 Buscando CSV via raw file:', rawUrl);
                 
+                // **CORREÇÃO CORS: Remover headers customizados e simplificar request**
                 const response = await fetch(rawUrl + '?v=' + Date.now());
+                
                 if (!response.ok) {
-                    if (response.status === 404) throw new Error('Arquivo CSV não encontrado no GitHub');
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    if (response.status === 404) {
+                        throw new Error('Arquivo CSV não encontrado no GitHub. Verifique o caminho: ' + GITHUB_CONFIG.FILE_PATH);
+                    } else if (response.status === 403) {
+                        throw new Error('Acesso negado ao repositório. Verifique as permissões.');
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
                 }
                 
                 const content = await response.text();
                 console.log('✅ CSV carregado via raw file');
+                console.log(`📊 Tamanho do arquivo: ${(content.length / 1024).toFixed(2)} KB`);
+                
                 return content;
             } catch (error) {
-                console.error('Erro ao buscar dados CSV do GitHub:', error);
+                console.error('❌ Erro ao buscar dados CSV do GitHub:', error);
+                
+                // **MELHORIA: Detectar problemas de CORS especificamente**
+                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                    throw new Error('Problema de conectividade com GitHub. Se estiver executando o arquivo localmente, considere usar um servidor web ou fazer upload de um CSV.');
+                }
+                
                 throw error;
             }
         }
 
         async function manualSync() {
-            if (!autoSyncEnabled) {
-                showNotification('Sincronização desabilitada. Habilite nas configurações para usar esta função.', 'warning');
-                return;
-            }
-
-            updateSyncStatus('loading', 'Sincronizando...');
-            console.log('🔄 Iniciando sincronização manual com GitHub...');
+            updateSyncStatus('loading', 'Conectando com GitHub...');
+            console.log('🔄 Iniciando sincronização com GitHub...');
             
             try {
-                // Carregar configuração primeiro
-                await loadConfigFromGitHub();
-                
+                console.log('📊 Buscando dados CSV do repositório...');
                 const csvContent = await fetchGitHubData();
-                console.log('📦 Conteúdo CSV recebido do GitHub.');
                 
-                if (csvContent) {
+                if (csvContent && csvContent.trim()) {
+                    console.log('🔍 Parseando dados CSV...');
                     const parsedData = parseCSVContent(csvContent);
-                    dadosCSV = parsedData;
-                    lastSyncTime = new Date();
                     
-                    updateSyncStatus('success', `${dadosCSV.length} registros carregados`);
-                    updateLastSyncTime();
-                    showNotification(`Sincronização concluída! ${dadosCSV.length} registros processados.`, 'success');
-                    
-                    dataSource = 'github';
-                    updateDataSourceIndicator();
-                    await processarDados();
+                    if (parsedData && parsedData.length > 0) {
+                        dadosCSV = parsedData;
+                        lastSyncTime = new Date();
+                        
+                        updateSyncStatus('success', `${dadosCSV.length} registros carregados`);
+                        updateLastSyncTime();
+                        
+                        console.log(`✅ ${dadosCSV.length} registros processados com sucesso`);
+                        showNotification(`🔄 Dados sincronizados: ${dadosCSV.length} registros carregados!`, 'success');
+                        
+                        dataSource = 'github';
+                        updateDataSourceIndicator();
+                        
+                        // Processar dados automaticamente
+                        console.log('⚙️ Processando dados...');
+                        await processarDados();
+                        
+                        return true;
+                    } else {
+                        throw new Error('Nenhum registro válido encontrado no arquivo CSV');
+                    }
                 } else {
-                    updateSyncStatus('error', 'Arquivo CSV vazio');
-                    showNotification('Arquivo CSV do GitHub está vazio.', 'error');
+                    throw new Error('Arquivo CSV vazio ou não encontrado');
                 }
             } catch (error) {
                 console.error('❌ Erro na sincronização:', error);
                 updateSyncStatus('error', 'Erro: ' + error.message);
-                showNotification('Erro ao sincronizar: ' + error.message, 'error');
+                
+                // Mensagens de erro mais amigáveis
+                if (error.message.includes('404')) {
+                    showNotification('📁 Arquivo não encontrado no GitHub. Verifique se o arquivo existe no repositório.', 'error');
+                } else if (error.message.includes('Failed to fetch') || error.message.includes('CORS') || error.message.includes('conectividade')) {
+                    showNotification('🌐 Problema de conectividade. Use o upload de arquivo CSV como alternativa.', 'warning');
+                } else {
+                    showNotification('❌ Erro ao sincronizar: ' + error.message, 'error');
+                }
+                
+                return false;
             }
         }
 
@@ -3114,17 +3771,9 @@
                 atualizarMonitoramentoQualidade();
                 atualizarHistoricoInvestigacoes();
             } else if (tabName === 'reports') {
-                const periodoSelect = document.getElementById('periodoRelatorio');
-                if (periodoSelect) {
-                    const togglePeriodoPersonalizado = () => {
-                        const isPersonalizado = periodoSelect.value === 'personalizado';
-                        document.getElementById('periodoPersonalizado').style.display = isPersonalizado ? 'block' : 'none';
-                        document.getElementById('periodoPersonalizado2').style.display = isPersonalizado ? 'block' : 'none';
-                    };
-                    
-                    periodoSelect.removeEventListener('change', togglePeriodoPersonalizado);
-                    periodoSelect.addEventListener('change', togglePeriodoPersonalizado);
-                    togglePeriodoPersonalizado();
+                updatePeriodFields();
+                if (dadosCSV.length > 0) {
+                    atualizarContadoresRelatorio();
                 }
             }
         }
@@ -3188,6 +3837,7 @@
             equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
             detectarApontamentosComAlertas(dadosFiltrados);
             atualizarInterface();
+            atualizarContadoresRelatorio();
             
             showNotification(`Filtros aplicados! ${dadosFiltrados.length} apontamentos encontrados.`, 'success');
         }
@@ -3229,232 +3879,8 @@
         }
 
         /*********************************
-         * RELATÓRIOS                    *
+         * FILTROS PERÍODO RELATÓRIO     *
          *********************************/
-        function exportarRelatorio(formato) {
-            const tipoRelatorio = document.getElementById('formatoRelatorio').value;
-            const periodoRelatorio = document.getElementById('periodoRelatorio').value;
-            
-            let dados = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
-            
-            if (periodoRelatorio !== 'todos') {
-                dados = filtrarPorPeriodo(dados, periodoRelatorio);
-            }
-            
-            let dadosRelatorio = [];
-            
-            switch (tipoRelatorio) {
-                case 'irregulares':
-                    dadosRelatorio = gerarRelatorioIrregularidades(dados);
-                    break;
-                case 'alertas':
-                    dadosRelatorio = gerarRelatorioAlertas(dados);
-                    break;
-                case 'completo':
-                    dadosRelatorio = gerarRelatorioCompleto(dados);
-                    break;
-                case 'resumo':
-                    dadosRelatorio = gerarRelatorioResumo(dados);
-                    break;
-                case 'categoria':
-                    dadosRelatorio = gerarRelatorioPorCategoria(dados);
-                    break;
-                case 'investigacoes':
-                    dadosRelatorio = gerarRelatorioInvestigacoes();
-                    break;
-            }
-            
-            if (!dadosRelatorio.length) {
-                showNotification('Nenhum dado para exportar com os filtros selecionados.', 'warning');
-                return;
-            }
-            
-            const nomeArquivo = `Relatorio_${tipoRelatorio}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
-            
-            if (formato === 'xlsx') {
-                exportarParaXLSX(dadosRelatorio, nomeArquivo);
-            } else {
-                exportarParaCSV(dadosRelatorio, nomeArquivo);
-            }
-            
-            showNotification(`Relatório ${formato.toUpperCase()} exportado com sucesso!`, 'success');
-        }
-
-        function gerarRelatorioAlertas(dados) {
-            const alertas = [];
-            dados.forEach(apt => {
-                const status = classificarApontamento(apt);
-                if (status === 'excede' || status === 'atencao_prox') {
-                    const codigo = extrairCodigoVaga(apt.Vaga);
-                    const gatilho = getGatilhoAlerta(apt['Categoria Demora']);
-                    const tempo = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
-                    
-                    alertas.push({
-                        'Equipamento': codigo || '',
-                        'Categoria': apt['Categoria Demora'],
-                        'Data/Hora': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
-                        'Tempo (min)': tempo,
-                        'Limite (min)': gatilho,
-                        'Excesso (min)': tempo - gatilho,
-                        'Gravidade': status === 'excede' ? 'CRÍTICO' : 'ATENÇÃO',
-                        'Placa': apt.Placa
-                    });
-                }
-            });
-            
-            return alertas;
-        }
-
-        function gerarRelatorioInvestigacoes() {
-            return investigacoes.map(inv => ({
-                'Equipamento': inv.equipamento,
-                'Regime': document.getElementById('regimePadrao')?.value || 'ADM',
-                'Nome Motorista': inv.alertaOriginal?.Motorista || '',
-                'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
-                'Problema Do Apontamento': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
-                'Tipo De Apontamento': inv.categoria,
-                'Data Apontamento': inv.dataApontamento,
-                'Hora Apontamento': inv.horaApontamento,
-                'Tempo Total': inv.tempoTotal,
-                'Justificativa': inv.justificativa,
-                'Ações Corretivas': inv.acoesCorretivas || ''
-            }));
-        }
-
-        function gerarRelatorioIrregularidades(dados) {
-            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || '';
-            const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM';
-            
-            const irregularidades = [];
-            dados.forEach(apt => {
-                const status = classificarApontamento(apt);
-                if (status !== 'normal') {
-                    const codigo = extrairCodigoVaga(apt.Vaga);
-                    const dataInicial = apt['Data Inicial']?.split(' ')[0] || '';
-                    const horaApontamento = formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']);
-                    
-                    irregularidades.push({
-                        'Equipamento': codigo || '',
-                        'Regime': regimePadrao,
-                        'Data De Apontamento': dataInicial,
-                        'Supervisor': supervisorPadrao,
-                        'Motorista': apt.Motorista || '',
-                        'Problemas Identificados': getMotivo(status, apt),
-                        'Gravidade': getGravidade(status),
-                        'Tipo De Apontamento': apt['Categoria Demora'] || '',
-                        'Hora Apontamento': horaApontamento,
-                        'Tempo (min)': tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']),
-                        'Justificativa': '',
-                        'Tratativa': '',
-                        'Sugestão': ''
-                    });
-                }
-            });
-            
-            return irregularidades;
-        }
-
-        function gerarRelatorioCompleto(dados) {
-            return dados.map(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                const status = classificarApontamento(apt);
-                
-                return {
-                    'Equipamento': codigo || '',
-                    'Placa': apt.Placa || '',
-                    'Vaga': apt.Vaga || '',
-                    'Categoria': apt['Categoria Demora'] || '',
-                    'Data Inicial': formatarDataHoraCompleta(apt['Data Inicial']),
-                    'Data Final': formatarDataHoraCompleta(apt['Data Final']),
-                    'Período': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
-                    'Tempo (HH:MM)': apt['Tempo Indisponível (HH:MM)'] || '',
-                    'Tempo (min)': tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']),
-                    'Status': status === 'normal' ? 'Normal' : 'Alerta',
-                    'Tipo Alerta': status,
-                    'Limite (min)': getGatilhoAlerta(apt['Categoria Demora']),
-                    'Observações': status !== 'normal' ? getMotivo(status, apt) : ''
-                };
-            });
-        }
-
-        function gerarRelatorioResumo(dados) {
-            const resumo = {};
-            
-            dados.forEach(apt => {
-                const codigo = extrairCodigoVaga(apt.Vaga);
-                if (!codigo) return;
-                
-                if (!resumo[codigo]) {
-                    resumo[codigo] = {
-                        equipamento: codigo,
-                        placa: apt.Placa,
-                        totalApontamentos: 0,
-                        tempoTotal: 0,
-                        alertas: 0,
-                        zerados: 0,
-                        curtos: 0,
-                        excede: 0
-                    };
-                }
-                
-                resumo[codigo].totalApontamentos++;
-                resumo[codigo].tempoTotal += tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
-                
-                const status = classificarApontamento(apt);
-                if (status !== 'normal') resumo[codigo].alertas++;
-                if (status === 'zerado') resumo[codigo].zerados++;
-                if (status === 'curto') resumo[codigo].curtos++;
-                if (status === 'excede') resumo[codigo].excede++;
-            });
-            
-            return Object.values(resumo).map(item => ({
-                'Equipamento': item.equipamento,
-                'Placa': item.placa,
-                'Total de Apontamentos': item.totalApontamentos,
-                'Tempo Total (horas)': (item.tempoTotal / 60).toFixed(2),
-                'Total de Alertas': item.alertas,
-                'Apontamentos Zerados': item.zerados,
-                'Apontamentos Curtos': item.curtos,
-                'Excedem Limite': item.excede,
-                'Taxa de Alertas (%)': ((item.alertas / item.totalApontamentos) * 100).toFixed(1)
-            }));
-        }
-
-        function gerarRelatorioPorCategoria(dados) {
-            const categorias = {};
-            
-            dados.forEach(apt => {
-                const categoria = apt['Categoria Demora'];
-                if (!categorias[categoria]) {
-                    categorias[categoria] = {
-                        categoria: categoria,
-                        quantidade: 0,
-                        tempoTotal: 0,
-                        alertas: 0,
-                        equipamentos: new Set()
-                    };
-                }
-                
-                categorias[categoria].quantidade++;
-                categorias[categoria].tempoTotal += tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
-                categorias[categoria].equipamentos.add(extrairCodigoVaga(apt.Vaga));
-                
-                const status = classificarApontamento(apt);
-                if (status !== 'normal') categorias[categoria].alertas++;
-            });
-            
-            return Object.values(categorias).map(item => ({
-                'Categoria': item.categoria,
-                'Quantidade de Apontamentos': item.quantidade,
-                'Tempo Total (horas)': (item.tempoTotal / 60).toFixed(2),
-                'Equipamentos Afetados': item.equipamentos.size,
-                'Tempo Médio por Apontamento (min)': (item.tempoTotal / item.quantidade).toFixed(1),
-                'Alertas': item.alertas,
-                'Taxa de Alertas (%)': ((item.alertas / item.quantidade) * 100).toFixed(1),
-                'Limite Configurado (min)': getGatilhoAlerta(item.categoria)
-            }));
-        }
-
         function filtrarPorPeriodo(dados, periodo) {
             const hoje = new Date();
             let dataInicio;
@@ -3538,12 +3964,18 @@
                 manualSyncBtn.innerHTML = '<span>🔄</span> Sincronizar Agora';
                 startAutoSync();
                 updateSyncStatus('success', 'Sincronização habilitada');
+                
+                // Sincronizar imediatamente se não há dados
+                if (dadosCSV.length === 0) {
+                    console.log('📥 Auto-sync habilitado e sem dados locais, sincronizando...');
+                    setTimeout(() => manualSync(), 500);
+                }
             } else {
                 syncIntervalGroup.style.opacity = '0.5';
-                manualSyncBtn.disabled = true;
-                manualSyncBtn.innerHTML = '<span>🔄</span> Sincronização Desabilitada';
+                manualSyncBtn.disabled = false; // **CORREÇÃO: Manter botão habilitado**
+                manualSyncBtn.innerHTML = '<span>🔄</span> Sincronizar Manualmente';
                 stopAutoSync();
-                updateSyncStatus('disabled', 'Sincronização desabilitada');
+                updateSyncStatus('disabled', 'Auto-sync desabilitado');
             }
             
             updateDataSourceIndicator();
@@ -3552,19 +3984,30 @@
         function startAutoSync() {
             if (syncInterval) clearInterval(syncInterval);
             
-            if (autoSyncEnabled && GITHUB_CONFIG.AUTO_SYNC) {
+            // **CORREÇÃO: Sempre tentar auto-sync se os dados estão configurados para GitHub**
+            if (GITHUB_CONFIG.AUTO_SYNC) {
                 const intervalMinutes = parseInt(document.getElementById('syncInterval')?.value || 30);
                 const intervalMs = intervalMinutes * 60 * 1000;
                 
                 syncInterval = setInterval(async () => {
                     if (!document.hidden && dataSource !== 'local') {
                         console.log('🔄 Auto-sync executando...');
-                        await manualSync();
+                        const success = await manualSync();
+                        
+                        if (!success) {
+                            console.log('⚠️ Auto-sync falhou, tentará novamente no próximo ciclo');
+                        }
                     }
                 }, intervalMs);
                 
                 console.log(`⏰ Auto-sync configurado para ${intervalMinutes} minutos`);
                 updateNextSyncTime(intervalMs);
+                
+                // Sincronizar imediatamente se não há dados
+                if (dadosCSV.length === 0) {
+                    console.log('📥 Nenhum dado encontrado, sincronizando imediatamente...');
+                    setTimeout(() => manualSync(), 1000);
+                }
             }
         }
 
@@ -3581,6 +4024,7 @@
             const indicator = document.getElementById('dataSourceIndicator');
             const icon = document.getElementById('dataSourceIcon');
             const text = document.getElementById('dataSourceText');
+            const headerSyncBtn = document.getElementById('headerSyncBtn');
             
             indicator.classList.remove('data-source-github', 'data-source-local', 'data-source-none');
             
@@ -3589,16 +4033,19 @@
                     indicator.classList.add('data-source-github');
                     icon.textContent = '🔄';
                     text.textContent = autoSyncEnabled ? 'GitHub (Sync)' : 'GitHub (Manual)';
+                    if (headerSyncBtn) headerSyncBtn.style.display = 'flex';
                     break;
                 case 'local':
                     indicator.classList.add('data-source-local');
                     icon.textContent = '📁';
                     text.textContent = `Arquivo: ${uploadedFileName.substring(0, 15)}${uploadedFileName.length > 15 ? '...' : ''}`;
+                    if (headerSyncBtn) headerSyncBtn.style.display = autoSyncEnabled ? 'flex' : 'none';
                     break;
                 default:
                     indicator.classList.add('data-source-none');
                     icon.textContent = '📁';
                     text.textContent = 'Nenhum dado';
+                    if (headerSyncBtn) headerSyncBtn.style.display = autoSyncEnabled ? 'flex' : 'none';
             }
         }
 
@@ -3693,13 +4140,20 @@
             try {
                 const config = JSON.parse(localStorage.getItem('grupoGPS_config') || '{}');
                 
+                // **CORREÇÃO: Sincronização habilitada por padrão**
                 if (config.autoSyncEnabled !== undefined) {
                     document.getElementById('autoSyncEnabled').value = config.autoSyncEnabled.toString();
                     autoSyncEnabled = config.autoSyncEnabled;
+                } else {
+                    // Padrão: sincronização habilitada
+                    document.getElementById('autoSyncEnabled').value = 'true';
+                    autoSyncEnabled = true;
                 }
                 
                 if (config.syncInterval) {
                     document.getElementById('syncInterval').value = config.syncInterval;
+                } else {
+                    document.getElementById('syncInterval').value = '30';
                 }
                 
                 if (config.supervisorPadrao) {
@@ -3717,9 +4171,13 @@
                 document.getElementById('percentualCritico').value = regras.percentual_irregularidade_critica;
                 document.getElementById('percentualAtencao').value = regras.percentual_irregularidade_atencao;
                 
-                onSyncSettingChange();
+                console.log('✅ Configurações carregadas - Sync habilitado:', autoSyncEnabled);
             } catch (e) {
-                console.log('Não foi possível carregar configurações do localStorage');
+                console.log('⚠️ Não foi possível carregar configurações, usando padrões');
+                // Definir valores padrão
+                document.getElementById('autoSyncEnabled').value = 'true';
+                document.getElementById('syncInterval').value = '30';
+                autoSyncEnabled = true;
             }
         }
 
@@ -3735,7 +4193,7 @@
             container.innerHTML = `
                 <div style="margin-bottom: 1rem;">
                     <strong>Status:</strong> 
-                    <span style="color: ${status === 'normal' ? '#27ae60' : '#e74c3c'}; font-weight: 600;">
+                    <span style="color: ${status === 'normal' ? '#198754' : '#dc3545'}; font-weight: 600;">
                         ${status === 'normal' ? 'NORMAL' : 'ALERTA - ' + status.toUpperCase()}
                     </span>
                 </div>
@@ -3748,7 +4206,7 @@
                 <div style="margin-bottom: 1rem;"><strong>Vaga:</strong> ${appointment.Vaga || 'N/D'}</div>
                 ${appointment.Supervisor ? `<div style="margin-bottom: 1rem;"><strong>Supervisor:</strong> ${appointment.Supervisor}</div>` : ''}
                 ${appointment.Motorista ? `<div style="margin-bottom: 1rem;"><strong>Motorista:</strong> ${appointment.Motorista}</div>` : ''}
-                ${status !== 'normal' ? `<div style="color: #e74c3c; font-weight: 600; margin-top: 1rem;">⚠️ ${getMotivo(status, appointment)}</div>` : ''}
+                ${status !== 'normal' ? `<div style="color: #dc3545; font-weight: 600; margin-top: 1rem;">⚠️ ${getMotivo(status, appointment)}</div>` : ''}
                 ${status !== 'normal' ? `<div style="margin-top: 1rem;"><button class="btn" onclick="closeModal(); startInvestigation(${JSON.stringify(appointment).replace(/"/g, "&quot;")})">🔍 Investigar</button></div>` : ''}
             `;
             
@@ -3817,27 +4275,37 @@
             loadInvestigations();
             carregarConfiguracoes();
             
-            // Tentar carregar configuração do GitHub
-            await loadConfigFromGitHub();
-            
             // Configurar drag & drop
             setupDragAndDrop();
             
             // Configurar indicadores iniciais
             updateDataSourceIndicator();
-            updateSyncStatus('success', 'Sistema inicializado');
+            updateSyncStatus('loading', 'Inicializando sistema...');
             updateLastSyncTime();
             
-            // Configurar auto-sync se habilitado
-            if (autoSyncEnabled && GITHUB_CONFIG.AUTO_SYNC) {
+            console.log('🔄 Iniciando sincronização automática...');
+            
+            // **CORREÇÃO: Sincronização simplificada e automática**
+            try {
+                // Tentar carregar configuração do GitHub (não crítico se falhar)
+                await loadConfigFromGitHub();
+                
+                // Configurar auto-sync primeiro
                 startAutoSync();
-                setTimeout(() => {
-                    if (autoSyncEnabled) {
-                        manualSync();
-                    }
-                }, 2000);
-            } else {
-                onSyncSettingChange();
+                
+                // Tentar sincronizar imediatamente
+                console.log('📥 Tentando sincronização inicial...');
+                const success = await manualSync();
+                
+                if (success) {
+                    console.log('✅ Sincronização inicial bem-sucedida');
+                } else {
+                    console.log('⚠️ Sincronização inicial falhou, mas continuará tentando');
+                }
+            } catch (error) {
+                console.error('❌ Erro na inicialização:', error);
+                updateSyncStatus('error', 'Erro na inicialização: ' + error.message);
+                showNotification('Erro na inicialização. Carregue um arquivo CSV manualmente.', 'error');
             }
             
             // Event listeners
@@ -3876,17 +4344,28 @@
             
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
-                    console.log('Página não visível - pausando auto-sync');
+                    console.log('📱 Página não visível - pausando auto-sync');
                 } else {
-                    console.log('Página visível - retomando auto-sync');
+                    console.log('📱 Página visível - retomando auto-sync');
                     if (autoSyncEnabled && !syncInterval) {
                         startAutoSync();
+                    }
+                    
+                    // Verificar se precisa sincronizar ao voltar
+                    if (autoSyncEnabled && dataSource === 'github') {
+                        const timeSinceLastSync = lastSyncTime ? Date.now() - lastSyncTime.getTime() : Infinity;
+                        const syncIntervalMs = parseInt(document.getElementById('syncInterval')?.value || 30) * 60 * 1000;
+                        
+                        if (timeSinceLastSync > syncIntervalMs) {
+                            console.log('🔄 Sincronização necessária após retornar à página');
+                            manualSync();
+                        }
                     }
                 }
             });
             
             console.log('✅ Sistema inicializado com sucesso!');
-            showNotification('Sistema inicializado! Novo sistema de qualidade e alertas ativo.', 'info');
+            showNotification('Sistema inicializado! Tentando conectar com GitHub...', 'info');
         });
     </script>
 </body>
