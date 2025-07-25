@@ -2697,13 +2697,25 @@
                         .map(apt => formatarRegistroPadrao(apt));
 
                 case 'resumo-equipamentos':
-                    const resumoEquipamentos = [];
-                    Object.values(equipamentosProcessados).forEach(eq => {
-                        eq.apontamentos.forEach(apt => {
-                            resumoEquipamentos.push(formatarRegistroPadrao(apt));
-                        });
+                    return Object.values(equipamentosProcessados).map(eq => {
+                        // Pegar a primeira vaga para mostrar o nome completo
+                        const primeiraVaga = eq.apontamentos.length > 0 ? eq.apontamentos[0].Vaga : '';
+                        
+                        return {
+                            'Equipamento': eq.codigo,
+                            'Vaga': primeiraVaga,
+                            'Placa': eq.placa,
+                            'Total de Apontamentos': eq.apontamentos.length,
+                            'Tempo Total (horas)': (eq.totalTempo / 60).toFixed(2),
+                            'Alertas Ativos': eq.alertasAtivos,
+                            'Taxa de Alertas (%)': eq.apontamentos.length > 0 ? ((eq.alertasAtivos / eq.apontamentos.length) * 100).toFixed(1) : '0',
+                            'Status Geral': eq.status,
+                            'Tempo Médio por Apontamento (min)': eq.apontamentos.length > 0 ? (eq.totalTempo / eq.apontamentos.length).toFixed(1) : '0',
+                            'Categoria Mais Frequente': getMostFrequentCategory(eq.apontamentos),
+                            'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
+                            'Regime': document.getElementById('regimePadrao')?.value || 'ADM'
+                        };
                     });
-                    return resumoEquipamentos;
 
                 case 'resumo-categorias':
                     const resumoCategorias = [];
@@ -2768,6 +2780,27 @@
                 default:
                     return 'Apontamento dentro dos parâmetros normais.';
             }
+        }
+
+        function getMostFrequentCategory(apontamentos) {
+            if (!apontamentos || apontamentos.length === 0) return '';
+            
+            const freq = {};
+            apontamentos.forEach(apt => {
+                const cat = apt['Categoria Demora'];
+                freq[cat] = (freq[cat] || 0) + 1;
+            });
+            
+            let maxCat = '';
+            let maxCount = 0;
+            Object.entries(freq).forEach(([cat, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    maxCat = cat;
+                }
+            });
+            
+            return maxCat;
         }
 
         function getReportSectionTitle(optionId) {
