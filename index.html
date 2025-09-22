@@ -140,7 +140,7 @@
 
         .sync-dot.success { background: #198754; }
         .sync-dot.error { background: #dc3545; }
-        .sync-dot.loading { background: #fd7e14; }
+        .sync-dot.loading { background: #fd7e14; animation: spin 1s linear infinite; }
         .sync-dot.disabled { background: #6c757d; animation: none; }
 
         @keyframes pulse {
@@ -394,9 +394,48 @@
         }
 
         .filter-panel.open {
-            max-height: 500px;
+            max-height: 800px;
             padding: 1.5rem;
             border: 2px solid #e9ecef;
+        }
+
+        /* Equipment Selector */
+        .equipment-selector {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid #e9ecef;
+        }
+
+        .equipment-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .equipment-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .equipment-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .equipment-checkbox input[type="checkbox"] {
+            margin: 0;
         }
 
         /* Compact Stats - Layout Melhorado */
@@ -680,7 +719,7 @@
         }
 
         .status-excede { background: #dc3545; }
-        .status-atencao-prox { background: #fd7e14; }
+        .status-atencao_prox { background: #fd7e14; }
         .status-normal { background: #198754; }
         .status-zerado { background: #6c757d; }
         .status-curto { background: #fd7e14; }
@@ -1242,6 +1281,24 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Seletor de Equipamentos -->
+                    <div class="equipment-selector">
+                        <div class="equipment-selector-header">
+                            <label style="font-weight: 600; color: #2c3e50;">Selecionar Equipamentos:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn secondary" onclick="selectAllEquipments()" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                    Todos
+                                </button>
+                                <button class="btn secondary" onclick="clearAllEquipments()" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                    Limpar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="equipment-checkboxes" id="equipmentCheckboxes">
+                            <!-- Equipamentos serão carregados aqui -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Compact Statistics -->
@@ -1548,77 +1605,79 @@
                                 </div>
                             </div>
                             <div class="panel-content">
+                                <!-- INÍCIO DA ATUALIZAÇÃO DE RELATÓRIOS -->
                                 <div class="report-selection-grid" id="reportSelectionGrid">
-                                    <div class="report-option" onclick="toggleReportOption('equipamentos-criticos')">
-                                        <div class="report-option-header">
-                                            <input type="checkbox" class="report-checkbox" id="checkbox-equipamentos-criticos">
-                                            <div class="report-option-title">🔴 Equipamentos Críticos</div>
-                                        </div>
-                                        <div class="report-option-description">
-                                            Equipamentos com status crítico (poucos apontamentos ou muitos alertas)
-                                        </div>
-                                        <div class="report-option-stats">
-                                            <span>Equipamentos encontrados:</span>
-                                            <span id="count-equipamentos-criticos">0</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="report-option" onclick="toggleReportOption('apontamentos-zerados')">
-                                        <div class="report-option-header">
-                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-zerados">
-                                            <div class="report-option-title">⚫ Apontamentos Zerados</div>
-                                        </div>
-                                        <div class="report-option-description">
-                                            Todos os apontamentos com tempo igual a zero
-                                        </div>
-                                        <div class="report-option-stats">
-                                            <span>Apontamentos encontrados:</span>
-                                            <span id="count-apontamentos-zerados">0</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="report-option" onclick="toggleReportOption('apontamentos-curtos')">
-                                        <div class="report-option-header">
-                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-curtos">
-                                            <div class="report-option-title">⏱️ Apontamentos Muito Curtos</div>
-                                        </div>
-                                        <div class="report-option-description">
-                                            Apontamentos com duração muito curta (suspeitos)
-                                        </div>
-                                        <div class="report-option-stats">
-                                            <span>Apontamentos encontrados:</span>
-                                            <span id="count-apontamentos-curtos">0</span>
-                                        </div>
-                                    </div>
-
                                     <div class="report-option" onclick="toggleReportOption('alertas-criticos')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-alertas-criticos">
-                                            <div class="report-option-title">🚨 Alertas Críticos</div>
+                                            <div class="report-option-title">🔴 Alertas Críticos</div>
                                         </div>
                                         <div class="report-option-description">
-                                            Apontamentos que excedem significativamente os limites configurados
+                                            Apontamentos que excedem os limites configurados para cada categoria
                                         </div>
                                         <div class="report-option-stats">
-                                            <span>Alertas encontrados:</span>
+                                            <span>Alertas críticos:</span>
                                             <span id="count-alertas-criticos">0</span>
                                         </div>
                                     </div>
-
+                                
                                     <div class="report-option" onclick="toggleReportOption('alertas-atencao')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-alertas-atencao">
                                             <div class="report-option-title">🟡 Alertas de Atenção</div>
                                         </div>
                                         <div class="report-option-description">
-                                            Apontamentos próximos aos limites configurados
+                                            Apontamentos próximos aos limites configurados (80% do gatilho)
                                         </div>
                                         <div class="report-option-stats">
-                                            <span>Alertas encontrados:</span>
+                                            <span>Alertas de atenção:</span>
                                             <span id="count-alertas-atencao">0</span>
                                         </div>
                                     </div>
-
+                                
+                                    <div class="report-option" onclick="toggleReportOption('apontamentos-zerados')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-zerados">
+                                            <div class="report-option-title">⚫ Apontamentos Zerados</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Apontamentos com tempo igual a zero que podem indicar erros de sistema
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Apontamentos zerados:</span>
+                                            <span id="count-apontamentos-zerados">0</span>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="report-option" onclick="toggleReportOption('apontamentos-curtos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-apontamentos-curtos">
+                                            <div class="report-option-title">⏱️ Apontamentos Muito Curtos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Apontamentos abaixo da tolerância mínima configurada
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Apontamentos curtos:</span>
+                                            <span id="count-apontamentos-curtos">0</span>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="report-option" onclick="toggleReportOption('equipamentos-poucos-apontamentos')">
+                                        <div class="report-option-header">
+                                            <input type="checkbox" class="report-checkbox" id="checkbox-equipamentos-poucos-apontamentos">
+                                            <div class="report-option-title">📉 Equipamentos com Poucos Apontamentos</div>
+                                        </div>
+                                        <div class="report-option-description">
+                                            Equipamentos que tiveram poucos apontamentos no período (possível inatividade)
+                                        </div>
+                                        <div class="report-option-stats">
+                                            <span>Equipamentos identificados:</span>
+                                            <span id="count-equipamentos-poucos-apontamentos">0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Manter as opções existentes -->
                                     <div class="report-option" onclick="toggleReportOption('resumo-equipamentos')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-resumo-equipamentos">
@@ -1632,7 +1691,7 @@
                                             <span id="count-resumo-equipamentos">0</span>
                                         </div>
                                     </div>
-
+                                
                                     <div class="report-option" onclick="toggleReportOption('resumo-categorias')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-resumo-categorias">
@@ -1646,21 +1705,7 @@
                                             <span id="count-resumo-categorias">0</span>
                                         </div>
                                     </div>
-
-                                    <div class="report-option" onclick="toggleReportOption('equipamentos-poucos-apontamentos')">
-                                        <div class="report-option-header">
-                                            <input type="checkbox" class="report-checkbox" id="checkbox-equipamentos-poucos-apontamentos">
-                                            <div class="report-option-title">📉 Equipamentos com Poucos Apontamentos</div>
-                                        </div>
-                                        <div class="report-option-description">
-                                            Equipamentos que tiveram poucos apontamentos (possível subutilização)
-                                        </div>
-                                        <div class="report-option-stats">
-                                            <span>Equipamentos encontrados:</span>
-                                            <span id="count-equipamentos-poucos-apontamentos">0</span>
-                                        </div>
-                                    </div>
-
+                                
                                     <div class="report-option" onclick="toggleReportOption('investigacoes')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-investigacoes">
@@ -1674,7 +1719,7 @@
                                             <span id="count-investigacoes">0</span>
                                         </div>
                                     </div>
-
+                                
                                     <div class="report-option" onclick="toggleReportOption('dados-completos')">
                                         <div class="report-option-header">
                                             <input type="checkbox" class="report-checkbox" id="checkbox-dados-completos">
@@ -1689,6 +1734,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- FIM DA ATUALIZAÇÃO DE RELATÓRIOS -->
                             </div>
                         </div>
                         
@@ -1846,7 +1892,7 @@
                             
                             <div class="control-group">
                                 <label>Supervisor Padrão:</label>
-                                <input type="text" id="supervisorPadrao" placeholder="Ex: Junior Pereira" value="">
+                                <input type="text" id="supervisorPadrao" placeholder="Ex: SEBASTIÃO" value="">
                             </div>
                             
                             <div class="control-group">
@@ -1984,7 +2030,7 @@
          * CONFIGURAÇÕES E ESTADO GLOBAL *
          *********************************/
         
-        // Configuração padrão de categorias com templates de justificativas
+        // CORREÇÃO: Configuração padrão de categorias atualizada para corresponder aos dados do novo CSV.
         const DEFAULT_CATEGORIES_CONFIG = {
             "mapeamento_categorias": {
                 "Preparação": {
@@ -1996,10 +2042,7 @@
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Equipamento com defeito",
-                        "Falta de material",
-                        "Aguardando liberação",
-                        "Problema técnico"
+                        "Equipamento com defeito", "Falta de material", "Aguardando liberação", "Problema técnico"
                     ]
                 },
                 "Descarregando equipamento": {
@@ -2011,9 +2054,7 @@
                     "icone": "📦",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Volume excessivo de material",
-                        "Equipamento com problema",
-                        "Demora na descarga"
+                        "Volume excessivo de material", "Equipamento com problema", "Demora na descarga"
                     ]
                 },
                 "Documentação": {
@@ -2025,9 +2066,7 @@
                     "icone": "📋",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Sistema fora do ar",
-                        "Documentos pendentes",
-                        "Liberação atrasada"
+                        "Sistema fora do ar", "Documentos pendentes", "Liberação atrasada"
                     ]
                 },
                 "Bloqueio": {
@@ -2039,9 +2078,7 @@
                     "icone": "🔒",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Procedimento de segurança complexo",
-                        "Equipamento com risco",
-                        "Bloqueio múltiplo necessário"
+                        "Procedimento de segurança complexo", "Equipamento com risco", "Bloqueio múltiplo necessário"
                     ]
                 },
                 "Abordagem de Segurança": {
@@ -2053,23 +2090,31 @@
                     "icone": "⚠️",
                     "ativo": true,
                     "templates_justificativa": [
-                        "DDS estendido",
-                        "Reunião de segurança",
-                        "Inspeção detalhada"
+                        "DDS estendido", "Reunião de segurança", "Inspeção detalhada"
                     ]
                 },
-                "Abastecimento (Comb/Água)": {
+                "Abastecimento (Água)": {
                     "classificacao": "Operacional",
                     "tipo_atividade": "Abastecimento",
                     "gatilho_alerta_minutos": 40,
                     "tempo_normal_minutos": 21,
                     "cor_indicador": "#20c997",
+                    "icone": "💧",
+                    "ativo": true,
+                    "templates_justificativa": [
+                        "Fila no ponto de água", "Problema no hidrante", "Demora na liberação"
+                    ]
+                },
+                 "Abastecimento (Combustível)": {
+                    "classificacao": "Operacional",
+                    "tipo_atividade": "Abastecimento",
+                    "gatilho_alerta_minutos": 40,
+                    "tempo_normal_minutos": 21,
+                    "cor_indicador": "#fd7e14",
                     "icone": "⛽",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Fila no posto",
-                        "Problema no equipamento de abastecimento",
-                        "Demora na liberação"
+                        "Fila no posto", "Problema na bomba de combustível", "Demora na liberação"
                     ]
                 },
                 "Troca de Equipamento": {
@@ -2081,9 +2126,7 @@
                     "icone": "🔄",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Equipamento não disponível",
-                        "Problema técnico na troca",
-                        "Demora na liberação"
+                        "Equipamento não disponível", "Problema técnico na troca", "Demora na liberação"
                     ]
                 },
                 "Refeição Motorista": {
@@ -2095,9 +2138,7 @@
                     "icone": "🍽️",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Horário de pico no refeitório",
-                        "Refeição estendida justificada",
-                        "Descanso médico recomendado"
+                        "Horário de pico no refeitório", "Refeição estendida justificada", "Descanso médico recomendado"
                     ]
                 },
                 "Inicio de turno": {
@@ -2109,12 +2150,10 @@
                     "icone": "🕐",
                     "ativo": true,
                     "templates_justificativa": [
-                        "DDS estendido",
-                        "Reunião de briefing",
-                        "Entrega de EPIs"
+                        "DDS estendido", "Reunião de briefing", "Entrega de EPIs"
                     ]
                 },
-                "Pausas Diversas": {
+                "Pausas Diversas (água, banheiro)": {
                     "classificacao": "Improdutivo Pessoal",
                     "tipo_atividade": "Pausa Pessoal",
                     "gatilho_alerta_minutos": 15,
@@ -2123,9 +2162,7 @@
                     "icone": "☕",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Necessidade pessoal",
-                        "Mal-estar",
-                        "Hidratação"
+                        "Necessidade pessoal", "Mal-estar", "Hidratação"
                     ]
                 },
                 "Condições Climáticas": {
@@ -2137,9 +2174,7 @@
                     "icone": "🌧️",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Chuva forte",
-                        "Vento excessivo",
-                        "Condições adversas"
+                        "Chuva forte", "Vento excessivo", "Condições adversas"
                     ]
                 },
                 "Aguardando Área": {
@@ -2151,9 +2186,7 @@
                     "icone": "⏳",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Congestionamento na área",
-                        "Liberação atrasada",
-                        "Falta de vaga disponível"
+                        "Congestionamento na área", "Liberação atrasada", "Falta de vaga disponível"
                     ]
                 },
                 "Aguardando carreta bascular": {
@@ -2165,9 +2198,7 @@
                     "icone": "🚛",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Carreta não disponível",
-                        "Problema mecânico na carreta",
-                        "Demora na liberação"
+                        "Carreta não disponível", "Problema mecânico na carreta", "Demora na liberação"
                     ]
                 },
                 "Aguardando semáforo/cancela": {
@@ -2179,9 +2210,7 @@
                     "icone": "🚦",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Tráfego intenso",
-                        "Semáforo com problema",
-                        "Fluxo congestionado"
+                        "Tráfego intenso", "Semáforo com problema", "Fluxo congestionado"
                     ]
                 },
                 "Falta de Acessório": {
@@ -2193,9 +2222,7 @@
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Acessório não disponível",
-                        "Problema no estoque",
-                        "Equipamento em manutenção"
+                        "Acessório não disponível", "Problema no estoque", "Equipamento em manutenção"
                     ]
                 },
                 "Pequenas manutenções": {
@@ -2207,9 +2234,7 @@
                     "icone": "🔧",
                     "ativo": true,
                     "templates_justificativa": [
-                        "Manutenção preventiva",
-                        "Problema mecânico menor",
-                        "Ajuste necessário"
+                        "Manutenção preventiva", "Problema mecânico menor", "Ajuste necessário"
                     ]
                 }
             },
@@ -2243,8 +2268,8 @@
         let categorias = new Set();
         let supervisores = new Set();
         let motoristas = new Set();
+        let equipamentosDisponiveis = [];
         
-        // **CORREÇÃO: Sincronização habilitada por padrão**
         let autoSyncEnabled = true;
         let lastSyncTime = null;
         let syncInterval = null;
@@ -2264,7 +2289,6 @@
                 const configUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/${GITHUB_CONFIG.CONFIG_FILE_PATH}`;
                 console.log('🔄 Tentando carregar configuração do GitHub:', configUrl);
                 
-                // **CORREÇÃO CORS: Simplificar request**
                 const response = await fetch(configUrl + '?v=' + Date.now());
                 if (response.ok) {
                     const configContent = await response.text();
@@ -2283,8 +2307,6 @@
         }
 
         async function saveConfigToGitHub() {
-            // Nota: Esta funcionalidade requereria autenticação GitHub
-            // Por enquanto, salvamos apenas localmente
             console.log('💾 Salvando configuração localmente...');
             saveApontamentosConfig();
         }
@@ -2335,6 +2357,46 @@
         }
 
         /*********************************
+         * SELETOR DE EQUIPAMENTOS       *
+         *********************************/
+        function updateEquipmentSelector() {
+            const container = document.getElementById('equipmentCheckboxes');
+            equipamentosDisponiveis = [...new Set(dadosCSV.map(apt => extrairCodigoVaga(apt.Vaga)).filter(Boolean))].sort();
+            
+            container.innerHTML = equipamentosDisponiveis.map(codigo => `
+                <div class="equipment-checkbox">
+                    <input type="checkbox" id="eq-${codigo}" value="${codigo}" onchange="onEquipmentSelectionChange()">
+                    <label for="eq-${codigo}">${codigo}</label>
+                </div>
+            `).join('');
+        }
+
+        function selectAllEquipments() {
+            document.querySelectorAll('#equipmentCheckboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            onEquipmentSelectionChange();
+        }
+
+        function clearAllEquipments() {
+            document.querySelectorAll('#equipmentCheckboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            onEquipmentSelectionChange();
+        }
+
+        function getSelectedEquipments() {
+            const checkboxes = document.querySelectorAll('#equipmentCheckboxes input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function onEquipmentSelectionChange() {
+            if (dadosCSV.length > 0) {
+                aplicarFiltros();
+            }
+        }
+
+        /*********************************
          * PROCESSAMENTO DE DADOS        *
          *********************************/
         async function processarDados() {
@@ -2346,9 +2408,13 @@
             console.log(`🔄 Processando ${dadosCSV.length} registros...`);
             
             try {
+                updateEquipmentSelector();
                 aplicarFiltros();
-                equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados.length ? dadosFiltrados : dadosCSV);
-                detectarApontamentosComAlertas(dadosFiltrados.length ? dadosFiltrados : dadosCSV);
+                
+                const dadosParaProcessar = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
+                equipamentosProcessados = processarEquipamentosDoCSV(dadosParaProcessar);
+                detectarApontamentosComAlertas(dadosParaProcessar);
+                
                 atualizarInterface();
                 atualizarContadoresRelatorio();
                 
@@ -2359,13 +2425,20 @@
             }
         }
 
+        // INÍCIO DA ATUALIZAÇÃO 2.2
         function processarEquipamentosDoCSV(dados) {
             const equipamentos = {};
             categorias.clear();
             supervisores.clear();
             motoristas.clear();
-            
-            dados.forEach(apt => {
+
+            // FILTRAR APENAS DADOS DE CATEGORIAS ATIVAS
+            const dadosAtivos = dados.filter(apt => {
+                const config = getCategoriaConfig(apt['Categoria Demora']);
+                return config.ativo;
+            });
+
+            dadosAtivos.forEach(apt => {
                 const codigo = extrairCodigoVaga(apt.Vaga);
                 if (!codigo) return;
                 
@@ -2380,6 +2453,9 @@
                         status: 'BOM'
                     };
                 }
+                
+                // CORREÇÃO: Garante que a placa seja atualizada se mudar para o mesmo equipamento lógico
+                equipamentos[codigo].placa = apt.Placa;
                 
                 categorias.add(apt['Categoria Demora']);
                 
@@ -2407,16 +2483,25 @@
             atualizarFiltroCategorias();
             return equipamentos;
         }
+        // FIM DA ATUALIZAÇÃO 2.2
 
+        // INÍCIO DA ATUALIZAÇÃO 2.1
         function classificarApontamento(apontamento) {
             const categoria = apontamento['Categoria Demora'];
             const tempoMinutos = tempoParaMinutos(apontamento['Tempo Indisponível (HH:MM)']);
-            const gatilho = getGatilhoAlerta(categoria);
+
+            // VERIFICAR SE CATEGORIA ESTÁ ATIVA
+            const config = getCategoriaConfig(categoria);
+            if (!config.ativo) {
+                return 'inativo'; // Novo status para categorias inativas
+            }
+
+            const gatilho = config.gatilho_alerta_minutos;
             const toleranciaCurto = parseInt(apontamentosConfig.regras_processamento?.tolerancia_apontamento_curto || 5);
-            
+
             if (tempoMinutos === 0) {
                 return 'zerado';
-            } else if (tempoMinutos <= toleranciaCurto) {
+            } else if (tempoMinutos > 0 && tempoMinutos <= toleranciaCurto) {
                 return 'curto';
             } else if (tempoMinutos > gatilho) {
                 return 'excede';
@@ -2426,6 +2511,7 @@
                 return 'normal';
             }
         }
+        // FIM DA ATUALIZAÇÃO 2.1
 
         function detectarApontamentosComAlertas(dados) {
             apontamentosComAlertas = [];
@@ -2433,7 +2519,7 @@
             dados.forEach(apt => {
                 const status = classificarApontamento(apt);
                 
-                if (status === 'excede' || status === 'atencao_prox' || status === 'zerado' || status === 'curto') {
+                if (status !== 'normal' && status !== 'inativo') {
                     apontamentosComAlertas.push({
                         ...apt,
                         statusAlerta: status,
@@ -2455,9 +2541,9 @@
             
             switch (status) {
                 case 'excede':
-                    return `Excede o limite de ${gatilho} minutos (${tempo} min)`;
+                    return `Excede o limite de ${gatilho} min (${tempo} min)`;
                 case 'atencao_prox':
-                    return `Próximo ao limite de ${gatilho} minutos (${tempo} min)`;
+                    return `Próximo ao limite de ${gatilho} min (${tempo} min)`;
                 case 'zerado':
                     return 'Apontamento com tempo zero';
                 case 'curto':
@@ -2469,16 +2555,11 @@
 
         function getGravidade(status) {
             switch (status) {
-                case 'excede':
-                    return 'ALTA';
-                case 'atencao_prox':
-                    return 'MÉDIA';
-                case 'zerado':
-                    return 'MÉDIA';
-                case 'curto':
-                    return 'BAIXA';
-                default:
-                    return 'BAIXA';
+                case 'excede': return 'ALTA';
+                case 'atencao_prox': return 'MÉDIA';
+                case 'zerado': return 'MÉDIA';
+                case 'curto': return 'BAIXA';
+                default: return 'BAIXA';
             }
         }
 
@@ -2487,16 +2568,91 @@
             const alertasAtivos = equipamento.alertasAtivos;
             const percentualCritico = parseInt(apontamentosConfig.regras_processamento?.percentual_irregularidade_critica || 40);
             const percentualAtencao = parseInt(apontamentosConfig.regras_processamento?.percentual_irregularidade_atencao || 20);
-            const limiarPoucos = parseInt(apontamentosConfig.regras_processamento?.equipamentos_poucos_apontamentos || 3);
             
-            if (totalApontamentos <= limiarPoucos) return 'CRITICO';
-            if (alertasAtivos > totalApontamentos * (percentualCritico / 100)) return 'CRITICO';
-            if (alertasAtivos > totalApontamentos * (percentualAtencao / 100)) return 'ATENCAO';
+            if (totalApontamentos === 0) return 'BOM';
+            
+            const irregularidades = equipamento.apontamentos.filter(apt => classificarApontamento(apt) !== 'normal' && classificarApontamento(apt) !== 'inativo').length;
+            const percentualIrregularidade = (irregularidades / totalApontamentos) * 100;
+
+            if (percentualIrregularidade >= percentualCritico) return 'CRITICO';
+            if (percentualIrregularidade >= percentualAtencao) return 'ATENCAO';
+            
             return 'BOM';
         }
 
         /*********************************
-         * RELATÓRIOS CUSTOMIZÁVEIS      *
+         * APLICAÇÃO DE FILTROS          *
+         *********************************/
+        function aplicarFiltros() {
+            const dataInicial = document.getElementById('dataInicial').value;
+            const dataFinal = document.getElementById('dataFinal').value;
+            const horaInicial = document.getElementById('horaInicial').value;
+            const horaFinal = document.getElementById('horaFinal').value;
+            const tipoFilter = document.getElementById('tipoFilter').value;
+            const categoriaFilter = document.getElementById('categoriaFilter').value;
+            const equipamentosSelecionados = getSelectedEquipments();
+            
+            dadosFiltrados = dadosCSV.filter(apt => {
+                if (dataInicial || dataFinal) {
+                    const dataApt = apt['Data Inicial']?.split(' ')[0];
+                    if (dataApt) {
+                        const [dia, mes, ano] = dataApt.split('/');
+                        const dataAptISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+                        if (dataInicial && dataAptISO < dataInicial) return false;
+                        if (dataFinal && dataAptISO > dataFinal) return false;
+                    }
+                }
+                
+                if (horaInicial || horaFinal) {
+                    const horaInicialApt = apt['Data Inicial']?.split(' ')[1]?.substring(0, 5);
+                    const horaFinalApt = apt['Data Final']?.split(' ')[1]?.substring(0, 5);
+                    if (horaInicial && horaInicialApt < horaInicial) return false;
+                    if (horaFinal && horaFinalApt > horaFinal) return false;
+                }
+                
+                if (tipoFilter) {
+                    const tipo = getTipoEquipamento(extrairCodigoVaga(apt.Vaga));
+                    if (tipo !== tipoFilter) return false;
+                }
+                
+                if (categoriaFilter && apt['Categoria Demora'] !== categoriaFilter) return false;
+                
+                if (equipamentosSelecionados.length > 0) {
+                    const codigo = extrairCodigoVaga(apt.Vaga);
+                    if (!equipamentosSelecionados.includes(codigo)) return false;
+                }
+                
+                return true;
+            });
+            
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados.length > 0 ? dadosFiltrados : dadosCSV);
+            detectarApontamentosComAlertas(dadosFiltrados.length > 0 ? dadosFiltrados : dadosCSV);
+            atualizarInterface();
+            atualizarContadoresRelatorio();
+            
+            const equipamentosVisiveis = Object.keys(processarEquipamentosDoCSV(dadosFiltrados)).length;
+            showNotification(`Filtros aplicados! ${dadosFiltrados.length} apontamentos e ${equipamentosVisiveis} equipamentos encontrados.`, 'info');
+        }
+        
+        function limparFiltros() {
+            document.getElementById('dataInicial').value = '';
+            document.getElementById('dataFinal').value = '';
+            document.getElementById('horaInicial').value = '';
+            document.getElementById('horaFinal').value = '';
+            document.getElementById('tipoFilter').value = '';
+            document.getElementById('categoriaFilter').value = '';
+            clearAllEquipments();
+            
+            dadosFiltrados = [];
+            equipamentosProcessados = processarEquipamentosDoCSV(dadosCSV);
+            detectarApontamentosComAlertas(dadosCSV);
+            atualizarInterface();
+            atualizarContadoresRelatorio();
+            showNotification('Filtros limpos.', 'info');
+        }
+
+        /*********************************
+         * RELATÓRIOS REORGANIZADOS      *
          *********************************/
         function updatePeriodFields() {
             const periodo = document.getElementById('periodoRelatorio').value;
@@ -2510,51 +2666,42 @@
             }
         }
 
+        // INÍCIO DA ATUALIZAÇÃO 1.2
         function atualizarContadoresRelatorio() {
-            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, document.getElementById('periodoRelatorio').value);
+            const periodo = document.getElementById('periodoRelatorio').value;
+            const dadosBase = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
+            const dadosRelatorio = filtrarPorPeriodo(dadosBase, periodo);
             
-            // Contar equipamentos críticos
-            let equipamentosCriticos = 0;
-            Object.values(equipamentosProcessados).forEach(eq => {
-                if (eq.status === 'CRITICO') equipamentosCriticos++;
-            });
+            const equipamentosRelatorio = processarEquipamentosDoCSV(dadosRelatorio);
             
-            // Contar apontamentos zerados
-            const apontamentosZerados = dados.filter(apt => classificarApontamento(apt) === 'zerado').length;
+            // Contar cada tipo de alerta separadamente
+            const alertasCriticos = dadosRelatorio.filter(apt => classificarApontamento(apt) === 'excede').length;
+            const alertasAtencao = dadosRelatorio.filter(apt => classificarApontamento(apt) === 'atencao_prox').length;
+            const apontamentosZerados = dadosRelatorio.filter(apt => classificarApontamento(apt) === 'zerado').length;
+            const apontamentosCurtos = dadosRelatorio.filter(apt => classificarApontamento(apt) === 'curto').length;
             
-            // Contar apontamentos curtos
-            const apontamentosCurtos = dados.filter(apt => classificarApontamento(apt) === 'curto').length;
-            
-            // Contar alertas críticos
-            const alertasCriticos = dados.filter(apt => classificarApontamento(apt) === 'excede').length;
-            
-            // Contar alertas de atenção
-            const alertasAtencao = dados.filter(apt => classificarApontamento(apt) === 'atencao_prox').length;
-            
-            // Contar equipamentos com poucos apontamentos
-            let equipamentosPoucos = 0;
             const limiar = parseInt(apontamentosConfig.regras_processamento?.equipamentos_poucos_apontamentos || 3);
-            Object.values(equipamentosProcessados).forEach(eq => {
-                if (eq.apontamentos.length <= limiar) equipamentosPoucos++;
-            });
+            const equipamentosPoucosApontamentos = Object.values(equipamentosRelatorio)
+                .filter(eq => eq.apontamentos.length > 0 && eq.apontamentos.length <= limiar).length;
             
-            // Atualizar contadores na interface
-            document.getElementById('count-equipamentos-criticos').textContent = equipamentosCriticos;
-            document.getElementById('count-apontamentos-zerados').textContent = apontamentosZerados;
-            document.getElementById('count-apontamentos-curtos').textContent = apontamentosCurtos;
+            // Atualizar contadores individuais
             document.getElementById('count-alertas-criticos').textContent = alertasCriticos;
             document.getElementById('count-alertas-atencao').textContent = alertasAtencao;
-            document.getElementById('count-resumo-equipamentos').textContent = Object.keys(equipamentosProcessados).length;
-            document.getElementById('count-resumo-categorias').textContent = categorias.size;
-            document.getElementById('count-equipamentos-poucos-apontamentos').textContent = equipamentosPoucos;
+            document.getElementById('count-apontamentos-zerados').textContent = apontamentosZerados;
+            document.getElementById('count-apontamentos-curtos').textContent = apontamentosCurtos;
+            document.getElementById('count-equipamentos-poucos-apontamentos').textContent = equipamentosPoucosApontamentos;
+            
+            // Manter contadores existentes
+            document.getElementById('count-resumo-equipamentos').textContent = Object.keys(equipamentosRelatorio).length;
+            document.getElementById('count-resumo-categorias').textContent = new Set(dadosRelatorio.map(d => d['Categoria Demora'])).size;
             document.getElementById('count-investigacoes').textContent = investigacoes.length;
-            document.getElementById('count-dados-completos').textContent = dados.length;
+            document.getElementById('count-dados-completos').textContent = dadosRelatorio.length;
         }
+        // FIM DA ATUALIZAÇÃO 1.2
 
         function toggleReportOption(optionId) {
             const checkbox = document.getElementById(`checkbox-${optionId}`);
             const option = checkbox.closest('.report-option');
-            
             checkbox.checked = !checkbox.checked;
             
             if (checkbox.checked) {
@@ -2568,19 +2715,15 @@
 
         function selectAllReportOptions() {
             document.querySelectorAll('.report-checkbox').forEach(checkbox => {
-                if (!checkbox.checked) {
-                    const optionId = checkbox.id.replace('checkbox-', '');
-                    toggleReportOption(optionId);
-                }
+                const optionId = checkbox.id.replace('checkbox-', '');
+                if (!checkbox.checked) toggleReportOption(optionId);
             });
         }
 
         function clearAllReportOptions() {
             document.querySelectorAll('.report-checkbox').forEach(checkbox => {
-                if (checkbox.checked) {
-                    const optionId = checkbox.id.replace('checkbox-', '');
-                    toggleReportOption(optionId);
-                }
+                const optionId = checkbox.id.replace('checkbox-', '');
+                if (checkbox.checked) toggleReportOption(optionId);
             });
         }
 
@@ -2592,17 +2735,16 @@
             
             const container = document.getElementById('previewRelatorio');
             const periodo = document.getElementById('periodoRelatorio').value;
-            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, periodo);
+            const dadosBase = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
+            const dados = filtrarPorPeriodo(dadosBase, periodo);
             
             let totalRegistros = 0;
             let previewHtml = '';
             
             selectedReportOptions.forEach(optionId => {
                 const sectionData = generateReportSection(optionId, dados);
-                
                 if (sectionData && sectionData.length > 0) {
                     totalRegistros += sectionData.length;
-                    
                     previewHtml += `
                         <div style="margin-bottom: 2rem;">
                             <h4 style="color: #2c3e50; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e9ecef;">
@@ -2610,21 +2752,14 @@
                             </h4>
                             <div style="overflow-x: auto;">
                                 <table class="preview-table">
-                                    <thead>
-                                        <tr>
-                                            ${Object.keys(sectionData[0]).map(key => `<th>${key}</th>`).join('')}
-                                        </tr>
-                                    </thead>
+                                    <thead><tr>${Object.keys(sectionData[0]).map(key => `<th>${key}</th>`).join('')}</tr></thead>
                                     <tbody>
-                                        ${sectionData.slice(0, 5).map(row => 
-                                            `<tr>${Object.values(row).map(value => `<td>${value || ''}</td>`).join('')}</tr>`
-                                        ).join('')}
+                                        ${sectionData.slice(0, 5).map(row => `<tr>${Object.values(row).map(value => `<td>${value || ''}</td>`).join('')}</tr>`).join('')}
                                         ${sectionData.length > 5 ? `<tr><td colspan="${Object.keys(sectionData[0]).length}" style="text-align: center; font-style: italic; color: #6c757d;">... e mais ${sectionData.length - 5} registros</td></tr>` : ''}
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }
             });
             
@@ -2637,186 +2772,168 @@
             }
         }
 
+        // INÍCIO DA ATUALIZAÇÃO 1.3
         function generateReportSection(optionId, dados) {
             const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || '';
             const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM';
-            
-            // Estrutura padrão para todos os relatórios principais
-            const formatarRegistroPadrao = (apt) => {
-                const status = classificarApontamento(apt);
-                const tempoMinutos = tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
-                const gatilho = getGatilhoAlerta(apt['Categoria Demora']);
-                
-                return {
-                    'Equipamento': extrairCodigoVaga(apt.Vaga) || '',
-                    'Regime': regimePadrao,
-                    'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
-                    'Supervisor': supervisorPadrao,
-                    'Motorista': apt.Motorista || '',
-                    'Problemas Identificados': getMotivo(status, apt),
-                    'Gravidade': getGravidade(status),
-                    'Tipo De Apontamento': apt['Categoria Demora'] || '',
-                    'Hora Apontamento': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']),
-                    'Tempo (min)': tempoMinutos,
-                    'Justificativa': '',
-                    'Tratativa': '',
-                    'Sugestão': getSugestaoTratativa(status, apt)
-                };
-            };
+            const equipamentosPeriodo = processarEquipamentosDoCSV(dados);
             
             switch (optionId) {
-                case 'equipamentos-criticos':
-                    const equipamentosCriticos = [];
-                    Object.values(equipamentosProcessados)
-                        .filter(eq => eq.status === 'CRITICO')
-                        .forEach(eq => {
-                            eq.apontamentos.forEach(apt => {
-                                equipamentosCriticos.push(formatarRegistroPadrao(apt));
-                            });
-                        });
-                    return equipamentosCriticos;
-
-                case 'apontamentos-zerados':
-                    return dados
-                        .filter(apt => classificarApontamento(apt) === 'zerado')
-                        .map(apt => formatarRegistroPadrao(apt));
-
-                case 'apontamentos-curtos':
-                    return dados
-                        .filter(apt => classificarApontamento(apt) === 'curto')
-                        .map(apt => formatarRegistroPadrao(apt));
-
                 case 'alertas-criticos':
-                    return dados
-                        .filter(apt => classificarApontamento(apt) === 'excede')
+                    return dados.filter(apt => classificarApontamento(apt) === 'excede')
                         .map(apt => formatarRegistroPadrao(apt));
-
-                case 'alertas-atencao':
-                    return dados
-                        .filter(apt => classificarApontamento(apt) === 'atencao_prox')
-                        .map(apt => formatarRegistroPadrao(apt));
-
-                case 'resumo-equipamentos':
-                    return Object.values(equipamentosProcessados).map(eq => {
-                        // Pegar a primeira vaga para mostrar o nome completo
-                        const primeiraVaga = eq.apontamentos.length > 0 ? eq.apontamentos[0].Vaga : '';
                         
-                        return {
-                            'Equipamento': eq.codigo,
-                            'Vaga': primeiraVaga,
-                            'Placa': eq.placa,
-                            'Total de Apontamentos': eq.apontamentos.length,
-                            'Tempo Total (horas)': (eq.totalTempo / 60).toFixed(2),
-                            'Alertas Ativos': eq.alertasAtivos,
-                            'Taxa de Alertas (%)': eq.apontamentos.length > 0 ? ((eq.alertasAtivos / eq.apontamentos.length) * 100).toFixed(1) : '0',
-                            'Status Geral': eq.status,
-                            'Tempo Médio por Apontamento (min)': eq.apontamentos.length > 0 ? (eq.totalTempo / eq.apontamentos.length).toFixed(1) : '0',
-                            'Categoria Mais Frequente': getMostFrequentCategory(eq.apontamentos),
-                            'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
-                            'Regime': document.getElementById('regimePadrao')?.value || 'ADM'
-                        };
-                    });
-
-                case 'resumo-categorias':
-                    const resumoCategorias = [];
-                    dados.forEach(apt => {
-                        resumoCategorias.push(formatarRegistroPadrao(apt));
-                    });
-                    return resumoCategorias;
-
+                case 'alertas-atencao':
+                    return dados.filter(apt => classificarApontamento(apt) === 'atencao_prox')
+                        .map(apt => formatarRegistroPadrao(apt));
+                        
+                case 'apontamentos-zerados':
+                    return dados.filter(apt => classificarApontamento(apt) === 'zerado')
+                        .map(apt => formatarRegistroPadrao(apt));
+                        
+                case 'apontamentos-curtos':
+                    return dados.filter(apt => classificarApontamento(apt) === 'curto')
+                        .map(apt => formatarRegistroPadrao(apt));
+                        
                 case 'equipamentos-poucos-apontamentos':
                     const limiar = parseInt(apontamentosConfig.regras_processamento?.equipamentos_poucos_apontamentos || 3);
-                    const equipamentosPoucos = [];
-                    Object.values(equipamentosProcessados)
-                        .filter(eq => eq.apontamentos.length <= limiar)
-                        .forEach(eq => {
-                            eq.apontamentos.forEach(apt => {
-                                const registro = formatarRegistroPadrao(apt);
-                                registro['Problemas Identificados'] = eq.apontamentos.length === 0 ? 'Equipamento não utilizado' : 'Baixa utilização detectada';
-                                registro['Sugestão'] = eq.apontamentos.length === 0 ? 'Verificar se está em operação' : 'Investigar motivo da baixa utilização';
-                                equipamentosPoucos.push(registro);
-                            });
+                    return Object.values(equipamentosPeriodo)
+                        .filter(eq => eq.apontamentos.length > 0 && eq.apontamentos.length <= limiar)
+                        .map(eq => {
+                            const ultimoApontamento = eq.apontamentos[eq.apontamentos.length - 1] || {};
+                            return {
+                                ...formatarRegistroPadrao(ultimoApontamento),
+                                'Problemas Identificados': 'Equipamento com poucos apontamentos',
+                                'Gravidade': 'ALTA',
+                                'Sugestão': `Equipamento teve apenas ${eq.apontamentos.length} apontamento(s) no período. Verificar se está operacional.`
+                            };
                         });
-                    return equipamentosPoucos;
+                    
+                case 'resumo-equipamentos':
+                    return Object.values(equipamentosPeriodo).map(eq => ({
+                        'Equipamento': eq.codigo, 'Vaga': eq.apontamentos.length > 0 ? eq.apontamentos[0].Vaga : '', 'Placa': eq.placa,
+                        'Total Apontamentos': eq.apontamentos.length, 'Tempo Total (h)': (eq.totalTempo / 60).toFixed(2), 'Alertas Ativos': eq.alertasAtivos,
+                        'Taxa Alertas (%)': eq.apontamentos.length > 0 ? ((eq.alertasAtivos / eq.apontamentos.length) * 100).toFixed(1) : '0',
+                        'Status Geral': eq.status, 'Tempo Médio (min)': eq.apontamentos.length > 0 ? (eq.totalTempo / eq.apontamentos.length).toFixed(1) : '0',
+                        'Categoria Mais Frequente': getMostFrequentCategory(eq.apontamentos), 'Supervisor': supervisorPadrao, 'Regime': regimePadrao
+                    }));
+
+                case 'resumo-categorias':
+                    return generateResumoCategorias(dados);
 
                 case 'investigacoes':
                     return investigacoes.map(inv => ({
-                        'Equipamento': inv.equipamento,
-                        'Regime': regimePadrao,
-                        'Data De Apontamento': inv.dataApontamento,
-                        'Supervisor': supervisorPadrao,
-                        'Motorista': inv.alertaOriginal?.Motorista || '',
-                        'Problemas Identificados': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
-                        'Gravidade': inv.alertaOriginal ? getGravidade(inv.alertaOriginal.statusAlerta) : '',
-                        'Tipo De Apontamento': inv.categoria,
-                        'Hora Apontamento': inv.horaApontamento,
-                        'Tempo (min)': tempoParaMinutos(inv.tempoTotal),
-                        'Justificativa': inv.justificativa,
-                        'Tratativa': inv.acoesCorretivas || '',
-                        'Sugestão': getStatusText(inv.status)
+                        'Equipamento': inv.equipamento, 'Regime': regimePadrao, 'Data Apontamento': inv.dataApontamento, 'Supervisor': supervisorPadrao,
+                        'Motorista': inv.alertaOriginal?.Motorista || '', 'Problema': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
+                        'Gravidade': inv.alertaOriginal ? getGravidade(inv.alertaOriginal.statusAlerta) : '', 'Tipo Apontamento': inv.categoria,
+                        'Hora Apontamento': inv.horaApontamento, 'Tempo (min)': tempoParaMinutos(inv.tempoTotal), 'Justificativa': inv.justificativa,
+                        'Tratativa': inv.acoesCorretivas || '', 'Status Investigação': getStatusText(inv.status)
                     }));
 
                 case 'dados-completos':
                     return dados.map(apt => formatarRegistroPadrao(apt));
-
-                default:
-                    return [];
+                
+                default: return [];
             }
         }
+        // FIM DA ATUALIZAÇÃO 1.3
 
-        function getSugestaoTratativa(status, apontamento) {
-            const categoria = apontamento['Categoria Demora'];
-            const config = getCategoriaConfig(categoria);
+        function generateResumoCategorias(dados) {
+            const categoriaStats = {};
+            dados.forEach(apt => {
+                const categoria = apt['Categoria Demora'];
+                if (!categoriaStats[categoria]) {
+                    categoriaStats[categoria] = { totalApontamentos: 0, tempoTotal: 0, alertas: 0 };
+                }
+                categoriaStats[categoria].totalApontamentos++;
+                categoriaStats[categoria].tempoTotal += tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']);
+                if (classificarApontamento(apt) !== 'normal' && classificarApontamento(apt) !== 'inativo') {
+                    categoriaStats[categoria].alertas++;
+                }
+            });
             
+            return Object.entries(categoriaStats).map(([categoria, stat]) => ({
+                'Categoria': categoria, 'Total Apontamentos': stat.totalApontamentos, 'Tempo Total (h)': (stat.tempoTotal / 60).toFixed(2),
+                'Tempo Médio (min)': stat.totalApontamentos > 0 ? (stat.tempoTotal / stat.totalApontamentos).toFixed(1) : '0', 'Alertas': stat.alertas,
+                'Taxa Alertas (%)': stat.totalApontamentos > 0 ? ((stat.alertas / stat.totalApontamentos) * 100).toFixed(1) : '0',
+                'Gatilho (min)': getGatilhoAlerta(categoria),
+                'Status': stat.alertas > stat.totalApontamentos * 0.3 ? 'CRÍTICO' : stat.alertas > stat.totalApontamentos * 0.1 ? 'ATENÇÃO' : 'NORMAL'
+            }));
+        }
+
+        function formatarRegistroPadrao(apt) {
+            const status = classificarApontamento(apt);
+            const supervisorPadrao = document.getElementById('supervisorPadrao')?.value || '';
+            const regimePadrao = document.getElementById('regimePadrao')?.value || 'ADM';
+            
+            return {
+                'Equipamento': extrairCodigoVaga(apt.Vaga) || '', 'Regime': regimePadrao, 'Data De Apontamento': apt['Data Inicial']?.split(' ')[0] || '',
+                'Supervisor': supervisorPadrao, 'Motorista': apt.Motorista || '', 'Problemas Identificados': getMotivo(status, apt),
+                'Gravidade': getGravidade(status), 'Tipo De Apontamento': apt['Categoria Demora'] || '',
+                'Hora Apontamento': formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final']), 'Tempo (min)': tempoParaMinutos(apt['Tempo Indisponível (HH:MM)']),
+                'Justificativa': '', 'Tratativa': '', 'Sugestão': getSugestaoTratativa(status, apt)
+            };
+        }
+
+        function getSugestaoTratativa(status, apt) {
+            const categoria = apt['Categoria Demora'];
             switch (status) {
-                case 'excede':
-                    return `Investigar excesso de tempo na atividade "${categoria}". Verificar se há problema operacional.`;
-                case 'atencao_prox':
-                    return `Monitorar categoria "${categoria}" para evitar que exceda o limite configurado.`;
-                case 'zerado':
-                    return 'Validar com operador se o apontamento está correto ou se houve erro de sistema.';
-                case 'curto':
-                    return `Verificar se o tempo curto para "${categoria}" está correto ou se houve erro no apontamento.`;
-                default:
-                    return 'Apontamento dentro dos parâmetros normais.';
+                case 'excede': return `Investigar excesso de tempo na atividade "${categoria}".`;
+                case 'atencao_prox': return `Monitorar categoria "${categoria}" para evitar excesso.`;
+                case 'zerado': return 'Validar se o apontamento está correto ou se houve erro de sistema.';
+                case 'curto': return `Verificar se o tempo curto para "${categoria}" está correto.`;
+                default: return 'Apontamento dentro dos parâmetros normais.';
             }
         }
 
         function getMostFrequentCategory(apontamentos) {
             if (!apontamentos || apontamentos.length === 0) return '';
-            
             const freq = {};
             apontamentos.forEach(apt => {
                 const cat = apt['Categoria Demora'];
                 freq[cat] = (freq[cat] || 0) + 1;
             });
-            
-            let maxCat = '';
-            let maxCount = 0;
-            Object.entries(freq).forEach(([cat, count]) => {
-                if (count > maxCount) {
-                    maxCount = count;
-                    maxCat = cat;
-                }
-            });
-            
-            return maxCat;
+            return Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
         }
 
+        // INÍCIO DA ATUALIZAÇÃO 1.4
         function getReportSectionTitle(optionId) {
             const titles = {
-                'equipamentos-criticos': '🔴 Equipamentos Críticos',
+                'alertas-criticos': '🔴 Alertas Críticos',
+                'alertas-atencao': '🟡 Alertas de Atenção', 
                 'apontamentos-zerados': '⚫ Apontamentos Zerados',
                 'apontamentos-curtos': '⏱️ Apontamentos Muito Curtos',
-                'alertas-criticos': '🚨 Alertas Críticos',
-                'alertas-atencao': '🟡 Alertas de Atenção',
+                'equipamentos-poucos-apontamentos': '📉 Equipamentos com Poucos Apontamentos',
                 'resumo-equipamentos': '📊 Resumo por Equipamento',
                 'resumo-categorias': '📋 Resumo por Categoria',
-                'equipamentos-poucos-apontamentos': '📉 Equipamentos com Poucos Apontamentos',
                 'investigacoes': '🔍 Investigações Realizadas',
                 'dados-completos': '📄 Dados Completos'
             };
             return titles[optionId] || optionId;
+        }
+        // FIM DA ATUALIZAÇÃO 1.4
+
+        // MELHORIA: Gera nome de arquivo inteligente baseado no range de datas dos dados.
+        function gerarNomeArquivo(dados) {
+            if (!dados || dados.length === 0) {
+                return `Relatorio_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            }
+            const datas = dados.map(apt => {
+                const dataStr = apt['Data Inicial'] || apt['Data De Apontamento'];
+                if (!dataStr) return null;
+                const [dia, mes, ano] = dataStr.split(' ')[0].split('/');
+                return new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+            }).filter(Boolean);
+
+            if (datas.length === 0) return `Relatorio_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+
+            const dataMinima = new Date(Math.min(...datas));
+            const dataMaxima = new Date(Math.max(...datas));
+            const formatarData = d => `${d.getDate().toString().padStart(2, '0')}_${(d.getMonth() + 1).toString().padStart(2, '0')}_${d.getFullYear()}`;
+            
+            return dataMinima.getTime() === dataMaxima.getTime() 
+                ? `Relatorio_${formatarData(dataMinima)}` 
+                : `Relatorio_${formatarData(dataMinima)}_a_${formatarData(dataMaxima)}`;
         }
 
         function exportCustomReport(formato) {
@@ -2826,99 +2943,69 @@
             }
             
             const periodo = document.getElementById('periodoRelatorio').value;
-            const dados = filtrarPorPeriodo(dadosFiltrados.length ? dadosFiltrados : dadosCSV, periodo);
-            
-            // Criar um workbook do Excel com múltiplas abas
+            const dadosBase = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
+            const dados = filtrarPorPeriodo(dadosBase, periodo);
+            const nomeArquivo = gerarNomeArquivo(dados);
+
             if (formato === 'xlsx') {
                 const wb = XLSX.utils.book_new();
-                
                 selectedReportOptions.forEach(optionId => {
                     const sectionData = generateReportSection(optionId, dados);
                     if (sectionData && sectionData.length > 0) {
                         const ws = XLSX.utils.json_to_sheet(sectionData);
-                        
-                        // Configurar largura das colunas
-                        const colWidths = Object.keys(sectionData[0]).map(key => ({
-                            wch: Math.max(key.length, 15)
-                        }));
+                        const colWidths = Object.keys(sectionData[0]).map(key => ({ wch: Math.max(key.length, 15) }));
                         ws['!cols'] = colWidths;
-                        
-                        // Adicionar aba com nome limpo
-                        const sheetName = getReportSectionTitle(optionId).substring(2).substring(0, 30);
+                        let sheetName = getReportSectionTitle(optionId).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
                         XLSX.utils.book_append_sheet(wb, ws, sheetName);
                     }
                 });
-                
-                const nomeArquivo = `Relatorio_Inteligente_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
-                XLSX.writeFile(wb, `${nomeArquivo}.xlsx`);
+                if (wb.SheetNames.length > 0) XLSX.writeFile(wb, `${nomeArquivo}.xlsx`);
                 
             } else {
-                // Para CSV, concatenar todas as seções
                 let dadosCompletos = [];
-                let secaoAtual = '';
-                
                 selectedReportOptions.forEach(optionId => {
                     const sectionData = generateReportSection(optionId, dados);
                     if (sectionData && sectionData.length > 0) {
-                        // Adicionar cabeçalho da seção
-                        dadosCompletos.push({
-                            'SEÇÃO': getReportSectionTitle(optionId),
-                            '': '',
-                            ' ': '',
-                            '  ': ''
-                        });
-                        
-                        // Adicionar dados da seção
-                        dadosCompletos = dadosCompletos.concat(sectionData);
-                        
-                        // Adicionar linha em branco
-                        dadosCompletos.push({});
+                        dadosCompletos.push({ 'SEÇÃO': getReportSectionTitle(optionId) });
+                        dadosCompletos = dadosCompletos.concat(sectionData, [{}]);
                     }
                 });
                 
                 const csv = Papa.unparse(dadosCompletos, { delimiter: ';', header: true });
                 const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-                
                 const link = document.createElement('a');
-                const nomeArquivo = `Relatorio_Inteligente_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
                 link.href = URL.createObjectURL(blob);
                 link.download = `${nomeArquivo}.csv`;
                 link.click();
-                URL.revokeObjectURL(link.href);
             }
-            
-            showNotification(`Relatório ${formato.toUpperCase()} exportado com sucesso!`, 'success');
+            showNotification(`Relatório ${formato.toUpperCase()} exportado!`, 'success');
         }
 
         /*********************************
          * INTERFACE E INDICADORES       *
          *********************************/
         function atualizarInterface() {
-            atualizarEstatisticas();
-            exibirEquipamentos();
+            const dadosBase = dadosFiltrados.length > 0 ? dadosFiltrados : dadosCSV;
+            const equipamentosVisiveis = processarEquipamentosDoCSV(dadosFiltrados);
+
+            atualizarEstatisticas(dadosBase, equipamentosVisiveis);
+            exibirEquipamentos(equipamentosVisiveis);
             atualizarStatusSistema();
-            atualizarMonitoramentoQualidade();
+            atualizarMonitoramentoQualidade(dadosBase);
         }
 
-        function atualizarEstatisticas() {
-            const totalApontamentos = dadosFiltrados.length || dadosCSV.length;
-            const totalEquipamentos = Object.keys(equipamentosProcessados).length;
+        function atualizarEstatisticas(dados, equipamentos) {
+            const totalApontamentos = dados.length;
+            const totalEquipamentos = Object.keys(equipamentos).length;
             const alertasAtivos = apontamentosComAlertas.length;
             
-            const dados = dadosFiltrados.length ? dadosFiltrados : dadosCSV;
-            let zerados = 0;
-            let curtos = 0;
-            let tempoTotal = 0;
-            
+            let zerados = 0, curtos = 0, tempoTotal = 0;
             dados.forEach(apt => {
                 const status = classificarApontamento(apt);
                 if (status === 'zerado') zerados++;
                 if (status === 'curto') curtos++;
             });
-            
-            Object.values(equipamentosProcessados).forEach(eq => {
-                tempoTotal += eq.totalTempo;
-            });
+            Object.values(equipamentos).forEach(eq => tempoTotal += eq.totalTempo);
             
             document.getElementById('totalApontamentos').textContent = totalApontamentos;
             document.getElementById('totalEquipamentos').textContent = totalEquipamentos;
@@ -2928,18 +3015,28 @@
             document.getElementById('tempoTotalParadas').textContent = Math.round(tempoTotal / 60) + 'h';
         }
 
-        function exibirEquipamentos() {
+        function exibirEquipamentos(equipamentos) {
             const container = document.getElementById('equipmentGrid');
-            const equipamentos = Object.values(equipamentosProcessados);
+            const listaEquipamentos = Object.values(equipamentos).sort((a, b) => a.codigo.localeCompare(b.codigo));
             
-            if (!equipamentos.length) {
+            if (listaEquipamentos.length === 0 && dadosCSV.length > 0) {
                 container.innerHTML = '<div class="loading-state"><div>Nenhum equipamento encontrado com os filtros atuais</div></div>';
+                document.getElementById('visibleEquipments').textContent = `0 equipamentos visíveis`;
+                return;
+            }
+            if (listaEquipamentos.length === 0) {
+                 container.innerHTML = `<div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <div id="equipmentLoadingMessage">Carregando dados...</div>
+                                <div style="margin-top: 1rem; font-size: 0.9rem; color: #6c757d;">
+                                    Se os dados não carregarem, tente fazer upload de um arquivo CSV/Excel na aba ⚙️ Configurações.
+                                </div>
+                            </div>`;
+                document.getElementById('visibleEquipments').textContent = `0 equipamentos visíveis`;
                 return;
             }
             
-            equipamentos.sort((a, b) => a.codigo.localeCompare(b.codigo));
-            
-            container.innerHTML = equipamentos.map(eq => `
+            container.innerHTML = listaEquipamentos.map(eq => `
                 <div class="equipment-card status-${eq.status.toLowerCase()}">
                     <div class="equipment-header">
                         <div>
@@ -2957,36 +3054,28 @@
                         </div>
                     </div>
                     <div class="appointments-list">
-                        ${eq.apontamentos.map(apt => {
-                            const status = apt._statusAlerta || classificarApontamento(apt);
-                            
-                            return `
-                                <div class="appointment-item" onclick='showAppointmentDetails(${JSON.stringify(apt).replace(/"/g, "&quot;")})'>
-                                    <div class="appointment-header">
-                                        <span class="appointment-category">${apt['Categoria Demora']}</span>
-                                        <div class="appointment-time">
-                                            <span class="appointment-status-indicator status-${status}"></span>
-                                            <span>${apt['Tempo Indisponível (HH:MM)']}</span>
-                                        </div>
-                                    </div>
-                                    <div class="appointment-datetime">
-                                        ${formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final'])}
+                        ${eq.apontamentos.map(apt => `
+                            <div class="appointment-item" onclick='showAppointmentDetails(${JSON.stringify(apt).replace(/"/g, "&quot;")})'>
+                                <div class="appointment-header">
+                                    <span class="appointment-category">${apt['Categoria Demora']}</span>
+                                    <div class="appointment-time">
+                                        <span class="appointment-status-indicator status-${apt._statusAlerta}"></span>
+                                        <span>${apt['Tempo Indisponível (HH:MM)']}</span>
                                     </div>
                                 </div>
-                            `;
-                        }).join('')}
+                                <div class="appointment-datetime">${formatarPeriodoApontamento(apt['Data Inicial'], apt['Data Final'])}</div>
+                            </div>`).join('')}
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
             
-            document.getElementById('visibleEquipments').textContent = `${equipamentos.length} equipamentos visíveis`;
+            document.getElementById('visibleEquipments').textContent = `${listaEquipamentos.length} equipamentos visíveis`;
         }
 
-        function atualizarMonitoramentoQualidade() {
+        function atualizarMonitoramentoQualidade(dados) {
             const alertasCriticos = apontamentosComAlertas.filter(a => a.gravidade === 'ALTA').length;
             const alertasAtencao = apontamentosComAlertas.filter(a => a.gravidade === 'MÉDIA').length;
-            const apontamentosNormais = (dadosFiltrados.length || dadosCSV.length) - apontamentosComAlertas.length;
-            const totalApontamentos = dadosFiltrados.length || dadosCSV.length;
+            const totalApontamentos = dados.length;
+            const apontamentosNormais = totalApontamentos - apontamentosComAlertas.length;
             const taxaConformidade = totalApontamentos > 0 ? Math.round((apontamentosNormais / totalApontamentos) * 100) : 0;
             
             document.getElementById('qualityAlertsCount').textContent = alertasCriticos;
@@ -2999,33 +3088,26 @@
 
         function atualizarListaAlertasAtivos() {
             const container = document.getElementById('activeAlertsList');
-            
             let alertasFiltrados = apontamentosComAlertas;
             
-            // Aplicar filtro rápido
             if (currentQualityFilter !== 'all') {
                 alertasFiltrados = apontamentosComAlertas.filter(alerta => {
-                    switch (currentQualityFilter) {
-                        case 'critical': return alerta.gravidade === 'ALTA';
-                        case 'warning': return alerta.gravidade === 'MÉDIA';
-                        case 'zerado': return alerta.statusAlerta === 'zerado';
-                        default: return true;
-                    }
+                    if (currentQualityFilter === 'critical') return alerta.gravidade === 'ALTA';
+                    if (currentQualityFilter === 'warning') return alerta.gravidade === 'MÉDIA';
+                    if (currentQualityFilter === 'zerado') return alerta.statusAlerta === 'zerado';
+                    return true;
                 });
             }
             
             if (!alertasFiltrados.length) {
-                container.innerHTML = '<div class="loading-state"><div>Nenhum alerta ativo</div></div>';
+                container.innerHTML = '<div class="loading-state"><div>Nenhum alerta ativo com os filtros atuais</div></div>';
                 return;
             }
             
-            // Agrupar por equipamento
             const alertasPorEquipamento = {};
             alertasFiltrados.forEach(alerta => {
                 const codigo = extrairCodigoVaga(alerta.Vaga);
-                if (!alertasPorEquipamento[codigo]) {
-                    alertasPorEquipamento[codigo] = [];
-                }
+                if (!alertasPorEquipamento[codigo]) alertasPorEquipamento[codigo] = [];
                 alertasPorEquipamento[codigo].push(alerta);
             });
             
@@ -3034,12 +3116,7 @@
                     <div class="equipment-header">
                         <div>
                             <div class="equipment-code">${codigo}</div>
-                            <div class="equipment-type">${alertas.length} alerta${alertas.length !== 1 ? 's' : ''} ativo${alertas.length !== 1 ? 's' : ''}</div>
-                        </div>
-                        <div>
-                            <div class="alert-counter">
-                                🔴 ${alertas.filter(a => a.gravidade === 'ALTA').length} crítico${alertas.filter(a => a.gravidade === 'ALTA').length !== 1 ? 's' : ''}
-                            </div>
+                            <div class="equipment-type">${alertas.length} alerta(s) ativo(s)</div>
                         </div>
                     </div>
                     <div class="appointments-list" style="max-height: 200px;">
@@ -3049,22 +3126,14 @@
                                     <span class="appointment-category">${alerta['Categoria Demora']}</span>
                                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                                         <span style="font-size: 0.8rem; color: #6c757d;">${alerta['Tempo Indisponível (HH:MM)']}</span>
-                                        <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick='startInvestigation(${JSON.stringify(alerta).replace(/"/g, "&quot;")})'>
-                                            Investigar
-                                        </button>
+                                        <button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick='startInvestigation(${JSON.stringify(alerta).replace(/"/g, "&quot;")})'>Investigar</button>
                                     </div>
                                 </div>
-                                <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 0.25rem;">
-                                    ${formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final'])}
-                                </div>
-                                <div style="font-size: 0.8rem; font-weight: 600; color: ${alerta.gravidade === 'ALTA' ? '#dc3545' : '#fd7e14'};">
-                                    ${alerta.motivo}
-                                </div>
-                            </div>
-                        `).join('')}
+                                <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 0.25rem;">${formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final'])}</div>
+                                <div style="font-size: 0.8rem; font-weight: 600; color: ${alerta.gravidade === 'ALTA' ? '#dc3545' : '#fd7e14'};">${alerta.motivo}</div>
+                            </div>`).join('')}
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
         /*********************************
@@ -3072,15 +3141,8 @@
          *********************************/
         function filterQualityAlerts(filter) {
             currentQualityFilter = filter;
-            
-            // Atualizar botões ativos
-            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
+            document.querySelectorAll('.quick-filter-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[onclick="filterQualityAlerts('${filter}')"]`).classList.add('active');
-            
-            // Atualizar lista
             atualizarListaAlertasAtivos();
         }
 
@@ -3089,22 +3151,14 @@
          *********************************/
         function toggleAutoRefresh() {
             const enabled = document.getElementById('autoRefreshEnabled').checked;
-            
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
             
             if (enabled && dataSource === 'github' && autoSyncEnabled) {
-                autoRefreshInterval = setInterval(() => {
-                    console.log('🔄 Auto-refresh executando...');
-                    manualSync();
-                }, 5 * 60 * 1000); // 5 minutos
-                
+                autoRefreshInterval = setInterval(() => manualSync(), 5 * 60 * 1000);
                 showNotification('Auto-refresh ativado (5 minutos)', 'info');
-            } else if (enabled && dataSource !== 'github') {
+            } else if (enabled) {
                 document.getElementById('autoRefreshEnabled').checked = false;
-                showNotification('Auto-refresh disponível apenas para dados do GitHub', 'warning');
+                showNotification('Auto-refresh disponível apenas para dados do GitHub com sync ativado.', 'warning');
             }
         }
 
@@ -3117,25 +3171,15 @@
                 return;
             }
             
-            const dados = apontamentosComAlertas.map(alerta => {
-                const codigo = extrairCodigoVaga(alerta.Vaga);
-                
-                return {
-                    'Equipamento': codigo || '',
-                    'Regime': document.getElementById('regimePadrao')?.value || 'ADM',
-                    'Data De Apontamento': alerta['Data Inicial']?.split(' ')[0] || '',
-                    'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
-                    'Motorista': alerta.Motorista || '',
-                    'Problemas Identificados': alerta.motivo,
-                    'Tipo De Apontamento': alerta['Categoria Demora'],
-                    'Hora Apontamento': formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']),
-                    'Tempo Total': alerta['Tempo Indisponível (HH:MM)'],
-                    'Justificativa': '',
-                    'Ações Corretivas': ''
-                };
-            });
+            const dados = apontamentosComAlertas.map(alerta => ({
+                'Equipamento': extrairCodigoVaga(alerta.Vaga) || '', 'Regime': document.getElementById('regimePadrao')?.value || 'ADM',
+                'Data De Apontamento': alerta['Data Inicial']?.split(' ')[0] || '', 'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
+                'Motorista': alerta.Motorista || '', 'Problemas Identificados': alerta.motivo, 'Tipo De Apontamento': alerta['Categoria Demora'],
+                'Hora Apontamento': formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']),
+                'Tempo Total': alerta['Tempo Indisponível (HH:MM)'], 'Justificativa': '', 'Ações Corretivas': ''
+            }));
             
-            const nomeArquivo = `Alertas_Ativos_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            const nomeArquivo = gerarNomeArquivo(dados);
             exportarParaXLSX(dados, nomeArquivo);
             showNotification('Alertas ativos exportados com sucesso!', 'success');
         }
@@ -3143,56 +3187,58 @@
         /*********************************
          * GESTÃO DE CATEGORIAS          *
          *********************************/
+        // INÍCIO DA ATUALIZAÇÃO 2.5
         function atualizarTabelaCategorias() {
             const tbody = document.getElementById('categoriesTableBody');
             const categorias = apontamentosConfig.mapeamento_categorias;
             
             tbody.innerHTML = Object.entries(categorias).map(([nome, config]) => `
-                <tr data-categoria="${nome}">
+                <tr data-categoria="${nome}" ${!config.ativo ? 'style="opacity: 0.6; background-color: #f8f9fa;"' : ''}>
                     <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <span>${config.icone}</span>
                             <span>${nome}</span>
+                            ${!config.ativo ? '<span style="color: #dc3545; font-size: 0.7rem; font-weight: 600;">INATIVA</span>' : ''}
                         </div>
                     </td>
-                    <td>
-                        <input type="text" class="editable-field" value="${config.classificacao}" 
-                               onchange="updateCategoryField('${nome}', 'classificacao', this.value)">
-                    </td>
-                    <td>
-                        <input type="text" class="editable-field" value="${config.tipo_atividade}" 
-                               onchange="updateCategoryField('${nome}', 'tipo_atividade', this.value)">
-                    </td>
-                    <td>
-                        <input type="number" class="editable-field" value="${config.gatilho_alerta_minutos}" 
-                               min="1" max="600" onchange="updateCategoryField('${nome}', 'gatilho_alerta_minutos', parseInt(this.value))">
-                    </td>
-                    <td>
-                        <input type="number" class="editable-field" value="${config.tempo_normal_minutos}" 
-                               min="0" max="300" onchange="updateCategoryField('${nome}', 'tempo_normal_minutos', parseInt(this.value))">
-                    </td>
+                    <td><input type="text" class="editable-field" value="${config.classificacao}" onchange="updateCategoryField('${nome}', 'classificacao', this.value)" ${!config.ativo ? 'disabled' : ''}></td>
+                    <td><input type="text" class="editable-field" value="${config.tipo_atividade}" onchange="updateCategoryField('${nome}', 'tipo_atividade', this.value)" ${!config.ativo ? 'disabled' : ''}></td>
+                    <td><input type="number" class="editable-field" value="${config.gatilho_alerta_minutos}" min="1" onchange="updateCategoryField('${nome}', 'gatilho_alerta_minutos', parseInt(this.value))" ${!config.ativo ? 'disabled' : ''}></td>
+                    <td><input type="number" class="editable-field" value="${config.tempo_normal_minutos}" min="0" onchange="updateCategoryField('${nome}', 'tempo_normal_minutos', parseInt(this.value))" ${!config.ativo ? 'disabled' : ''}></td>
                     <td>
                         <select class="editable-field" onchange="updateCategoryField('${nome}', 'ativo', this.value === 'true')">
                             <option value="true" ${config.ativo ? 'selected' : ''}>Ativa</option>
                             <option value="false" ${!config.ativo ? 'selected' : ''}>Inativa</option>
                         </select>
                     </td>
-                    <td>
-                        <button class="btn danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" 
-                                onclick="removeCategory('${nome}')">
-                            🗑️ Remover
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                    <td><button class="btn danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" onclick="removeCategory('${nome}')">🗑️</button></td>
+                </tr>`).join('');
         }
+        // FIM DA ATUALIZAÇÃO 2.5
 
+        // INÍCIO DA ATUALIZAÇÃO 2.4
         function updateCategoryField(categoria, campo, valor) {
             if (apontamentosConfig.mapeamento_categorias[categoria]) {
+                // Converter string para boolean se necessário
+                if (campo === 'ativo') {
+                    valor = valor === 'true' || valor === true;
+                }
+                
                 apontamentosConfig.mapeamento_categorias[categoria][campo] = valor;
-                console.log(`✅ Atualizado ${categoria}.${campo} = ${valor}`);
+                
+                // Salvar automaticamente ao alterar
+                saveApontamentosConfig();
+                
+                // Se desativou/ativou uma categoria, reprocessar dados
+                if (campo === 'ativo' && dadosCSV.length > 0) {
+                    setTimeout(() => {
+                        processarDados();
+                        atualizarTabelaCategorias(); // Para refletir a mudança visual
+                    }, 100);
+                }
             }
         }
+        // FIM DA ATUALIZAÇÃO 2.4
 
         function removeCategory(categoria) {
             if (confirm(`Tem certeza que deseja remover a categoria "${categoria}"?`)) {
@@ -3206,64 +3252,53 @@
             const nome = prompt('Nome da nova categoria:');
             if (nome && nome.trim()) {
                 const nomeCategoria = nome.trim();
-                
                 if (apontamentosConfig.mapeamento_categorias[nomeCategoria]) {
-                    showNotification('Categoria já existe', 'warning');
-                    return;
+                    showNotification('Categoria já existe', 'warning'); return;
                 }
-                
                 apontamentosConfig.mapeamento_categorias[nomeCategoria] = {
-                    "classificacao": "Nova Categoria",
-                    "tipo_atividade": "Definir Tipo",
-                    "gatilho_alerta_minutos": 30,
-                    "tempo_normal_minutos": 15,
-                    "cor_indicador": "#6c757d",
-                    "icone": "📝",
-                    "ativo": true,
-                    "templates_justificativa": ["Template padrão"]
+                    "classificacao": "Nova", "tipo_atividade": "Definir", "gatilho_alerta_minutos": 30, "tempo_normal_minutos": 15,
+                    "cor_indicador": "#6c757d", "icone": "📝", "ativo": true, "templates_justificativa": ["Template"]
                 };
-                
                 atualizarTabelaCategorias();
                 showNotification(`Categoria "${nomeCategoria}" adicionada`, 'success');
             }
         }
 
+        // INÍCIO DA ATUALIZAÇÃO 2.3
         function saveCategories() {
+            // Salvar configurações localmente
             saveApontamentosConfig();
-            showNotification('Configurações de categorias salvas com sucesso!', 'success');
             
+            // Tentar salvar no GitHub (se disponível)
+            saveConfigToGitHub();
+            
+            showNotification('Configurações de categorias salvas!', 'success');
+            
+            // Reprocessar dados apenas com categorias ativas
             if (dadosCSV.length > 0) {
                 processarDados();
             }
         }
+        // FIM DA ATUALIZAÇÃO 2.3
 
         function resetToDefaultRules() {
-            if (confirm('Tem certeza que deseja resetar todas as categorias para os valores padrão? Esta ação não pode ser desfeita.')) {
+            if (confirm('Deseja resetar todas as categorias para os valores padrão?')) {
                 apontamentosConfig = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES_CONFIG));
                 saveApontamentosConfig();
                 atualizarTabelaCategorias();
-                showNotification('Configurações resetadas para valores padrão', 'success');
-                
-                if (dadosCSV.length > 0) {
-                    processarDados();
-                }
+                showNotification('Configurações resetadas para o padrão', 'success');
+                if (dadosCSV.length > 0) processarDados();
             }
         }
-
+        
         function filterCategoriesTable() {
             const searchTerm = document.getElementById('searchCategory').value.toLowerCase();
             const statusFilter = document.getElementById('filterCategoryStatus').value;
-            const rows = document.querySelectorAll('#categoriesTableBody tr');
-            
-            rows.forEach(row => {
+            document.querySelectorAll('#categoriesTableBody tr').forEach(row => {
                 const categoria = row.dataset.categoria.toLowerCase();
                 const ativo = row.querySelector('select').value === 'true';
-                
                 const matchesSearch = categoria.includes(searchTerm);
-                const matchesStatus = statusFilter === '' || 
-                                    (statusFilter === 'active' && ativo) || 
-                                    (statusFilter === 'inactive' && !ativo);
-                
+                const matchesStatus = statusFilter === '' || (statusFilter === 'active' && ativo) || (statusFilter === 'inactive' && !ativo);
                 row.style.display = matchesSearch && matchesStatus ? '' : 'none';
             });
         }
@@ -3273,184 +3308,103 @@
          *********************************/
         function startInvestigation(alerta) {
             const modal = document.getElementById('investigationModal');
-            const codigo = extrairCodigoVaga(alerta.Vaga);
-            const categoria = alerta['Categoria Demora'];
-            
-            // Preencher formulário
-            document.getElementById('invEquipamento').value = codigo || '';
-            document.getElementById('invCategoria').value = categoria || '';
-            
-            // Formatação de data e hora melhorada
-            const dataApontamento = alerta['Data Inicial']?.split(' ')[0] || '';
-            const horaApontamento = formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']);
-            
+            document.getElementById('invEquipamento').value = extrairCodigoVaga(alerta.Vaga) || '';
+            document.getElementById('invCategoria').value = alerta['Categoria Demora'] || '';
             document.getElementById('invDataApontamento').value = formatarDataCompacta(alerta['Data Inicial']);
-            document.getElementById('invHoraApontamento').value = horaApontamento;
+            document.getElementById('invHoraApontamento').value = formatarPeriodoApontamento(alerta['Data Inicial'], alerta['Data Final']);
             document.getElementById('invTempoTotal').value = alerta['Tempo Indisponível (HH:MM)'] || '';
             document.getElementById('invStatus').value = 'pendente';
             document.getElementById('invJustificativa').value = '';
             document.getElementById('invAcoes').value = '';
-            
-            // Carregar templates de justificativa
-            loadJustificationTemplates(categoria);
-            
+            loadJustificationTemplates(alerta['Categoria Demora']);
             modal.dataset.alertaData = JSON.stringify(alerta);
             modal.classList.add('show');
         }
 
         function loadJustificationTemplates(categoria) {
             const container = document.getElementById('templateSuggestions');
-            const config = getCategoriaConfig(categoria);
-            const templates = config.templates_justificativa || [];
-            
-            container.innerHTML = templates.map(template => `
-                <div class="template-btn" onclick="applyTemplate('${template}')">
-                    ${template}
-                </div>
-            `).join('');
+            const templates = getCategoriaConfig(categoria).templates_justificativa || [];
+            container.innerHTML = templates.map(t => `<div class="template-btn" onclick="applyTemplate('${t}')">${t}</div>`).join('');
         }
 
         function applyTemplate(template) {
             const textarea = document.getElementById('invJustificativa');
-            if (textarea.value.trim()) {
-                textarea.value += '; ' + template;
-            } else {
-                textarea.value = template;
-            }
+            textarea.value = textarea.value.trim() ? `${textarea.value}; ${template}` : template;
         }
 
         function saveInvestigation() {
             const modal = document.getElementById('investigationModal');
             const alertaData = JSON.parse(modal.dataset.alertaData);
-            
-            const investigacao = {
-                id: Date.now().toString(),
-                equipamento: document.getElementById('invEquipamento').value,
-                categoria: document.getElementById('invCategoria').value,
-                dataApontamento: document.getElementById('invDataApontamento').value,
-                horaApontamento: document.getElementById('invHoraApontamento').value,
-                tempoTotal: document.getElementById('invTempoTotal').value,
-                status: document.getElementById('invStatus').value,
-                justificativa: document.getElementById('invJustificativa').value,
-                acoesCorretivas: document.getElementById('invAcoes').value,
-                dataInvestigacao: new Date().toISOString(),
-                alertaOriginal: alertaData
-            };
-            
-            // Validação
-            if (!investigacao.justificativa.trim()) {
-                showNotification('Justificativa é obrigatória', 'warning');
-                return;
+            if (!document.getElementById('invJustificativa').value.trim()) {
+                showNotification('Justificativa é obrigatória', 'warning'); return;
             }
-            
-            investigacoes.push(investigacao);
+            investigacoes.push({
+                id: Date.now().toString(), equipamento: document.getElementById('invEquipamento').value,
+                categoria: document.getElementById('invCategoria').value, dataApontamento: document.getElementById('invDataApontamento').value,
+                horaApontamento: document.getElementById('invHoraApontamento').value, tempoTotal: document.getElementById('invTempoTotal').value,
+                status: document.getElementById('invStatus').value, justificativa: document.getElementById('invJustificativa').value,
+                acoesCorretivas: document.getElementById('invAcoes').value, dataInvestigacao: new Date().toISOString(), alertaOriginal: alertaData
+            });
             saveInvestigations();
-            
             closeModal();
             atualizarHistoricoInvestigacoes();
-            showNotification('Investigação salva com sucesso!', 'success');
+            showNotification('Investigação salva!', 'success');
         }
 
         function saveInvestigations() {
-            try {
-                localStorage.setItem('grupoGPS_investigacoes', JSON.stringify(investigacoes));
-            } catch (error) {
-                console.error('❌ Erro ao salvar investigações:', error);
-            }
+            try { localStorage.setItem('grupoGPS_investigacoes', JSON.stringify(investigacoes)); } 
+            catch (error) { console.error('❌ Erro ao salvar investigações:', error); }
         }
 
         function loadInvestigations() {
-            try {
-                const saved = localStorage.getItem('grupoGPS_investigacoes');
-                if (saved) {
-                    investigacoes = JSON.parse(saved);
-                }
-            } catch (error) {
-                console.error('❌ Erro ao carregar investigações:', error);
-                investigacoes = [];
-            }
+            try { const saved = localStorage.getItem('grupoGPS_investigacoes'); if (saved) investigacoes = JSON.parse(saved); } 
+            catch (error) { console.error('❌ Erro ao carregar investigações:', error); investigacoes = []; }
         }
 
         function atualizarHistoricoInvestigacoes() {
             const container = document.getElementById('investigationHistory');
-            
             if (!investigacoes.length) {
-                container.innerHTML = '<div class="loading-state"><div>Nenhuma investigação registrada</div></div>';
-                return;
+                container.innerHTML = '<div class="loading-state"><div>Nenhuma investigação registrada</div></div>'; return;
             }
-            
-            const investigacoesOrdenadas = investigacoes.sort((a, b) => 
-                new Date(b.dataInvestigacao) - new Date(a.dataInvestigacao)
-            );
-            
-            container.innerHTML = investigacoesOrdenadas.map(inv => `
+            container.innerHTML = [...investigacoes].sort((a, b) => new Date(b.dataInvestigacao) - new Date(a.dataInvestigacao)).map(inv => `
                 <div class="investigation-item" style="background: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border-left: 3px solid ${getStatusColor(inv.status)};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                         <div style="font-weight: 600; color: #2c3e50;">${inv.equipamento} - ${inv.categoria}</div>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: ${getStatusColor(inv.status)}20; color: ${getStatusColor(inv.status)};">
-                                ${getStatusText(inv.status)}
-                            </span>
-                            <span style="font-size: 0.8rem; color: #6c757d;">
-                                ${new Date(inv.dataInvestigacao).toLocaleDateString('pt-BR')}
-                            </span>
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; background: ${getStatusColor(inv.status)}20; color: ${getStatusColor(inv.status)};">${getStatusText(inv.status)}</span>
+                            <span style="font-size: 0.8rem; color: #6c757d;">${new Date(inv.dataInvestigacao).toLocaleDateString('pt-BR')}</span>
                         </div>
                     </div>
-                    <div style="font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem;">
-                        <strong>Período:</strong> ${inv.horaApontamento} | <strong>Tempo:</strong> ${inv.tempoTotal}
-                    </div>
-                    <div style="font-size: 0.9rem; color: #2c3e50; margin-bottom: 0.5rem;">
-                        <strong>Justificativa:</strong> ${inv.justificativa}
-                    </div>
+                    <div style="font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem;"><strong>Período:</strong> ${inv.horaApontamento} | <strong>Tempo:</strong> ${inv.tempoTotal}</div>
+                    <div style="font-size: 0.9rem; color: #2c3e50; margin-bottom: 0.5rem;"><strong>Justificativa:</strong> ${inv.justificativa}</div>
                     ${inv.acoesCorretivas ? `<div style="font-size: 0.9rem; color: #2c3e50;"><strong>Ações Corretivas:</strong> ${inv.acoesCorretivas}</div>` : ''}
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
         function getStatusColor(status) {
-            switch (status) {
-                case 'pendente': return '#fd7e14';
-                case 'em_investigacao': return '#0dcaf0';
-                case 'justificado': return '#198754';
-                case 'resolvido': return '#198754';
-                default: return '#6c757d';
-            }
+            const colors = { pendente: '#fd7e14', em_investigacao: '#0dcaf0', justificado: '#198754', resolvido: '#198754' };
+            return colors[status] || '#6c757d';
         }
 
         function getStatusText(status) {
-            switch (status) {
-                case 'pendente': return 'Pendente';
-                case 'em_investigacao': return 'Em Investigação';
-                case 'justificado': return 'Justificado';
-                case 'resolvido': return 'Resolvido';
-                default: return 'Desconhecido';
-            }
+            const texts = { pendente: 'Pendente', em_investigacao: 'Em Investigação', justificado: 'Justificado', resolvido: 'Resolvido' };
+            return texts[status] || 'Desconhecido';
         }
 
         function exportInvestigationHistory() {
             if (!investigacoes.length) {
-                showNotification('Nenhuma investigação para exportar', 'warning');
-                return;
+                showNotification('Nenhuma investigação para exportar', 'warning'); return;
             }
-            
-            // Formato baseado na imagem fornecida
             const dados = investigacoes.map(inv => ({
-                'Equipamento': inv.equipamento,
-                'Regime': document.getElementById('regimePadrao')?.value || 'ADM',
-                'Nome Motorista': inv.alertaOriginal?.Motorista || '',
-                'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
-                'Problema Do Apontamento': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
-                'Tipo De Apontamento': inv.categoria,
-                'Data Apontamento': inv.dataApontamento,
-                'Hora Apontamento': inv.horaApontamento,
-                'Tempo Total': inv.tempoTotal,
-                'Justificativa': inv.justificativa,
-                'Ações Corretivas': inv.acoesCorretivas || ''
+                'Equipamento': inv.equipamento, 'Regime': document.getElementById('regimePadrao')?.value || 'ADM',
+                'Nome Motorista': inv.alertaOriginal?.Motorista || '', 'Supervisor': document.getElementById('supervisorPadrao')?.value || '',
+                'Problema Apontamento': inv.alertaOriginal ? getMotivo(inv.alertaOriginal.statusAlerta, inv.alertaOriginal) : '',
+                'Tipo Apontamento': inv.categoria, 'Data Apontamento': inv.dataApontamento, 'Hora Apontamento': inv.horaApontamento,
+                'Tempo Total': inv.tempoTotal, 'Justificativa': inv.justificativa, 'Ações Corretivas': inv.acoesCorretivas || ''
             }));
-            
-            const nomeArquivo = `Relatorio_De_Apontamentos_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '_')}`;
+            const nomeArquivo = gerarNomeArquivo(dados);
             exportarParaXLSX(dados, nomeArquivo);
-            showNotification('Histórico de investigações exportado com sucesso!', 'success');
+            showNotification('Histórico de investigações exportado!', 'success');
         }
 
         /*********************************
@@ -3459,87 +3413,40 @@
         async function fetchGitHubData() {
             try {
                 const rawUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/${GITHUB_CONFIG.FILE_PATH}`;
-                console.log('🔄 Buscando CSV via raw file:', rawUrl);
-                
-                // **CORREÇÃO CORS: Remover headers customizados e simplificar request**
-                const response = await fetch(rawUrl + '?v=' + Date.now());
-                
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        throw new Error('Arquivo CSV não encontrado no GitHub. Verifique o caminho: ' + GITHUB_CONFIG.FILE_PATH);
-                    } else if (response.status === 403) {
-                        throw new Error('Acesso negado ao repositório. Verifique as permissões.');
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                }
-                
-                const content = await response.text();
-                console.log('✅ CSV carregado via raw file');
-                console.log(`📊 Tamanho do arquivo: ${(content.length / 1024).toFixed(2)} KB`);
-                
-                return content;
+                const response = await fetch(rawUrl + '?v=' + Date.now()); // Cache-busting
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                return await response.text();
             } catch (error) {
                 console.error('❌ Erro ao buscar dados CSV do GitHub:', error);
-                
-                // **MELHORIA: Detectar problemas de CORS especificamente**
                 if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
-                    throw new Error('Problema de conectividade com GitHub. Se estiver executando o arquivo localmente, considere usar um servidor web ou fazer upload de um CSV.');
+                    throw new Error('Problema de conectividade com GitHub. Use um servidor web ou upload local.');
                 }
-                
                 throw error;
             }
         }
 
         async function manualSync() {
-            updateSyncStatus('loading', 'Conectando com GitHub...');
-            console.log('🔄 Iniciando sincronização com GitHub...');
-            
+            updateSyncStatus('loading', 'Sincronizando...');
             try {
-                console.log('📊 Buscando dados CSV do repositório...');
                 const csvContent = await fetchGitHubData();
-                
                 if (csvContent && csvContent.trim()) {
-                    console.log('🔍 Parseando dados CSV...');
                     const parsedData = parseCSVContent(csvContent);
-                    
                     if (parsedData && parsedData.length > 0) {
                         dadosCSV = parsedData;
                         lastSyncTime = new Date();
-                        
-                        updateSyncStatus('success', `${dadosCSV.length} registros carregados`);
+                        updateSyncStatus('success', `${dadosCSV.length} registros`);
                         updateLastSyncTime();
-                        
-                        console.log(`✅ ${dadosCSV.length} registros processados com sucesso`);
-                        showNotification(`🔄 Dados sincronizados: ${dadosCSV.length} registros carregados!`, 'success');
-                        
+                        showNotification(`🔄 Dados sincronizados: ${dadosCSV.length} registros!`, 'success');
                         dataSource = 'github';
                         updateDataSourceIndicator();
-                        
-                        // Processar dados automaticamente
-                        console.log('⚙️ Processando dados...');
                         await processarDados();
-                        
                         return true;
-                    } else {
-                        throw new Error('Nenhum registro válido encontrado no arquivo CSV');
                     }
-                } else {
-                    throw new Error('Arquivo CSV vazio ou não encontrado');
                 }
+                throw new Error('Arquivo CSV vazio ou inválido');
             } catch (error) {
-                console.error('❌ Erro na sincronização:', error);
                 updateSyncStatus('error', 'Erro: ' + error.message);
-                
-                // Mensagens de erro mais amigáveis
-                if (error.message.includes('404')) {
-                    showNotification('📁 Arquivo não encontrado no GitHub. Verifique se o arquivo existe no repositório.', 'error');
-                } else if (error.message.includes('Failed to fetch') || error.message.includes('CORS') || error.message.includes('conectividade')) {
-                    showNotification('🌐 Problema de conectividade. Use o upload de arquivo CSV como alternativa.', 'warning');
-                } else {
-                    showNotification('❌ Erro ao sincronizar: ' + error.message, 'error');
-                }
-                
+                showNotification('❌ Erro ao sincronizar: ' + error.message, 'error');
                 return false;
             }
         }
@@ -3551,58 +3458,48 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            console.log('📁 Processando arquivo:', file.name);
             uploadedFileName = file.name;
-            
             updateSyncStatus('loading', 'Processando arquivo...');
             
             try {
                 let content;
-                
                 if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
                     content = await processExcelFile(file);
                 } else if (file.name.endsWith('.csv')) {
                     content = await processCSVFile(file);
                 } else {
-                    throw new Error('Formato de arquivo não suportado. Use .csv ou .xlsx');
+                    throw new Error('Formato não suportado. Use .csv ou .xlsx');
                 }
                 
-                if (content) {
-                    const parsedData = typeof content === 'string' ? parseCSVContent(content) : content;
-                    dadosCSV = parsedData;
-                    lastSyncTime = new Date();
-                    
-                    dataSource = 'local';
-                    updateDataSourceIndicator();
-                    updateSyncStatus('success', `${dadosCSV.length} registros carregados do arquivo`);
-                    updateLastSyncTime();
-                    
-                    document.getElementById('uploadStatus').style.display = 'block';
-                    document.getElementById('uploadedRecords').textContent = dadosCSV.length;
-                    
-                    await processarDados();
-                    
-                    const equipamentosCount = Object.keys(equipamentosProcessados).length;
-                    document.getElementById('uploadedEquipments').textContent = equipamentosCount;
-                    
-                    showNotification(`Arquivo "${file.name}" carregado com sucesso! ${dadosCSV.length} registros processados.`, 'success');
-                } else {
-                    throw new Error('Não foi possível processar o arquivo');
-                }
+                const parsedData = typeof content === 'string' ? parseCSVContent(content) : content;
+                dadosCSV = parsedData;
+                lastSyncTime = new Date();
+                dataSource = 'local';
+                
+                updateDataSourceIndicator();
+                updateSyncStatus('success', `${dadosCSV.length} registros do arquivo`);
+                updateLastSyncTime();
+                
+                document.getElementById('uploadStatus').style.display = 'block';
+                document.getElementById('uploadedRecords').textContent = dadosCSV.length;
+                
+                await processarDados();
+                
+                document.getElementById('uploadedEquipments').textContent = Object.keys(equipamentosProcessados).length;
+                showNotification(`Arquivo "${file.name}" carregado!`, 'success');
+
             } catch (error) {
-                console.error('❌ Erro no upload:', error);
                 updateSyncStatus('error', 'Erro no upload: ' + error.message);
                 showNotification('Erro ao processar arquivo: ' + error.message, 'error');
             }
-            
             event.target.value = '';
         }
 
         async function processCSVFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = () => reject(new Error('Erro ao ler arquivo CSV'));
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = () => reject(new Error('Erro ao ler CSV'));
                 reader.readAsText(file);
             });
         }
@@ -3610,63 +3507,34 @@
         async function processExcelFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = e => {
                     try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheetName = workbook.SheetNames[0];
-                        const worksheet = workbook.Sheets[firstSheetName];
-                        
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                        const csvContent = Papa.unparse(jsonData);
-                        resolve(csvContent);
-                    } catch (error) {
-                        reject(new Error('Erro ao processar arquivo Excel: ' + error.message));
-                    }
+                        const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                        resolve(XLSX.utils.sheet_to_json(worksheet));
+                    } catch (err) { reject(new Error('Erro ao processar Excel: ' + err.message)); }
                 };
-                reader.onerror = () => reject(new Error('Erro ao ler arquivo Excel'));
+                reader.onerror = () => reject(new Error('Erro ao ler Excel'));
                 reader.readAsArrayBuffer(file);
             });
         }
 
+        // CORREÇÃO: Função de parse robusta para lidar com delimitadores e aspas.
         function parseCSVContent(csvString) {
             try {
-                console.log('🔄 Iniciando parse do CSV...');
-                
                 const delimiter = csvString.includes('";') ? ';' : ',';
-                console.log('🔍 Delimitador detectado:', delimiter);
-                
                 const papaConfig = {
-                    header: true,
-                    skipEmptyLines: true,
-                    delimiter: delimiter,
-                    quoteChar: '"',
+                    header: true, skipEmptyLines: true, delimiter: delimiter, quoteChar: '"',
                     trimHeaders: true,
                     transformHeader: header => header.replace(/^"|"$/g, '').trim(),
-                    transform: (value) => {
-                        return typeof value === 'string' ? value.replace(/^"|"$/g, '').trim() : value;
-                    }
+                    transform: value => typeof value === 'string' ? value.replace(/^"|"$/g, '').trim() : value
                 };
 
                 const result = Papa.parse(csvString, papaConfig);
+                if (result.errors.length > 0) console.warn('⚠️ Erros no parse:', result.errors);
                 
-                console.log('📊 Headers detectados:', result.meta.fields);
-                
-                if (result.errors.length > 0) {
-                    console.warn('⚠️ Erros no parse:', result.errors);
-                }
-                
-                const validData = result.data.filter(linha => {
-                    return linha.Placa && 
-                           linha.Vaga && 
-                           linha['Categoria Demora'] && 
-                           linha['Data Inicial'] && 
-                           linha['Data Final'] && 
-                           linha['Tempo Indisponível (HH:MM)'];
-                });
-                
-                console.log('✅ Registros válidos:', validData.length);
-                return validData;
+                return result.data.filter(linha => linha.Placa && linha.Vaga && linha['Categoria Demora'] &&
+                                                   linha['Data Inicial'] && linha['Data Final'] && linha['Tempo Indisponível (HH:MM)']);
             } catch (error) {
                 console.error('❌ Erro ao parsear CSV:', error);
                 return [];
@@ -3678,19 +3546,16 @@
          *********************************/
         function extrairCodigoVaga(nomeVaga) {
             if (!nomeVaga) return null;
-            
             const nome = nomeVaga.toString().trim().toUpperCase();
             const patterns = [
-                { regex: /CAMINHÃO ALTA PRESSÃO - GPS - (\d+)/, prefix: 'AP' },
-                { regex: /CAMINHÃO AUTO VÁCUO - GPS - (\d+)/, prefix: 'AV' },
-                { regex: /CAMINHÃO HIPER VÁCUO - GPS - (\d+)/, prefix: 'HP' }
+                { regex: /ALTA PRESSÃO.*?(\d+)/, prefix: 'AP' },
+                { regex: /AUTO VÁCUO.*?(\d+)/, prefix: 'AV' },
+                { regex: /HIPER VÁCUO.*?(\d+)/, prefix: 'HP' }
             ];
-            
-            for (const pattern of patterns) {
-                const match = nome.match(pattern.regex);
-                if (match) return `${pattern.prefix}-${match[1].padStart(2, '0')}`;
+            for (const { regex, prefix } of patterns) {
+                const match = nome.match(regex);
+                if (match) return `${prefix}-${match[1].padStart(2, '0')}`;
             }
-            
             return null;
         }
 
@@ -3703,62 +3568,28 @@
         }
 
         function getTipoNome(tipo) {
-            switch (tipo) {
-                case 'AP': return 'Alta Pressão';
-                case 'AV': return 'Auto Vácuo';
-                case 'HP': return 'Hiper Vácuo';
-                default: return 'Desconhecido';
-            }
+            const nomes = { 'AP': 'Alta Pressão', 'AV': 'Auto Vácuo', 'HP': 'Hiper Vácuo' };
+            return nomes[tipo] || 'Desconhecido';
         }
 
         function tempoParaMinutos(tempo) {
             if (!tempo || !tempo.includes(':')) return 0;
-            const parts = tempo.split(':').map(Number);
-            return parts[0] * 60 + (parts[1] || 0);
+            const [horas, minutos] = tempo.split(':').map(Number);
+            return (horas || 0) * 60 + (minutos || 0);
         }
-
-        function formatarDataHoraCompleta(dataStr) {
-            if (!dataStr) return '';
-            try {
-                const [data, hora] = dataStr.split(' ');
-                const [dia, mes, ano] = data.split('/');
-                const horaCompleta = hora || '00:00:00';
-                return `${dia}/${mes}/${ano} ${horaCompleta}`;
-            } catch {
-                return dataStr;
-            }
-        }
-
-        function formatarHoraCompleta(dataStr) {
-            if (!dataStr) return '';
-            try {
-                const [, hora] = dataStr.split(' ');
-                return hora || '00:00:00';
-            } catch {
-                return '';
-            }
-        }
-
+        
         function formatarPeriodoApontamento(dataInicial, dataFinal) {
             if (!dataInicial || !dataFinal) return '';
-            
             try {
-                // Extrair componentes das datas
                 const [dataIni, horaIni] = dataInicial.split(' ');
-                const [diaIni, mesIni, anoIni] = dataIni.split('/');
-                const horaIniFormatada = horaIni ? horaIni.substring(0, 5) : '00:00';
+                const [diaIni, mesIni] = dataIni.split('/');
+                const horaIniF = horaIni ? horaIni.substring(0, 5) : '00:00';
                 
                 const [dataFim, horaFim] = dataFinal.split(' ');
-                const [diaFim, mesFim, anoFim] = dataFim.split('/');
-                const horaFimFormatada = horaFim ? horaFim.substring(0, 5) : '00:00';
+                const [diaFim, mesFim] = dataFim.split('/');
+                const horaFimF = horaFim ? horaFim.substring(0, 5) : '00:00';
                 
-                // Se for o mesmo dia
-                if (dataIni === dataFim) {
-                    return `${diaIni}/${mesIni} ${horaIniFormatada} - ${horaFimFormatada}`;
-                } else {
-                    // Dias diferentes
-                    return `${diaIni}/${mesIni} ${horaIniFormatada} - ${diaFim}/${mesFim} ${horaFimFormatada}`;
-                }
+                return dataIni === dataFim ? `${diaIni}/${mesIni} ${horaIniF} - ${horaFimF}` : `${diaIni}/${mesIni} ${horaIniF} - ${diaFim}/${mesFim} ${horaFimF}`;
             } catch {
                 return `${dataInicial} - ${dataFinal}`;
             }
@@ -3766,23 +3597,7 @@
 
         function formatarDataCompacta(dataStr) {
             if (!dataStr) return '';
-            try {
-                const [data] = dataStr.split(' ');
-                const [dia, mes] = data.split('/');
-                return `${dia}/${mes}`;
-            } catch {
-                return dataStr;
-            }
-        }
-
-        function formatarHoraCompacta(dataStr) {
-            if (!dataStr) return '';
-            try {
-                const [, hora] = dataStr.split(' ');
-                return hora ? hora.substring(0, 5) : '00:00';
-            } catch {
-                return '';
-            }
+            try { return dataStr.split(' ')[0]; } catch { return dataStr; }
         }
 
         /*********************************
@@ -3791,114 +3606,32 @@
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            const button = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
-            const tab = document.getElementById(tabName + '-tab');
-
-            if (button) button.classList.add('active');
-            if (tab) tab.classList.add('active');
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
             
-            if (tabName === 'categories') {
-                atualizarTabelaCategorias();
-            } else if (tabName === 'quality') {
-                atualizarMonitoramentoQualidade();
+            if (tabName === 'categories') atualizarTabelaCategorias();
+            else if (tabName === 'quality') {
+                atualizarMonitoramentoQualidade(dadosFiltrados.length ? dadosFiltrados : dadosCSV);
                 atualizarHistoricoInvestigacoes();
             } else if (tabName === 'reports') {
                 updatePeriodFields();
-                if (dadosCSV.length > 0) {
-                    atualizarContadoresRelatorio();
-                }
+                if (dadosCSV.length > 0) atualizarContadoresRelatorio();
             }
         }
 
         function toggleFilters() {
             filtersOpen = !filtersOpen;
             const panel = document.getElementById('filterPanel');
-            const toggleText = document.getElementById('filterToggleText');
-            const toggleIcon = document.getElementById('filterToggleIcon');
-            
-            if (filtersOpen) {
-                panel.classList.add('open');
-                toggleText.textContent = 'Ocultar Filtros';
-                toggleIcon.textContent = '▲';
-            } else {
-                panel.classList.remove('open');
-                toggleText.textContent = 'Mostrar Filtros';
-                toggleIcon.textContent = '▼';
-            }
-        }
-
-        function aplicarFiltros() {
-            const dataInicial = document.getElementById('dataInicial').value;
-            const dataFinal = document.getElementById('dataFinal').value;
-            const horaInicial = document.getElementById('horaInicial').value;
-            const horaFinal = document.getElementById('horaFinal').value;
-            const tipoFilter = document.getElementById('tipoFilter').value;
-            const categoriaFilter = document.getElementById('categoriaFilter').value;
-            
-            dadosFiltrados = dadosCSV.filter(apt => {
-                if (dataInicial || dataFinal) {
-                    const dataApt = apt['Data Inicial']?.split(' ')[0];
-                    if (dataApt) {
-                        const [dia, mes, ano] = dataApt.split('/');
-                        const dataAptISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-                        
-                        if (dataInicial && dataAptISO < dataInicial) return false;
-                        if (dataFinal && dataAptISO > dataFinal) return false;
-                    }
-                }
-                
-                if (horaInicial || horaFinal) {
-                    const horaApt = apt['Data Inicial']?.split(' ')[1]?.substring(0, 5);
-                    if (horaApt) {
-                        if (horaInicial && horaApt < horaInicial) return false;
-                        if (horaFinal && horaApt > horaFinal) return false;
-                    }
-                }
-                
-                if (tipoFilter) {
-                    const codigo = extrairCodigoVaga(apt.Vaga);
-                    const tipo = getTipoEquipamento(codigo);
-                    if (tipo !== tipoFilter) return false;
-                }
-                
-                if (categoriaFilter && apt['Categoria Demora'] !== categoriaFilter) return false;
-                
-                return true;
-            });
-            
-            equipamentosProcessados = processarEquipamentosDoCSV(dadosFiltrados);
-            detectarApontamentosComAlertas(dadosFiltrados);
-            atualizarInterface();
-            atualizarContadoresRelatorio();
-            
-            showNotification(`Filtros aplicados! ${dadosFiltrados.length} apontamentos encontrados.`, 'success');
-        }
-
-        function limparFiltros() {
-            document.getElementById('dataInicial').value = '';
-            document.getElementById('dataFinal').value = '';
-            document.getElementById('horaInicial').value = '';
-            document.getElementById('horaFinal').value = '';
-            document.getElementById('tipoFilter').value = '';
-            document.getElementById('categoriaFilter').value = '';
-            
-            dadosFiltrados = [];
-            aplicarFiltros();
+            panel.classList.toggle('open');
+            document.getElementById('filterToggleText').textContent = filtersOpen ? 'Ocultar Filtros' : 'Mostrar Filtros';
+            document.getElementById('filterToggleIcon').textContent = filtersOpen ? '▲' : '▼';
         }
 
         function atualizarFiltroCategorias() {
             const select = document.getElementById('categoriaFilter');
-            const currentValue = select.value;
-            
             select.innerHTML = '<option value="">Todas as categorias</option>';
-            
-            Array.from(categorias).sort().forEach(categoria => {
-                const option = document.createElement('option');
-                option.value = categoria;
-                option.textContent = categoria;
-                if (categoria === currentValue) option.selected = true;
-                select.appendChild(option);
+            [...categorias].sort().forEach(cat => {
+                select.innerHTML += `<option value="${cat}">${cat}</option>`;
             });
         }
 
@@ -3916,333 +3649,172 @@
          *********************************/
         function filtrarPorPeriodo(dados, periodo) {
             const hoje = new Date();
-            let dataInicio;
-            
+            let dataInicio, dataFim;
             switch (periodo) {
-                case 'hoje':
-                    dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-                    break;
-                case 'ontem':
-                    dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 1);
-                    break;
-                case 'semana':
-                    dataInicio = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    break;
-                case 'mes':
-                    dataInicio = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
-                    break;
+                case 'hoje': dataInicio = new Date(hoje.setHours(0, 0, 0, 0)); dataFim = new Date(hoje.setHours(23, 59, 59, 999)); break;
+                case 'ontem': dataFim = new Date(hoje.setHours(0, 0, 0, 0) - 1); dataInicio = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate()); break;
+                case 'semana': dataInicio = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000); break;
+                case 'mes': dataInicio = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000); break;
                 case 'personalizado':
                     const dataInicialRelatorio = document.getElementById('dataInicialRelatorio').value;
                     const dataFinalRelatorio = document.getElementById('dataFinalRelatorio').value;
-                    
                     return dados.filter(apt => {
                         const dataApt = apt['Data Inicial']?.split(' ')[0];
-                        if (dataApt) {
-                            const [dia, mes, ano] = dataApt.split('/');
-                            const dataAptISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-                            
-                            if (dataInicialRelatorio && dataAptISO < dataInicialRelatorio) return false;
-                            if (dataFinalRelatorio && dataAptISO > dataFinalRelatorio) return false;
-                        }
+                        if (!dataApt) return false;
+                        const [dia, mes, ano] = dataApt.split('/');
+                        const dataAptISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+                        if (dataInicialRelatorio && dataAptISO < dataInicialRelatorio) return false;
+                        if (dataFinalRelatorio && dataAptISO > dataFinalRelatorio) return false;
                         return true;
                     });
-                default:
-                    return dados;
+                default: return dados;
             }
             
             return dados.filter(apt => {
-                const dataApt = apt['Data Inicial']?.split(' ')[0];
-                if (dataApt) {
-                    const [dia, mes, ano] = dataApt.split('/');
-                    const dataAptObj = new Date(ano, mes - 1, dia);
-                    return dataAptObj >= dataInicio;
-                }
-                return false;
+                const dataAptStr = apt['Data Inicial']?.split(' ')[0];
+                if (!dataAptStr) return false;
+                const [dia, mes, ano] = dataAptStr.split('/');
+                const dataApt = new Date(ano, mes - 1, dia);
+                return dataApt >= dataInicio && (!dataFim || dataApt <= dataFim);
             });
         }
-
+        
         function exportarParaXLSX(dados, nome) {
             const ws = XLSX.utils.json_to_sheet(dados);
-            ws['!cols'] = Array(Object.keys(dados[0]).length).fill({ width: 20 });
-            
+            ws['!cols'] = Object.keys(dados[0] || {}).map(key => ({ wch: Math.max(key.length, 20) }));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
             XLSX.writeFile(wb, `${nome}.xlsx`);
-        }
-
-        function exportarParaCSV(dados, nome) {
-            const csv = Papa.unparse(dados, { delimiter: ';', header: true });
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${nome}.csv`;
-            link.click();
-            URL.revokeObjectURL(link.href);
         }
 
         /*********************************
          * CONTROLE DE SINCRONIZAÇÃO     *
          *********************************/
         function onSyncSettingChange() {
-            const enabled = document.getElementById('autoSyncEnabled').value === 'true';
-            autoSyncEnabled = enabled;
-            
-            const syncIntervalGroup = document.getElementById('syncIntervalGroup');
-            const manualSyncBtn = document.getElementById('manualSyncBtn');
-            
-            if (enabled) {
-                syncIntervalGroup.style.opacity = '1';
-                manualSyncBtn.disabled = false;
-                manualSyncBtn.innerHTML = '<span>🔄</span> Sincronizar Agora';
+            autoSyncEnabled = document.getElementById('autoSyncEnabled').value === 'true';
+            document.getElementById('syncIntervalGroup').style.opacity = autoSyncEnabled ? '1' : '0.5';
+            if (autoSyncEnabled) {
                 startAutoSync();
-                updateSyncStatus('success', 'Sincronização habilitada');
-                
-                // Sincronizar imediatamente se não há dados
-                if (dadosCSV.length === 0) {
-                    console.log('📥 Auto-sync habilitado e sem dados locais, sincronizando...');
-                    setTimeout(() => manualSync(), 500);
-                }
+                if (dadosCSV.length === 0) manualSync();
             } else {
-                syncIntervalGroup.style.opacity = '0.5';
-                manualSyncBtn.disabled = false; // **CORREÇÃO: Manter botão habilitado**
-                manualSyncBtn.innerHTML = '<span>🔄</span> Sincronizar Manualmente';
                 stopAutoSync();
-                updateSyncStatus('disabled', 'Auto-sync desabilitado');
             }
-            
             updateDataSourceIndicator();
         }
 
         function startAutoSync() {
             if (syncInterval) clearInterval(syncInterval);
-            
-            // **CORREÇÃO: Sempre tentar auto-sync se os dados estão configurados para GitHub**
-            if (GITHUB_CONFIG.AUTO_SYNC) {
-                const intervalMinutes = parseInt(document.getElementById('syncInterval')?.value || 30);
-                const intervalMs = intervalMinutes * 60 * 1000;
-                
-                syncInterval = setInterval(async () => {
-                    if (!document.hidden && dataSource !== 'local') {
-                        console.log('🔄 Auto-sync executando...');
-                        const success = await manualSync();
-                        
-                        if (!success) {
-                            console.log('⚠️ Auto-sync falhou, tentará novamente no próximo ciclo');
-                        }
-                    }
-                }, intervalMs);
-                
-                console.log(`⏰ Auto-sync configurado para ${intervalMinutes} minutos`);
-                updateNextSyncTime(intervalMs);
-                
-                // Sincronizar imediatamente se não há dados
-                if (dadosCSV.length === 0) {
-                    console.log('📥 Nenhum dado encontrado, sincronizando imediatamente...');
-                    setTimeout(() => manualSync(), 1000);
-                }
-            }
+            const intervalMinutes = parseInt(document.getElementById('syncInterval')?.value || 30);
+            syncInterval = setInterval(() => {
+                if (!document.hidden && dataSource !== 'local' && autoSyncEnabled) manualSync();
+            }, intervalMinutes * 60 * 1000);
+            updateNextSyncTime(intervalMinutes * 60 * 1000);
         }
 
         function stopAutoSync() {
-            if (syncInterval) {
-                clearInterval(syncInterval);
-                syncInterval = null;
-            }
+            if (syncInterval) clearInterval(syncInterval);
+            syncInterval = null;
             updateSyncStatus('disabled', 'Auto-sync desabilitado');
             document.getElementById('proximaSync').textContent = 'Desabilitado';
         }
 
         function updateDataSourceIndicator() {
-            const indicator = document.getElementById('dataSourceIndicator');
-            const icon = document.getElementById('dataSourceIcon');
-            const text = document.getElementById('dataSourceText');
-            const headerSyncBtn = document.getElementById('headerSyncBtn');
-            
-            indicator.classList.remove('data-source-github', 'data-source-local', 'data-source-none');
+            const indicator = document.getElementById('dataSourceIndicator'), icon = document.getElementById('dataSourceIcon'), text = document.getElementById('dataSourceText'), btn = document.getElementById('headerSyncBtn');
+            indicator.className = 'data-source-indicator';
             
             switch (dataSource) {
-                case 'github':
-                    indicator.classList.add('data-source-github');
-                    icon.textContent = '🔄';
-                    text.textContent = autoSyncEnabled ? 'GitHub (Sync)' : 'GitHub (Manual)';
-                    if (headerSyncBtn) headerSyncBtn.style.display = 'flex';
-                    break;
-                case 'local':
-                    indicator.classList.add('data-source-local');
-                    icon.textContent = '📁';
-                    text.textContent = `Arquivo: ${uploadedFileName.substring(0, 15)}${uploadedFileName.length > 15 ? '...' : ''}`;
-                    if (headerSyncBtn) headerSyncBtn.style.display = autoSyncEnabled ? 'flex' : 'none';
-                    break;
-                default:
-                    indicator.classList.add('data-source-none');
-                    icon.textContent = '📁';
-                    text.textContent = 'Nenhum dado';
-                    if (headerSyncBtn) headerSyncBtn.style.display = autoSyncEnabled ? 'flex' : 'none';
+                case 'github': indicator.classList.add('data-source-github'); icon.textContent = '🔄'; text.textContent = autoSyncEnabled ? 'GitHub (Sync)' : 'GitHub (Manual)'; btn.style.display = 'flex'; break;
+                case 'local': indicator.classList.add('data-source-local'); icon.textContent = '📁'; text.textContent = `Arquivo: ${uploadedFileName.substring(0, 15)}...`; btn.style.display = 'none'; break;
+                default: indicator.classList.add('data-source-none'); icon.textContent = '📁'; text.textContent = 'Nenhum dado'; btn.style.display = autoSyncEnabled ? 'flex' : 'none';
             }
         }
 
         function updateSyncStatus(status, message) {
-            const dot = document.getElementById('syncDot');
-            const statusText = document.getElementById('syncStatus');
-            
-            dot.className = 'sync-dot';
-            dot.classList.add(status);
+            const dot = document.getElementById('syncDot'), statusText = document.getElementById('syncStatus');
+            dot.className = 'sync-dot ' + status;
             statusText.textContent = message;
         }
 
         function updateLastSyncTime() {
-            const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
-            if (lastUpdateTimeElement) {
-                lastUpdateTimeElement.textContent = new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
+            if (lastSyncTime) document.getElementById('lastUpdateTime').textContent = lastSyncTime.toLocaleTimeString('pt-BR');
         }
 
         function updateNextSyncTime(intervalMs) {
             if (intervalMs && autoSyncEnabled && dataSource !== 'local') {
-                const nextUpdate = new Date(Date.now() + intervalMs);
-                document.getElementById('proximaSync').textContent = nextUpdate.toLocaleTimeString('pt-BR');
+                const next = new Date(Date.now() + intervalMs);
+                document.getElementById('proximaSync').textContent = next.toLocaleTimeString('pt-BR');
             } else {
                 document.getElementById('proximaSync').textContent = 'Desabilitado';
             }
         }
 
         function atualizarStatusSistema() {
-            document.getElementById('ultimaSync').textContent = lastSyncTime ? 
-                lastSyncTime.toLocaleTimeString('pt-BR') : '--:--';
+            document.getElementById('ultimaSync').textContent = lastSyncTime ? lastSyncTime.toLocaleTimeString('pt-BR') : '--:--';
             document.getElementById('registrosProcessados').textContent = dadosCSV.length;
-            
-            let statusConexao = 'Offline';
-            if (dataSource === 'github') {
-                statusConexao = autoSyncEnabled ? 'Online (Auto)' : 'Online (Manual)';
-            } else if (dataSource === 'local') {
-                statusConexao = 'Local';
-            }
-            
-            document.getElementById('statusConexao').textContent = statusConexao;
+            let status = 'Offline';
+            if (dataSource === 'github') status = autoSyncEnabled ? 'Online (Auto)' : 'Online (Manual)';
+            else if (dataSource === 'local') status = 'Local';
+            document.getElementById('statusConexao').textContent = status;
         }
 
         /*********************************
          * CONFIGURAÇÕES E MODAIS        *
          *********************************/
         function salvarConfiguracoes() {
-            const autoSync = document.getElementById('autoSyncEnabled').value === 'true';
-            const interval = parseInt(document.getElementById('syncInterval').value);
+            onSyncSettingChange(); // Aplica as configurações de sync
             
-            autoSyncEnabled = autoSync;
-            GITHUB_CONFIG.SYNC_INTERVAL = interval * 60 * 1000;
-            
-            // Atualizar regras de processamento
             apontamentosConfig.regras_processamento.tolerancia_apontamento_curto = parseInt(document.getElementById('toleranciaApontamentoCurto').value);
             apontamentosConfig.regras_processamento.equipamentos_poucos_apontamentos = parseInt(document.getElementById('limiarPoucosApontamentos').value);
             apontamentosConfig.regras_processamento.percentual_irregularidade_critica = parseInt(document.getElementById('percentualCritico').value);
             apontamentosConfig.regras_processamento.percentual_irregularidade_atencao = parseInt(document.getElementById('percentualAtencao').value);
-            
             saveApontamentosConfig();
-            
-            if (autoSync) {
-                startAutoSync();
-            } else {
-                stopAutoSync();
-            }
             
             try {
                 const config = {
-                    autoSyncEnabled,
-                    syncInterval: interval,
+                    autoSyncEnabled, syncInterval: parseInt(document.getElementById('syncInterval').value),
                     supervisorPadrao: document.getElementById('supervisorPadrao').value,
                     regimePadrao: document.getElementById('regimePadrao').value
                 };
                 localStorage.setItem('grupoGPS_config', JSON.stringify(config));
-            } catch (e) {
-                console.log('Não foi possível salvar configurações no localStorage');
-            }
+            } catch (e) { console.error("Falha ao salvar config no localStorage", e); }
             
-            showNotification('Configurações salvas com sucesso!', 'success');
+            showNotification('Configurações salvas!', 'success');
             atualizarStatusSistema();
-            
-            if (dadosCSV.length > 0) {
-                processarDados();
-            }
+            if (dadosCSV.length > 0) processarDados();
         }
 
         function carregarConfiguracoes() {
             try {
                 const config = JSON.parse(localStorage.getItem('grupoGPS_config') || '{}');
+                document.getElementById('autoSyncEnabled').value = config.autoSyncEnabled !== undefined ? config.autoSyncEnabled.toString() : 'true';
+                document.getElementById('syncInterval').value = config.syncInterval || '30';
+                document.getElementById('supervisorPadrao').value = config.supervisorPadrao || '';
+                document.getElementById('regimePadrao').value = config.regimePadrao || 'ADM';
                 
-                // **CORREÇÃO: Sincronização habilitada por padrão**
-                if (config.autoSyncEnabled !== undefined) {
-                    document.getElementById('autoSyncEnabled').value = config.autoSyncEnabled.toString();
-                    autoSyncEnabled = config.autoSyncEnabled;
-                } else {
-                    // Padrão: sincronização habilitada
-                    document.getElementById('autoSyncEnabled').value = 'true';
-                    autoSyncEnabled = true;
-                }
-                
-                if (config.syncInterval) {
-                    document.getElementById('syncInterval').value = config.syncInterval;
-                } else {
-                    document.getElementById('syncInterval').value = '30';
-                }
-                
-                if (config.supervisorPadrao) {
-                    document.getElementById('supervisorPadrao').value = config.supervisorPadrao;
-                }
-                
-                if (config.regimePadrao) {
-                    document.getElementById('regimePadrao').value = config.regimePadrao;
-                }
-                
-                // Carregar regras de processamento
                 const regras = apontamentosConfig.regras_processamento;
                 document.getElementById('toleranciaApontamentoCurto').value = regras.tolerancia_apontamento_curto;
                 document.getElementById('limiarPoucosApontamentos').value = regras.equipamentos_poucos_apontamentos;
                 document.getElementById('percentualCritico').value = regras.percentual_irregularidade_critica;
                 document.getElementById('percentualAtencao').value = regras.percentual_irregularidade_atencao;
-                
-                console.log('✅ Configurações carregadas - Sync habilitado:', autoSyncEnabled);
-            } catch (e) {
-                console.log('⚠️ Não foi possível carregar configurações, usando padrões');
-                // Definir valores padrão
-                document.getElementById('autoSyncEnabled').value = 'true';
-                document.getElementById('syncInterval').value = '30';
-                autoSyncEnabled = true;
-            }
+
+                autoSyncEnabled = document.getElementById('autoSyncEnabled').value === 'true';
+            } catch (e) { console.error('Falha ao carregar config, usando padrões', e); }
         }
 
         function showAppointmentDetails(appointment) {
             const modal = document.getElementById('appointmentModal');
             const container = document.getElementById('appointmentDetails');
-            
-            const codigo = extrairCodigoVaga(appointment.Vaga);
             const status = classificarApontamento(appointment);
-            const tempoMinutos = tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)']);
-            const gatilho = getGatilhoAlerta(appointment['Categoria Demora']);
             
             container.innerHTML = `
-                <div style="margin-bottom: 1rem;">
-                    <strong>Status:</strong> 
-                    <span style="color: ${status === 'normal' ? '#198754' : '#dc3545'}; font-weight: 600;">
-                        ${status === 'normal' ? 'NORMAL' : 'ALERTA - ' + status.toUpperCase()}
-                    </span>
-                </div>
-                <div style="margin-bottom: 1rem;"><strong>Equipamento:</strong> ${codigo || 'N/D'}</div>
-                <div style="margin-bottom: 1rem;"><strong>Placa:</strong> ${appointment.Placa || 'N/D'}</div>
+                <div style="margin-bottom: 1rem;"><strong>Equipamento:</strong> ${extrairCodigoVaga(appointment.Vaga) || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Categoria:</strong> ${appointment['Categoria Demora'] || 'N/D'}</div>
                 <div style="margin-bottom: 1rem;"><strong>Período:</strong> ${formatarPeriodoApontamento(appointment['Data Inicial'], appointment['Data Final'])}</div>
-                <div style="margin-bottom: 1rem;"><strong>Tempo:</strong> ${appointment['Tempo Indisponível (HH:MM)'] || 'N/D'} (${tempoMinutos} minutos)</div>
-                <div style="margin-bottom: 1rem;"><strong>Limite Configurado:</strong> ${gatilho} minutos</div>
-                <div style="margin-bottom: 1rem;"><strong>Vaga:</strong> ${appointment.Vaga || 'N/D'}</div>
-                ${appointment.Supervisor ? `<div style="margin-bottom: 1rem;"><strong>Supervisor:</strong> ${appointment.Supervisor}</div>` : ''}
-                ${appointment.Motorista ? `<div style="margin-bottom: 1rem;"><strong>Motorista:</strong> ${appointment.Motorista}</div>` : ''}
-                ${status !== 'normal' ? `<div style="color: #dc3545; font-weight: 600; margin-top: 1rem;">⚠️ ${getMotivo(status, appointment)}</div>` : ''}
-                ${status !== 'normal' ? `<div style="margin-top: 1rem;"><button class="btn" onclick="closeModal(); startInvestigation(${JSON.stringify(appointment).replace(/"/g, "&quot;")})">🔍 Investigar</button></div>` : ''}
+                <div style="margin-bottom: 1rem;"><strong>Tempo:</strong> ${appointment['Tempo Indisponível (HH:MM)']} (${tempoParaMinutos(appointment['Tempo Indisponível (HH:MM)'])} min)</div>
+                <div style="margin-bottom: 1rem;"><strong>Limite Configurado:</strong> ${getGatilhoAlerta(appointment['Categoria Demora'])} min</div>
+                ${status !== 'normal' && status !== 'inativo' ? `<div style="color: #dc3545; font-weight: 600; margin-top: 1rem;">⚠️ ${getMotivo(status, appointment)}</div>
+                                         <div style="margin-top: 1rem;"><button class="btn" onclick="closeModal(); startInvestigation(${JSON.stringify(appointment).replace(/"/g, "&quot;")})">🔍 Investigar</button></div>` : ''}
             `;
-            
             modal.classList.add('show');
         }
 
@@ -4254,9 +3826,7 @@
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
-            
             document.body.appendChild(notification);
-            
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.3s ease-in';
                 setTimeout(() => notification.remove(), 300);
@@ -4268,31 +3838,18 @@
          *********************************/
         function setupDragAndDrop() {
             const uploadSection = document.getElementById('uploadSection');
-            
-            uploadSection.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadSection.classList.add('drag-over');
-            });
-            
-            uploadSection.addEventListener('dragleave', (e) => {
-                e.preventDefault();
+            ['dragover', 'dragleave', 'drop'].forEach(eventName => uploadSection.addEventListener(eventName, e => e.preventDefault()));
+            uploadSection.addEventListener('dragover', () => uploadSection.classList.add('drag-over'));
+            uploadSection.addEventListener('dragleave', () => uploadSection.classList.remove('drag-over'));
+            uploadSection.addEventListener('drop', e => {
                 uploadSection.classList.remove('drag-over');
-            });
-            
-            uploadSection.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadSection.classList.remove('drag-over');
-                
                 const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    const file = files[0];
-                    if (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-                        const fileInput = document.getElementById('csvFileInput');
-                        fileInput.files = files;
-                        handleFileUpload({ target: fileInput });
-                    } else {
-                        showNotification('Formato de arquivo não suportado. Use .csv ou .xlsx', 'error');
-                    }
+                if (files.length > 0 && (files[0].name.endsWith('.csv') || files[0].name.endsWith('.xlsx'))) {
+                    const fileInput = document.getElementById('csvFileInput');
+                    fileInput.files = files;
+                    handleFileUpload({ target: fileInput });
+                } else {
+                    showNotification('Formato inválido. Use .csv ou .xlsx', 'error');
                 }
             });
         }
@@ -4303,102 +3860,41 @@
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚛 Iniciando Controle de Apontamentos - GrupoGPS');
             
-            // Carregar configurações
             loadApontamentosConfig();
             loadInvestigations();
             carregarConfiguracoes();
-            
-            // Configurar drag & drop
             setupDragAndDrop();
             
-            // Configurar indicadores iniciais
             updateDataSourceIndicator();
-            updateSyncStatus('loading', 'Inicializando sistema...');
-            updateLastSyncTime();
+            updateSyncStatus('loading', 'Inicializando...');
             
-            console.log('🔄 Iniciando sincronização automática...');
-            
-            // **CORREÇÃO: Sincronização simplificada e automática**
+            // MELHORIA: Lógica de inicialização simplificada e mais robusta.
             try {
-                // Tentar carregar configuração do GitHub (não crítico se falhar)
                 await loadConfigFromGitHub();
-                
-                // Configurar auto-sync primeiro
                 startAutoSync();
-                
-                // Tentar sincronizar imediatamente
-                console.log('📥 Tentando sincronização inicial...');
-                const success = await manualSync();
-                
-                if (success) {
-                    console.log('✅ Sincronização inicial bem-sucedida');
+                if(autoSyncEnabled) {
+                    await manualSync();
                 } else {
-                    console.log('⚠️ Sincronização inicial falhou, mas continuará tentando');
+                    updateSyncStatus('disabled', 'Auto-sync desabilitado');
                 }
             } catch (error) {
                 console.error('❌ Erro na inicialização:', error);
-                updateSyncStatus('error', 'Erro na inicialização: ' + error.message);
-                showNotification('Erro na inicialização. Carregue um arquivo CSV manualmente.', 'error');
+                updateSyncStatus('error', 'Erro na inicialização');
+                showNotification('Falha ao conectar com GitHub. Carregue um arquivo manualmente.', 'warning');
             }
             
-            // Event listeners
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal')) closeModal();
-            });
+            document.addEventListener('click', e => { if (e.target.classList.contains('modal')) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
             
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeModal();
-                
-                // Atalhos de teclado
-                if ((e.ctrlKey || e.metaKey) && e.key === 'r' && autoSyncEnabled) {
-                    e.preventDefault();
-                    manualSync();
-                }
-                
-                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                    e.preventDefault();
-                    if (!filtersOpen) {
-                        toggleFilters();
-                    }
-                    setTimeout(() => {
-                        document.getElementById('dataInicial').focus();
-                    }, 100);
-                }
-                
-                if (e.key === 'Escape' && filtersOpen) {
-                    toggleFilters();
+            window.addEventListener('visibilitychange', () => {
+                if (!document.hidden && autoSyncEnabled && dataSource === 'github') {
+                    const timeSince = lastSyncTime ? Date.now() - lastSyncTime.getTime() : Infinity;
+                    const intervalMs = parseInt(document.getElementById('syncInterval')?.value || 30) * 60 * 1000;
+                    if (timeSince > intervalMs) manualSync();
                 }
             });
             
-            window.addEventListener('beforeunload', () => {
-                stopAutoSync();
-                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-            });
-            
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    console.log('📱 Página não visível - pausando auto-sync');
-                } else {
-                    console.log('📱 Página visível - retomando auto-sync');
-                    if (autoSyncEnabled && !syncInterval) {
-                        startAutoSync();
-                    }
-                    
-                    // Verificar se precisa sincronizar ao voltar
-                    if (autoSyncEnabled && dataSource === 'github') {
-                        const timeSinceLastSync = lastSyncTime ? Date.now() - lastSyncTime.getTime() : Infinity;
-                        const syncIntervalMs = parseInt(document.getElementById('syncInterval')?.value || 30) * 60 * 1000;
-                        
-                        if (timeSinceLastSync > syncIntervalMs) {
-                            console.log('🔄 Sincronização necessária após retornar à página');
-                            manualSync();
-                        }
-                    }
-                }
-            });
-            
-            console.log('✅ Sistema inicializado com sucesso!');
-            showNotification('Sistema inicializado! Tentando conectar com GitHub...', 'info');
+            console.log('✅ Sistema inicializado!');
         });
     </script>
 </body>
